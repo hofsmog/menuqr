@@ -236,7 +236,7 @@
     <!-- OVERVIEW -->
     <div id="panel-overview" class="panel active">
       <div class="admin-topbar">
-        <div><div class="admin-title">Välkommen! 👋</div><div class="admin-subtitle" id="overview-subtitle">Ansluter till Supabase...</div></div>
+        <div><div class="admin-title">Välkommen! 👋</div><div class="admin-subtitle" id="overview-subtitle">Laddar din meny...</div></div>
         <button class="btn-gold" onclick="showView('view-menu')">Se din meny →</button>
       </div>
       <div class="stats-grid">
@@ -258,7 +258,7 @@
     <!-- MENU EDITOR -->
     <div id="panel-menu" class="panel">
       <div class="admin-topbar">
-        <div><div class="admin-title">Redigera meny</div><div class="admin-subtitle">Sparas direkt i Supabase – syns direkt på menyn</div></div>
+        <div><div class="admin-title">Redigera meny</div><div class="admin-subtitle">Ändringar syns direkt på din digitala meny</div></div>
         <button class="btn-gold" onclick="toggleAddForm()">+ Lägg till rätt</button>
       </div>
       <div class="categories-row" id="cat-filter">
@@ -309,7 +309,7 @@
         <div class="qr-info-card">
           <div class="section-title" style="margin-bottom:20px">Information</div>
           <div class="info-row"><span class="info-label">Status</span><span class="info-value green">● Aktiv</span></div>
-          <div class="info-row"><span class="info-label">Databas</span><span class="info-value green">● Supabase ansluten</span></div>
+          <div class="info-row"><span class="info-label">Databas</span><span class="info-value green">● Aktiv</span></div>
           <div class="info-row"><span class="info-label">Anpassad domän</span><span class="info-value gold">Pro 🔒</span></div>
           <div class="info-row"><span class="info-label">Ta bort logga</span><span class="info-value gold">Pro 🔒</span></div>
         </div>
@@ -372,7 +372,7 @@ async function init() {
     const { data, error } = await db.from('restaurants').select('*').eq('slug', SLUG).single();
     if (error) throw error;
     restaurantId = data.id;
-    document.getElementById('overview-subtitle').textContent = data.name + ' – ansluten till Supabase ✓';
+    document.getElementById('overview-subtitle').textContent = data.name + ' – din meny är aktiv';
     document.getElementById('qr-restaurant-name').textContent = data.name;
     document.getElementById('qr-url').textContent = 'menuqr.se/' + data.slug;
     document.getElementById('guest-restaurant-name').textContent = data.name;
@@ -380,7 +380,7 @@ async function init() {
     await loadMenuItems();
   } catch(e) {
     document.getElementById('overview-subtitle').textContent = '⚠️ Kunde inte ansluta – har du kört SQL-scriptet?';
-    document.getElementById('menu-items-list').innerHTML = '<p style="color:var(--rust);padding:20px">⚠️ Databas ej konfigurerad. Kör supabase-setup.sql först!</p>';
+    document.getElementById('menu-items-list').innerHTML = '<p style="color:var(--rust);padding:20px">⚠️ Kunde inte ladda menyn. Kontakta support.</p>';
     document.getElementById('guest-menu-content').innerHTML = '<div class="menu-section"><p style="color:rgba(245,240,232,0.3)">Meny ej tillgänglig.</p></div>';
   }
 }
@@ -456,7 +456,7 @@ async function addItem() {
   toggleAddForm();
   document.getElementById('stat-items').textContent = menuItems.length;
   renderAdminMenu(); renderGuestMenu();
-  showToast('✓ Sparat i Supabase!');
+  showToast('✓ Rätten sparad!');
 }
 
 function renderGuestMenu() {
