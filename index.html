@@ -6,7 +6,6 @@
 <title>MenuQR – Digital meny & bokning</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <style>
   :root {
     --ink: #1a1208;
@@ -402,7 +401,7 @@
       <div class="admin-topbar"><div><div class="admin-title">Din QR-kod</div><div class="admin-subtitle">Placera på bord, menyhållare eller fönster</div></div></div>
       <div class="qr-container">
         <div class="qr-card">
-          <div class="qr-visual"><canvas id="qr-canvas"></canvas></div>
+          <div class="qr-visual"><img id="qr-img" style="width:176px;height:176px;border-radius:8px;" alt="QR-kod"></div>
           <div class="qr-title" id="qr-restaurant-name">–</div>
           <div class="qr-url" id="qr-url">menuqr.se/...</div>
           <div class="qr-actions">
@@ -703,32 +702,29 @@ function filterGuestCat(cat, el) {
 
 // ── QR ──
 function buildQR(slug) {
-  const canvas = document.getElementById('qr-canvas');
-  if (!canvas) return;
+  const visual = document.querySelector('.qr-visual');
+  if (!visual) return;
   const url = slug ? `https://menuqr.se/${slug}` : 'https://menuqr.se';
-  QRCode.toCanvas(canvas, url, {
-    width: 176,
-    margin: 1,
-    color: { dark: '#1a1208', light: '#ffffff' }
-  }, function(err) {
-    if (err) console.error(err);
-  });
+  const encoded = encodeURIComponent(url);
+  const imgSrc = `https://api.qrserver.com/v1/create-qr-code/?size=176x176&data=${encoded}&bgcolor=ffffff&color=1a1208&margin=10`;
+  visual.innerHTML = `<img id="qr-img" src="${imgSrc}" style="width:176px;height:176px;border-radius:8px;" alt="QR-kod">`;
 }
 
 function downloadQR() {
-  const canvas = document.getElementById('qr-canvas');
-  if (!canvas) return;
+  const img = document.getElementById('qr-img');
+  if (!img) return;
   const link = document.createElement('a');
   link.download = 'menuqr-kod.png';
-  link.href = canvas.toDataURL('image/png');
+  link.href = img.src;
+  link.target = '_blank';
   link.click();
-  showToast('✓ QR-koden laddas ned!');
+  showToast('✓ QR-koden öppnas för nedladdning!');
 }
 
 function printQR() {
-  const canvas = document.getElementById('qr-canvas');
-  if (!canvas) return;
-  const img = canvas.toDataURL('image/png');
+  const img = document.getElementById('qr-img');
+  const name = document.getElementById('qr-restaurant-name').textContent;
+  if (!img) return;
   const win = window.open('', '_blank');
   win.document.write(`
     <html><head><title>MenuQR – Skriv ut</title>
@@ -739,8 +735,8 @@ function printQR() {
       p { color:#888; font-size:0.85rem; margin-top:6px; }
     </style></head>
     <body>
-      <img src="${img}">
-      <h2>${document.getElementById('qr-restaurant-name').textContent}</h2>
+      <img src="${img.src}">
+      <h2>${name}</h2>
       <p>Scanna för att se menyn</p>
       <script>window.onload=()=>window.print()<\/script>
     </body></html>
