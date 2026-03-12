@@ -329,10 +329,10 @@
     </nav>
     <div class="sidebar-bottom">
       <div class="user-info">Inloggad som:<br><span class="user-email" id="user-email-display">–</span></div>
-      <div class="plan-badge">
-        <div class="plan-name">✦ Gratis plan</div>
-        <div class="plan-desc">1 meny · Grundfunktioner</div>
-        <button class="upgrade-btn" onclick="startCheckout()">Uppgradera till Pro →</button>
+      <div class="plan-badge" id="plan-badge">
+        <div class="plan-name" id="plan-name">✦ Gratis plan</div>
+        <div class="plan-desc" id="plan-desc">1 meny · Grundfunktioner</div>
+        <button class="upgrade-btn" id="upgrade-btn" onclick="startCheckout()">Uppgradera till Pro →</button>
       </div>
       <button class="logout-btn" onclick="logout()">Logga ut</button>
     </div>
@@ -452,7 +452,7 @@
     <button class="menu-cat-btn" onclick="filterGuestCat('drycker',this)">Drycker</button>
   </div>
   <div id="guest-menu-content"><div class="loading"><div class="spinner spinner-dark"></div></div></div>
-  <div class="menu-footer">Skapad med <a onclick="showView('view-home')">MenuQR</a> · Gratis digital meny</div>
+  <div class="menu-footer" id="guest-menu-footer">Skapad med <a onclick="showView('view-home')">MenuQR</a> · Gratis digital meny</div>
 </div>
 
 <!-- GUEST MENU DEMO -->
@@ -531,6 +531,9 @@ async function showGuestMenuBySlug(slug) {
   document.getElementById('guest-restaurant-desc').textContent = data.description || '';
   // Dölj "tillbaka"-knappen för gäster – visa bara menyn
   document.querySelector('.menu-hero button').style.display = 'none';
+  // Dölj logga om Pro
+  const footer = document.getElementById('guest-menu-footer');
+  if (footer) footer.style.display = data.is_pro ? 'none' : 'block';
 
   const { data: items } = await db.from('menu_items').select('*').eq('restaurant_id', data.id).order('created_at');
   menuItems = items || [];
@@ -544,6 +547,7 @@ async function loadUserRestaurant() {
     return;
   }
   restaurantId = data.id;
+  window._restaurantData = data;
   document.getElementById('user-email-display').textContent = currentUser.email;
   document.getElementById('overview-subtitle').textContent = data.name + ' – din meny är aktiv';
   document.getElementById('qr-restaurant-name').textContent = data.name;
@@ -551,6 +555,7 @@ async function loadUserRestaurant() {
   document.getElementById('qr-url-display').textContent = 'menuqr.se/' + data.slug;
   document.getElementById('guest-restaurant-name').textContent = data.name;
   document.getElementById('guest-restaurant-desc').textContent = data.description || '';
+  updateProUI(data.is_pro);
   await loadMenuItems();
   showView('view-admin');
   setTimeout(() => buildQR(data.slug), 100);
@@ -827,8 +832,51 @@ async function processPayment() {
   btn.textContent = 'Behandlar...'; btn.disabled = true;
   const { paymentMethod, error } = await window._stripe.createPaymentMethod({ type: 'card', card: window._stripeCard, billing_details: { email: currentUser?.email } });
   if (error) { errEl.style.display='block'; errEl.textContent=error.message; btn.textContent='Starta Pro – 199 kr/mån'; btn.disabled=false; return; }
+  // Spara betalningsmetod och aktivera Pro
+  await db.from('restaurants').update({ stripe_customer_id: paymentMethod.id }).eq('id', restaurantId);
   document.getElementById('payment-modal').remove();
-  showToast('🎉 Tack! Din betalning behandlas. Pro aktiveras inom kort!');
+  await activatePro();
+}
+
+function updateProUI(isPro) {
+  const planName = document.getElementById('plan-name');
+  const planDesc = document.getElementById('plan-desc');
+  const upgradeBtn = document.getElementById('upgrade-btn');
+  const footer = document.getElementById('guest-menu-footer');
+
+  if (isPro) {
+    planName.innerHTML = '⭐ Pro-plan';
+    planName.style.color = '#e8b84b';
+    planDesc.textContent = 'Alla funktioner upplåsta';
+    if (upgradeBtn) upgradeBtn.style.display = 'none';
+    if (footer) footer.style.display = 'none';
+    // Lås upp bokningar
+    const lockOverlay = document.querySelector('.lock-overlay');
+    if (lockOverlay) lockOverlay.style.display = 'none';
+    // Uppdatera stat-card för bokningar
+    const statBookings = document.querySelector('.stat-card:nth-child(3) .stat-value');
+    if (statBookings) statBookings.textContent = '0';
+    const statBookingsChange = document.querySelector('.stat-card:nth-child(3) .stat-change');
+    if (statBookingsChange) { statBookingsChange.textContent = 'Bokningar idag'; statBookingsChange.style.color = 'var(--sage)'; }
+  } else {
+    planName.innerHTML = '✦ Gratis plan';
+    planName.style.color = 'var(--gold)';
+    planDesc.textContent = '1 meny · Grundfunktioner';
+    if (upgradeBtn) upgradeBtn.style.display = 'block';
+    if (footer) footer.style.display = 'block';
+  }
+}
+
+async function activatePro() {
+  const { error } = await db.from('restaurants')
+    .update({ is_pro: true, pro_since: new Date().toISOString() })
+    .eq('id', restaurantId);
+  if (!error) {
+    updateProUI(true);
+    showToast('🎉 Pro aktiverat! Alla funktioner är nu upplåsta.');
+  } else {
+    showToast('Fel vid aktivering – kontakta support');
+  }
 }
 
 // ── TOAST ──
