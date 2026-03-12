@@ -324,7 +324,7 @@
       <div class="sidebar-item active" onclick="switchPanel('panel-overview',this)"><span class="sidebar-icon">◈</span> Översikt</div>
       <div class="sidebar-item" onclick="switchPanel('panel-menu',this)"><span class="sidebar-icon">◉</span> Redigera meny</div>
       <div class="sidebar-item" onclick="switchPanel('panel-qr',this)"><span class="sidebar-icon">◫</span> QR-kod</div>
-      <div class="sidebar-item" onclick="switchPanel('panel-bookings',this)"><span class="sidebar-icon">◷</span> Bokningar</div>
+      <div class="sidebar-item" onclick="switchPanel('panel-bookings',this);loadBookings()"><span class="sidebar-icon">◷</span> Bokningar</div>
       <div class="sidebar-item" onclick="previewMenu()"><span class="sidebar-icon">◌</span> Förhandsgranska</div>
     </nav>
     <div class="sidebar-bottom">
@@ -347,7 +347,7 @@
       <div class="stats-grid">
         <div class="stat-card"><div class="stat-label">Menyrätter totalt</div><div class="stat-value" id="stat-items">–</div><div class="stat-change">Din meny</div></div>
         <div class="stat-card"><div class="stat-label">Kategorier</div><div class="stat-value" id="stat-cats">–</div><div class="stat-change">Aktiva kategorier</div></div>
-        <div class="stat-card"><div class="stat-label">Bokningar</div><div class="stat-value">🔒</div><div class="stat-change" style="color:var(--gold)">Pro-funktion</div></div>
+        <div class="stat-card" style="cursor:pointer" onclick="switchPanel('panel-bookings',document.querySelectorAll('.sidebar-item')[3]);loadBookings()"><div class="stat-label">Bokningar idag</div><div class="stat-value" id="stat-bookings">–</div><div class="stat-change" id="stat-bookings-change" style="color:var(--gold)">Klicka för att se</div></div>
       </div>
       <div class="section-header"><div class="section-title">Snabbåtgärder</div></div>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px">
@@ -420,19 +420,18 @@
     </div>
 
     <div id="panel-bookings" class="panel">
-      <div class="admin-topbar"><div><div class="admin-title">Bokningar</div><div class="admin-subtitle">Hantera bordsreservationer</div></div></div>
-      <div style="position:relative" class="premium-lock">
-        <div style="opacity:0.3;pointer-events:none">
-          <div class="menu-item-row"><div><div class="item-name">Anna Lindqvist</div><div class="item-desc-small">4 personer · 18:30 idag</div></div><div class="item-price" style="color:var(--sage)">Bekräftad</div><div></div></div>
-          <div class="menu-item-row" style="margin-top:12px"><div><div class="item-name">Marcus Ek</div><div class="item-desc-small">2 personer · 19:00 idag</div></div><div class="item-price" style="color:var(--gold)">Väntar</div><div></div></div>
-        </div>
-        <div class="lock-overlay">
-          <div class="lock-icon">🔒</div>
-          <div class="lock-title">Pro-funktion</div>
-          <div class="lock-desc">Uppgradera för att ta emot och hantera bordsreservationer.</div>
-          <button class="btn-gold" onclick="startCheckout()">Uppgradera till Pro</button>
+      <div class="admin-topbar">
+        <div><div class="admin-title">Bokningar</div><div class="admin-subtitle" id="bookings-subtitle">Laddar...</div></div>
+        <div style="display:flex;gap:12px">
+          <select id="booking-filter" onchange="filterBookings()" style="border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:0.85rem;background:white;cursor:pointer;">
+            <option value="all">Alla</option>
+            <option value="pending">Väntar</option>
+            <option value="confirmed">Bekräftade</option>
+            <option value="cancelled">Avbokade</option>
+          </select>
         </div>
       </div>
+      <div id="bookings-list"><div class="loading"><div class="spinner"></div></div></div>
     </div>
   </main>
 </div>
@@ -452,6 +451,63 @@
     <button class="menu-cat-btn" onclick="filterGuestCat('drycker',this)">Drycker</button>
   </div>
   <div id="guest-menu-content"><div class="loading"><div class="spinner spinner-dark"></div></div></div>
+
+  <!-- Bokningssektion -->
+  <div id="guest-booking-section" style="display:none;">
+    <div style="padding:32px;border-top:1px solid rgba(200,151,58,0.15);">
+      <div id="booking-form-container">
+        <div style="font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--cream);margin-bottom:8px;">Boka bord</div>
+        <div style="font-size:0.82rem;color:rgba(245,240,232,0.4);margin-bottom:24px;">Fyll i dina uppgifter så bekräftar vi din bokning</div>
+        <div id="booking-error" style="background:rgba(181,74,42,0.15);border:1px solid rgba(181,74,42,0.3);border-radius:6px;padding:10px 14px;font-size:0.82rem;color:#e07a5f;display:none;margin-bottom:16px;"></div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div>
+              <div style="font-size:0.72rem;color:rgba(245,240,232,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Datum</div>
+              <input type="date" id="book-date" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:11px 14px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;color-scheme:dark;">
+            </div>
+            <div>
+              <div style="font-size:0.72rem;color:rgba(245,240,232,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Tid</div>
+              <select id="book-time" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:11px 14px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;">
+                <option value="">Välj tid</option>
+                <option>11:00</option><option>11:30</option><option>12:00</option><option>12:30</option>
+                <option>13:00</option><option>13:30</option><option>17:00</option><option>17:30</option>
+                <option>18:00</option><option>18:30</option><option>19:00</option><option>19:30</option>
+                <option>20:00</option><option>20:30</option><option>21:00</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:0.72rem;color:rgba(245,240,232,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Antal gäster</div>
+            <select id="book-guests" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:11px 14px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;">
+              <option value="1">1 person</option><option value="2">2 personer</option><option value="3">3 personer</option>
+              <option value="4">4 personer</option><option value="5">5 personer</option><option value="6">6 personer</option>
+              <option value="7">7 personer</option><option value="8">8+ personer</option>
+            </select>
+          </div>
+          <div>
+            <div style="font-size:0.72rem;color:rgba(245,240,232,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Ditt namn</div>
+            <input type="text" id="book-name" placeholder="För- och efternamn" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:11px 14px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;">
+          </div>
+          <div>
+            <div style="font-size:0.72rem;color:rgba(245,240,232,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Telefon</div>
+            <input type="tel" id="book-phone" placeholder="07X-XXX XX XX" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:11px 14px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;">
+          </div>
+          <div>
+            <div style="font-size:0.72rem;color:rgba(245,240,232,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Meddelande (valfritt)</div>
+            <textarea id="book-message" placeholder="Allergier, önskemål..." rows="2" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:11px 14px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;resize:none;"></textarea>
+          </div>
+          <button onclick="submitBooking()" id="book-submit-btn" style="background:var(--gold);color:var(--ink);border:none;padding:14px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;cursor:pointer;border-radius:8px;margin-top:4px;">Skicka bokningsförfrågan</button>
+        </div>
+      </div>
+      <div id="booking-success" style="display:none;text-align:center;padding:24px 0;">
+        <div style="font-size:2.5rem;margin-bottom:16px;">🎉</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--cream);margin-bottom:8px;">Bokningsförfrågan skickad!</div>
+        <div style="font-size:0.85rem;color:rgba(245,240,232,0.5);line-height:1.6;">Restaurangen bekräftar din bokning så snart som möjligt.</div>
+        <button onclick="resetBookingForm()" style="margin-top:20px;background:transparent;border:1px solid rgba(200,151,58,0.3);color:var(--cream);padding:10px 24px;font-family:'DM Sans',sans-serif;font-size:0.85rem;cursor:pointer;border-radius:8px;">Boka igen</button>
+      </div>
+    </div>
+  </div>
+
   <div class="menu-footer" id="guest-menu-footer">Skapad med <a onclick="showView('view-home')">MenuQR</a> · Gratis digital meny</div>
 </div>
 
@@ -534,6 +590,11 @@ async function showGuestMenuBySlug(slug) {
   // Dölj logga om Pro
   const footer = document.getElementById('guest-menu-footer');
   if (footer) footer.style.display = data.is_pro ? 'none' : 'block';
+  // Visa bokningsformulär om Pro
+  const bookingSection = document.getElementById('guest-booking-section');
+  if (bookingSection) bookingSection.style.display = data.is_pro ? 'block' : 'none';
+  // Spara restaurant_id för bokning
+  window._guestRestaurantId = data.id;
 
   const { data: items } = await db.from('menu_items').select('*').eq('restaurant_id', data.id).order('created_at');
   menuItems = items || [];
@@ -877,6 +938,103 @@ async function activatePro() {
   } else {
     showToast('Fel vid aktivering – kontakta support');
   }
+}
+
+// ── BOOKINGS GUEST ──
+async function submitBooking() {
+  const name = document.getElementById('book-name').value.trim();
+  const phone = document.getElementById('book-phone').value.trim();
+  const date = document.getElementById('book-date').value;
+  const time = document.getElementById('book-time').value;
+  const guests = document.getElementById('book-guests').value;
+  const message = document.getElementById('book-message').value.trim();
+  const errEl = document.getElementById('booking-error');
+  const btn = document.getElementById('book-submit-btn');
+  errEl.style.display = 'none';
+  if (!name || !phone || !date || !time) {
+    errEl.style.display = 'block';
+    errEl.textContent = 'Fyll i namn, telefon, datum och tid';
+    return;
+  }
+  btn.textContent = 'Skickar...'; btn.disabled = true;
+  const { error } = await db.from('bookings').insert([{
+    restaurant_id: window._guestRestaurantId,
+    name, phone, date, time,
+    guests: parseInt(guests),
+    message,
+    status: 'pending'
+  }]);
+  btn.textContent = 'Skicka bokningsförfrågan'; btn.disabled = false;
+  if (error) { errEl.style.display='block'; errEl.textContent='Något gick fel, försök igen'; return; }
+  document.getElementById('booking-form-container').style.display = 'none';
+  document.getElementById('booking-success').style.display = 'block';
+}
+
+function resetBookingForm() {
+  document.getElementById('booking-form-container').style.display = 'block';
+  document.getElementById('booking-success').style.display = 'none';
+  document.getElementById('book-name').value = '';
+  document.getElementById('book-phone').value = '';
+  document.getElementById('book-date').value = '';
+  document.getElementById('book-time').value = '';
+  document.getElementById('book-message').value = '';
+}
+
+// ── BOOKINGS ADMIN ──
+let allBookings = [];
+
+async function loadBookings() {
+  if (!restaurantId) return;
+  const { data, error } = await db.from('bookings')
+    .select('*')
+    .eq('restaurant_id', restaurantId)
+    .order('date', { ascending: true })
+    .order('time', { ascending: true });
+  if (error) { document.getElementById('bookings-list').innerHTML = '<p style="color:var(--rust);padding:20px">Fel vid hämtning av bokningar.</p>'; return; }
+  allBookings = data || [];
+  renderBookings(allBookings);
+  const pending = allBookings.filter(b => b.status === 'pending').length;
+  document.getElementById('bookings-subtitle').textContent = `${allBookings.length} bokningar totalt · ${pending} väntar på bekräftelse`;
+}
+
+function filterBookings() {
+  const filter = document.getElementById('booking-filter').value;
+  const filtered = filter === 'all' ? allBookings : allBookings.filter(b => b.status === filter);
+  renderBookings(filtered);
+}
+
+function renderBookings(bookings) {
+  const el = document.getElementById('bookings-list');
+  if (!bookings.length) {
+    el.innerHTML = '<p style="color:#999;padding:20px 0">Inga bokningar här.</p>';
+    return;
+  }
+  el.innerHTML = bookings.map(b => {
+    const statusColor = b.status === 'confirmed' ? 'var(--sage)' : b.status === 'cancelled' ? 'var(--rust)' : 'var(--gold)';
+    const statusLabel = b.status === 'confirmed' ? '✓ Bekräftad' : b.status === 'cancelled' ? '✕ Avbokad' : '● Väntar';
+    const dateStr = new Date(b.date).toLocaleDateString('sv-SE', { weekday:'short', month:'short', day:'numeric' });
+    return `
+    <div class="menu-item-row" style="grid-template-columns:1fr auto auto;margin-bottom:12px;">
+      <div>
+        <div class="item-name">${b.name}</div>
+        <div class="item-desc-small">${b.guests} personer · ${dateStr} kl ${b.time}${b.phone ? ' · ' + b.phone : ''}${b.message ? '<br><em>' + b.message + '</em>' : ''}</div>
+      </div>
+      <div style="font-size:0.82rem;font-weight:500;color:${statusColor};white-space:nowrap;">${statusLabel}</div>
+      <div class="item-actions">
+        ${b.status === 'pending' ? `<button class="icon-btn" style="color:var(--sage);border-color:var(--sage)" onclick="updateBooking('${b.id}','confirmed')" title="Bekräfta">✓</button>` : ''}
+        ${b.status !== 'cancelled' ? `<button class="icon-btn danger" onclick="updateBooking('${b.id}','cancelled')" title="Avboka">✕</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function updateBooking(id, status) {
+  const { error } = await db.from('bookings').update({ status }).eq('id', id);
+  if (error) { showToast('Fel vid uppdatering'); return; }
+  const b = allBookings.find(x => x.id === id);
+  if (b) b.status = status;
+  filterBookings();
+  showToast(status === 'confirmed' ? '✓ Bokning bekräftad!' : '✕ Bokning avbokad');
 }
 
 // ── TOAST ──
