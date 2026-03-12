@@ -493,6 +493,10 @@
             <input type="tel" id="book-phone" placeholder="07X-XXX XX XX" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:11px 14px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;">
           </div>
           <div>
+            <div style="font-size:0.72rem;color:rgba(245,240,232,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">E-post (för bekräftelse)</div>
+            <input type="email" id="book-email" placeholder="din@email.se" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:11px 14px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;">
+          </div>
+          <div>
             <div style="font-size:0.72rem;color:rgba(245,240,232,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Meddelande (valfritt)</div>
             <textarea id="book-message" placeholder="Allergier, önskemål..." rows="2" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:11px 14px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;resize:none;"></textarea>
           </div>
@@ -944,6 +948,7 @@ async function activatePro() {
 async function submitBooking() {
   const name = document.getElementById('book-name').value.trim();
   const phone = document.getElementById('book-phone').value.trim();
+  const email = document.getElementById('book-email').value.trim();
   const date = document.getElementById('book-date').value;
   const time = document.getElementById('book-time').value;
   const guests = document.getElementById('book-guests').value;
@@ -959,7 +964,7 @@ async function submitBooking() {
   btn.textContent = 'Skickar...'; btn.disabled = true;
   const { error } = await db.from('bookings').insert([{
     restaurant_id: window._guestRestaurantId,
-    name, phone, date, time,
+    name, phone, email, date, time,
     guests: parseInt(guests),
     message,
     status: 'pending'
@@ -1032,9 +1037,31 @@ async function updateBooking(id, status) {
   const { error } = await db.from('bookings').update({ status }).eq('id', id);
   if (error) { showToast('Fel vid uppdatering'); return; }
   const b = allBookings.find(x => x.id === id);
-  if (b) b.status = status;
+  if (b) {
+    b.status = status;
+    // Skicka bekräftelsemail om gästen angett e-post
+    if (b.email) {
+      const restaurantName = document.getElementById('qr-restaurant-name').textContent;
+      try {
+        await fetch('/api/send-booking-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: b.name,
+            email: b.email,
+            phone: b.phone,
+            date: b.date,
+            time: b.time,
+            guests: b.guests,
+            restaurantName,
+            status
+          })
+        });
+      } catch(e) { console.error('Mail kunde inte skickas', e); }
+    }
+  }
   filterBookings();
-  showToast(status === 'confirmed' ? '✓ Bokning bekräftad!' : '✕ Bokning avbokad');
+  showToast(status === 'confirmed' ? '✓ Bokning bekräftad! Mail skickat.' : '✕ Bokning avbokad');
 }
 
 // ── TOAST ──
