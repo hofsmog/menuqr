@@ -6,6 +6,7 @@
 <title>MenuQR – Digital meny & bokning</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <style>
   :root {
     --ink: #1a1208;
@@ -145,9 +146,7 @@
   /* QR */
   .qr-container { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
   .qr-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 32px; text-align: center; }
-  .qr-visual { width: 160px; height: 160px; margin: 0 auto 20px; border: 2px solid var(--ink); border-radius: 8px; overflow: hidden; }
-  .qr-grid { display: grid; grid-template-columns: repeat(8,1fr); gap: 2px; padding: 8px; width: 100%; height: 100%; }
-  .qr-cell { border-radius: 1px; background: var(--ink); }
+  .qr-visual { width: 180px; height: 180px; margin: 0 auto 20px; border-radius: 12px; overflow: hidden; display:flex; align-items:center; justify-content:center; background:white; }
   .qr-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 8px; }
   .qr-url { font-size: 0.78rem; color: #999; margin-bottom: 20px; }
   .qr-actions { display: flex; flex-direction: column; gap: 8px; }
@@ -403,12 +402,12 @@
       <div class="admin-topbar"><div><div class="admin-title">Din QR-kod</div><div class="admin-subtitle">Placera på bord, menyhållare eller fönster</div></div></div>
       <div class="qr-container">
         <div class="qr-card">
-          <div class="qr-visual"><div class="qr-grid" id="qr-grid"></div></div>
+          <div class="qr-visual"><canvas id="qr-canvas"></canvas></div>
           <div class="qr-title" id="qr-restaurant-name">–</div>
           <div class="qr-url" id="qr-url">menuqr.se/...</div>
           <div class="qr-actions">
-            <button class="btn-primary" onclick="showToast('QR-nedladdning kommer snart!')">Ladda ned PNG</button>
-            <button class="btn-secondary" onclick="showToast('Utskriftsvy kommer snart!')">Skriv ut</button>
+            <button class="btn-primary" onclick="downloadQR()">Ladda ned PNG</button>
+            <button class="btn-secondary" onclick="printQR()">Skriv ut</button>
           </div>
         </div>
         <div class="qr-info-card">
@@ -528,6 +527,7 @@ async function loadUserRestaurant() {
   document.getElementById('guest-restaurant-desc').textContent = data.description || '';
   await loadMenuItems();
   showView('view-admin');
+  setTimeout(() => buildQR(data.slug), 100);
 }
 
 // ── AUTH ──
@@ -599,6 +599,7 @@ async function setupRestaurant() {
   document.getElementById('guest-restaurant-desc').textContent = data.description || '';
   await loadMenuItems();
   showView('view-admin');
+  setTimeout(() => buildQR(data.slug), 100);
   showToast('🎉 Din restaurang är skapad!');
 }
 
@@ -701,11 +702,49 @@ function filterGuestCat(cat, el) {
 }
 
 // ── QR ──
-function buildQR() {
-  const grid = document.getElementById('qr-grid');
-  if (!grid) return;
-  const p = [1,0,1,1,0,1,0,1,0,1,1,0,0,1,0,1,1,0,1,0,1,0,1,1,0,1,0,1,0,0,1,0,1,1,0,0,1,0,1,1,0,1,0,1,1,0,0,1,0,1,0,1,1,1,0,0,1,0,1,0,0,1,1,0];
-  grid.innerHTML = p.map(v=>`<div class="qr-cell" style="opacity:${v?1:0}"></div>`).join('');
+function buildQR(slug) {
+  const canvas = document.getElementById('qr-canvas');
+  if (!canvas) return;
+  const url = slug ? `https://menuqr.se/${slug}` : 'https://menuqr.se';
+  QRCode.toCanvas(canvas, url, {
+    width: 176,
+    margin: 1,
+    color: { dark: '#1a1208', light: '#ffffff' }
+  }, function(err) {
+    if (err) console.error(err);
+  });
+}
+
+function downloadQR() {
+  const canvas = document.getElementById('qr-canvas');
+  if (!canvas) return;
+  const link = document.createElement('a');
+  link.download = 'menuqr-kod.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+  showToast('✓ QR-koden laddas ned!');
+}
+
+function printQR() {
+  const canvas = document.getElementById('qr-canvas');
+  if (!canvas) return;
+  const img = canvas.toDataURL('image/png');
+  const win = window.open('', '_blank');
+  win.document.write(`
+    <html><head><title>MenuQR – Skriv ut</title>
+    <style>
+      body { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; font-family:'Georgia',serif; }
+      img { width:280px; height:280px; }
+      h2 { margin-top:16px; font-size:1.4rem; }
+      p { color:#888; font-size:0.85rem; margin-top:6px; }
+    </style></head>
+    <body>
+      <img src="${img}">
+      <h2>${document.getElementById('qr-restaurant-name').textContent}</h2>
+      <p>Scanna för att se menyn</p>
+      <script>window.onload=()=>window.print()<\/script>
+    </body></html>
+  `);
 }
 
 // ── STRIPE ──
@@ -776,7 +815,6 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-buildQR();
 startup();
 </script>
 </body>
