@@ -501,6 +501,13 @@ let currentUser = null;
 
 // ── STARTUP ──
 async function startup() {
+  // Kolla om URL:en har en slug, t.ex. menuqr.se/hofsmog
+  const path = window.location.pathname.replace('/', '').trim();
+  if (path && path !== 'index.html') {
+    await showGuestMenuBySlug(path);
+    return;
+  }
+
   const { data: { session } } = await db.auth.getSession();
   if (session) {
     currentUser = session.user;
@@ -508,6 +515,26 @@ async function startup() {
   } else {
     showView('view-auth');
   }
+}
+
+async function showGuestMenuBySlug(slug) {
+  showView('view-menu');
+  document.getElementById('guest-menu-content').innerHTML = '<div class="loading"><div class="spinner spinner-dark"></div></div>';
+  const { data, error } = await db.from('restaurants').select('*').eq('slug', slug).single();
+  if (error || !data) {
+    document.getElementById('guest-restaurant-name').textContent = 'Restaurang hittades inte';
+    document.getElementById('guest-restaurant-desc').textContent = '';
+    document.getElementById('guest-menu-content').innerHTML = '<div class="menu-section"><p style="color:rgba(245,240,232,0.3)">Menyn är inte tillgänglig.</p></div>';
+    return;
+  }
+  document.getElementById('guest-restaurant-name').textContent = data.name;
+  document.getElementById('guest-restaurant-desc').textContent = data.description || '';
+  // Dölj "tillbaka"-knappen för gäster – visa bara menyn
+  document.querySelector('.menu-hero button').style.display = 'none';
+
+  const { data: items } = await db.from('menu_items').select('*').eq('restaurant_id', data.id).order('created_at');
+  menuItems = items || [];
+  renderGuestMenu();
 }
 
 async function loadUserRestaurant() {
