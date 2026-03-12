@@ -22,7 +22,39 @@
   .view { display: none; min-height: 100vh; }
   .view.active { display: block; }
 
-  /* HOME */
+  /* ── AUTH ── */
+  #view-auth { background: var(--ink); }
+  #view-auth.active { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; }
+  .auth-box { background: #221a0e; border: 1px solid rgba(200,151,58,0.2); border-radius: 16px; padding: 48px; width: 100%; max-width: 420px; }
+  .auth-logo { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--gold); text-align: center; margin-bottom: 8px; }
+  .auth-logo span { color: var(--cream); font-style: italic; }
+  .auth-tagline { text-align: center; font-size: 0.82rem; color: rgba(245,240,232,0.4); margin-bottom: 36px; letter-spacing: 0.05em; }
+  .auth-tabs { display: flex; gap: 0; margin-bottom: 28px; border: 1px solid rgba(200,151,58,0.2); border-radius: 8px; overflow: hidden; }
+  .auth-tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-size: 0.85rem; color: rgba(245,240,232,0.4); transition: all 0.2s; background: transparent; border: none; font-family: 'DM Sans', sans-serif; }
+  .auth-tab.active { background: var(--gold); color: var(--ink); font-weight: 500; }
+  .auth-form { display: flex; flex-direction: column; gap: 16px; }
+  .auth-form.hidden { display: none; }
+  .auth-field { display: flex; flex-direction: column; gap: 6px; }
+  .auth-field label { font-size: 0.78rem; color: rgba(245,240,232,0.5); letter-spacing: 0.08em; text-transform: uppercase; }
+  .auth-field input { background: rgba(255,255,255,0.05); border: 1px solid rgba(200,151,58,0.2); border-radius: 8px; padding: 12px 16px; color: var(--cream); font-family: 'DM Sans', sans-serif; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
+  .auth-field input:focus { border-color: var(--gold); }
+  .auth-field input::placeholder { color: rgba(245,240,232,0.2); }
+  .auth-btn { background: var(--gold); color: var(--ink); border: none; padding: 14px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 500; cursor: pointer; border-radius: 8px; letter-spacing: 0.05em; transition: background 0.2s; margin-top: 8px; }
+  .auth-btn:hover { background: var(--gold-light); }
+  .auth-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .auth-error { background: rgba(181,74,42,0.15); border: 1px solid rgba(181,74,42,0.3); border-radius: 6px; padding: 10px 14px; font-size: 0.82rem; color: #e07a5f; display: none; }
+  .auth-success { background: rgba(90,122,90,0.15); border: 1px solid rgba(90,122,90,0.3); border-radius: 6px; padding: 10px 14px; font-size: 0.82rem; color: #8ab48a; display: none; }
+  .auth-divider { text-align: center; font-size: 0.75rem; color: rgba(245,240,232,0.2); margin: 4px 0; }
+
+  /* ── SETUP (after register) ── */
+  #view-setup { background: var(--ink); }
+  #view-setup.active { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; }
+  .setup-box { background: #221a0e; border: 1px solid rgba(200,151,58,0.2); border-radius: 16px; padding: 48px; width: 100%; max-width: 480px; }
+  .setup-title { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--cream); margin-bottom: 8px; }
+  .setup-sub { font-size: 0.85rem; color: rgba(245,240,232,0.4); margin-bottom: 32px; line-height: 1.6; }
+  .setup-form { display: flex; flex-direction: column; gap: 16px; }
+
+  /* ── HOME ── */
   #view-home { background: var(--ink); color: var(--cream); flex-direction: column; }
   #view-home.active { display: flex; }
   .home-nav { padding: 28px 48px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(200,151,58,0.2); }
@@ -54,7 +86,7 @@
   .feature-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
   .feature-text { font-size: 0.8rem; color: rgba(245,240,232,0.5); }
 
-  /* ADMIN */
+  /* ── ADMIN ── */
   #view-admin { background: var(--surface); }
   #view-admin.active { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
   .admin-sidebar { background: var(--ink); color: var(--cream); padding: 32px 0; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
@@ -66,11 +98,15 @@
   .sidebar-item.active { background: rgba(200,151,58,0.15); color: var(--gold); }
   .sidebar-icon { font-size: 1rem; width: 20px; text-align: center; }
   .sidebar-bottom { padding: 16px; border-top: 1px solid rgba(200,151,58,0.15); }
+  .user-info { font-size: 0.78rem; color: rgba(245,240,232,0.4); padding: 0 12px; margin-bottom: 12px; }
+  .user-email { color: rgba(245,240,232,0.7); font-weight: 500; word-break: break-all; }
   .plan-badge { background: rgba(200,151,58,0.1); border: 1px solid rgba(200,151,58,0.2); border-radius: 8px; padding: 12px 16px; font-size: 0.78rem; }
   .plan-badge .plan-name { color: var(--gold); font-weight: 500; margin-bottom: 4px; }
   .plan-badge .plan-desc { color: rgba(245,240,232,0.4); line-height: 1.5; }
   .upgrade-btn { display: block; margin-top: 10px; background: var(--gold); color: var(--ink); border: none; padding: 8px; width: 100%; font-family: 'DM Sans', sans-serif; font-size: 0.78rem; font-weight: 500; cursor: pointer; border-radius: 4px; letter-spacing: 0.05em; text-transform: uppercase; }
   .upgrade-btn:hover { background: var(--gold-light); }
+  .logout-btn { display: block; margin-top: 10px; background: transparent; color: rgba(245,240,232,0.3); border: 1px solid rgba(245,240,232,0.1); padding: 8px; width: 100%; font-family: 'DM Sans', sans-serif; font-size: 0.75rem; cursor: pointer; border-radius: 4px; letter-spacing: 0.05em; text-align: center; transition: all 0.2s; }
+  .logout-btn:hover { color: var(--rust); border-color: var(--rust); }
   .admin-main { padding: 40px 48px; overflow-y: auto; }
   .admin-topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
   .admin-title { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 400; }
@@ -153,6 +189,7 @@
   /* Misc */
   .loading { text-align: center; padding: 40px; color: #999; }
   .spinner { display: inline-block; width: 24px; height: 24px; border: 2px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  .spinner-dark { border-color: rgba(200,151,58,0.2); border-top-color: var(--gold); }
   @keyframes spin { to { transform: rotate(360deg); } }
   .toast { position: fixed; bottom: 32px; right: 32px; background: var(--ink); color: var(--cream); padding: 14px 20px; border-radius: 8px; font-size: 0.85rem; border-left: 3px solid var(--gold); transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); z-index: 1000; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
   .toast.show { transform: translateX(0); }
@@ -170,13 +207,82 @@
 </head>
 <body>
 
+<!-- AUTH -->
+<div id="view-auth" class="view active">
+  <div class="auth-box">
+    <div class="auth-logo">Menu<span>QR</span></div>
+    <div class="auth-tagline">Digital meny för restauranger</div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">Logga in</button>
+      <button class="auth-tab" onclick="switchAuthTab('register')">Skapa konto</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="auth-login" class="auth-form">
+      <div id="login-error" class="auth-error"></div>
+      <div class="auth-field">
+        <label>E-postadress</label>
+        <input type="email" id="login-email" placeholder="din@email.se">
+      </div>
+      <div class="auth-field">
+        <label>Lösenord</label>
+        <input type="password" id="login-password" placeholder="••••••••">
+      </div>
+      <button class="auth-btn" onclick="login()" id="login-btn">Logga in</button>
+      <div class="auth-divider">eller</div>
+      <button class="auth-btn" style="background:transparent;border:1px solid rgba(200,151,58,0.3);color:var(--cream);" onclick="showView('view-home')">Se demo utan konto →</button>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="auth-register" class="auth-form hidden">
+      <div id="register-error" class="auth-error"></div>
+      <div id="register-success" class="auth-success"></div>
+      <div class="auth-field">
+        <label>E-postadress</label>
+        <input type="email" id="register-email" placeholder="din@email.se">
+      </div>
+      <div class="auth-field">
+        <label>Lösenord</label>
+        <input type="password" id="register-password" placeholder="Minst 6 tecken">
+      </div>
+      <button class="auth-btn" onclick="register()" id="register-btn">Skapa gratis konto</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETUP (after register) -->
+<div id="view-setup" class="view">
+  <div class="setup-box">
+    <div class="auth-logo" style="text-align:left;margin-bottom:16px">Menu<span>QR</span></div>
+    <div class="setup-title">Sätt upp din restaurang</div>
+    <div class="setup-sub">Fyll i grunduppgifterna för din restaurang. Du kan ändra dessa senare.</div>
+    <div class="setup-form">
+      <div id="setup-error" class="auth-error"></div>
+      <div class="auth-field">
+        <label>Restaurangens namn</label>
+        <input type="text" id="setup-name" placeholder="t.ex. Trattoria Bella" style="background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:12px 16px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;">
+      </div>
+      <div class="auth-field">
+        <label>Kort beskrivning</label>
+        <input type="text" id="setup-desc" placeholder="t.ex. Italiensk mat sedan 1987 · Malmö" style="background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:12px 16px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;">
+      </div>
+      <div class="auth-field">
+        <label>Din meny-URL (menuqr.se/...)</label>
+        <input type="text" id="setup-slug" placeholder="t.ex. trattoria-bella" style="background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:12px 16px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;">
+      </div>
+      <button class="auth-btn" onclick="setupRestaurant()" id="setup-btn">Skapa min meny →</button>
+    </div>
+  </div>
+</div>
+
 <!-- HOME -->
-<div id="view-home" class="view active">
+<div id="view-home" class="view">
   <nav class="home-nav">
     <div class="logo">Menu<span>QR</span></div>
     <div style="display:flex;gap:16px;align-items:center">
-      <button class="btn-outline" onclick="showView('view-menu')">Se demo</button>
-      <button class="btn-gold" onclick="showView('view-admin')">Kom igång gratis</button>
+      <button class="btn-outline" onclick="showView('view-menu-demo')">Se demo</button>
+      <button class="btn-gold" onclick="showView('view-auth')">Logga in / Registrera</button>
     </div>
   </nav>
   <div class="home-hero">
@@ -185,8 +291,8 @@
       <h1 class="hero-title">Din meny.<br><em>Alltid uppdaterad.</em><br>Alltid tillgänglig.</h1>
       <p class="hero-sub">Skapa en vacker digital meny på minuter. Gästerna scannar QR-koden – och ser alltid det senaste. Inga appar, inga utskrifter.</p>
       <div class="hero-actions">
-        <button class="btn-gold" onclick="showView('view-admin')">Skapa gratis meny</button>
-        <button class="btn-outline" onclick="showView('view-menu')">Se demo →</button>
+        <button class="btn-gold" onclick="showView('view-auth')">Skapa gratis konto</button>
+        <button class="btn-outline" onclick="showView('view-menu-demo')">Se demo →</button>
       </div>
     </div>
     <div class="hero-right">
@@ -221,33 +327,34 @@
       <div class="sidebar-item" onclick="switchPanel('panel-menu',this)"><span class="sidebar-icon">◉</span> Redigera meny</div>
       <div class="sidebar-item" onclick="switchPanel('panel-qr',this)"><span class="sidebar-icon">◫</span> QR-kod</div>
       <div class="sidebar-item" onclick="switchPanel('panel-bookings',this)"><span class="sidebar-icon">◷</span> Bokningar</div>
-      <div class="sidebar-item" onclick="showView('view-menu')"><span class="sidebar-icon">◌</span> Förhandsgranska</div>
+      <div class="sidebar-item" onclick="previewMenu()"><span class="sidebar-icon">◌</span> Förhandsgranska</div>
     </nav>
     <div class="sidebar-bottom">
+      <div class="user-info">Inloggad som:<br><span class="user-email" id="user-email-display">–</span></div>
       <div class="plan-badge">
         <div class="plan-name">✦ Gratis plan</div>
         <div class="plan-desc">1 meny · Grundfunktioner</div>
         <button class="upgrade-btn" onclick="startCheckout()">Uppgradera till Pro →</button>
       </div>
+      <button class="logout-btn" onclick="logout()">Logga ut</button>
     </div>
   </aside>
 
   <main class="admin-main">
-    <!-- OVERVIEW -->
     <div id="panel-overview" class="panel active">
       <div class="admin-topbar">
-        <div><div class="admin-title">Välkommen! 👋</div><div class="admin-subtitle" id="overview-subtitle">Laddar din meny...</div></div>
-        <button class="btn-gold" onclick="showView('view-menu')">Se din meny →</button>
+        <div><div class="admin-title">Välkommen! 👋</div><div class="admin-subtitle" id="overview-subtitle">Laddar...</div></div>
+        <button class="btn-gold" onclick="previewMenu()">Se din meny →</button>
       </div>
       <div class="stats-grid">
-        <div class="stat-card"><div class="stat-label">Menyrätter totalt</div><div class="stat-value" id="stat-items">–</div><div class="stat-change">Live från databasen</div></div>
+        <div class="stat-card"><div class="stat-label">Menyrätter totalt</div><div class="stat-value" id="stat-items">–</div><div class="stat-change">Din meny</div></div>
         <div class="stat-card"><div class="stat-label">Kategorier</div><div class="stat-value" id="stat-cats">–</div><div class="stat-change">Aktiva kategorier</div></div>
         <div class="stat-card"><div class="stat-label">Bokningar</div><div class="stat-value">🔒</div><div class="stat-change" style="color:var(--gold)">Pro-funktion</div></div>
       </div>
       <div class="section-header"><div class="section-title">Snabbåtgärder</div></div>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px">
         <div class="menu-item-row" style="cursor:pointer;grid-template-columns:auto 1fr" onclick="switchPanel('panel-menu',document.querySelectorAll('.sidebar-item')[1])">
-          <span style="font-size:1.4rem">✏️</span><div><div class="item-name">Lägg till maträtt</div><div class="item-desc-small">Sparas direkt i Supabase</div></div>
+          <span style="font-size:1.4rem">✏️</span><div><div class="item-name">Lägg till maträtt</div><div class="item-desc-small">Uppdatera menyn direkt</div></div>
         </div>
         <div class="menu-item-row" style="cursor:pointer;grid-template-columns:auto 1fr" onclick="switchPanel('panel-qr',document.querySelectorAll('.sidebar-item')[2])">
           <span style="font-size:1.4rem">◫</span><div><div class="item-name">QR-kod</div><div class="item-desc-small">Ladda ned och skriv ut</div></div>
@@ -255,7 +362,6 @@
       </div>
     </div>
 
-    <!-- MENU EDITOR -->
     <div id="panel-menu" class="panel">
       <div class="admin-topbar">
         <div><div class="admin-title">Redigera meny</div><div class="admin-subtitle">Ändringar syns direkt på din digitala meny</div></div>
@@ -288,12 +394,11 @@
         </div>
         <div class="form-actions">
           <button class="btn-secondary" onclick="toggleAddForm()">Avbryt</button>
-          <button class="btn-primary" onclick="addItem()">Spara i databasen</button>
+          <button class="btn-primary" onclick="addItem()">Spara rätt</button>
         </div>
       </div>
     </div>
 
-    <!-- QR -->
     <div id="panel-qr" class="panel">
       <div class="admin-topbar"><div><div class="admin-title">Din QR-kod</div><div class="admin-subtitle">Placera på bord, menyhållare eller fönster</div></div></div>
       <div class="qr-container">
@@ -309,14 +414,13 @@
         <div class="qr-info-card">
           <div class="section-title" style="margin-bottom:20px">Information</div>
           <div class="info-row"><span class="info-label">Status</span><span class="info-value green">● Aktiv</span></div>
-          <div class="info-row"><span class="info-label">Databas</span><span class="info-value green">● Aktiv</span></div>
+          <div class="info-row"><span class="info-label">Din meny-URL</span><span class="info-value" id="qr-url-display">–</span></div>
           <div class="info-row"><span class="info-label">Anpassad domän</span><span class="info-value gold">Pro 🔒</span></div>
           <div class="info-row"><span class="info-label">Ta bort logga</span><span class="info-value gold">Pro 🔒</span></div>
         </div>
       </div>
     </div>
 
-    <!-- BOOKINGS -->
     <div id="panel-bookings" class="panel">
       <div class="admin-topbar"><div><div class="admin-title">Bokningar</div><div class="admin-subtitle">Hantera bordsreservationer</div></div></div>
       <div style="position:relative" class="premium-lock">
@@ -335,7 +439,7 @@
   </main>
 </div>
 
-<!-- GUEST MENU -->
+<!-- GUEST MENU (dynamic) -->
 <div id="view-menu" class="view">
   <div class="menu-hero">
     <div class="menu-restaurant-name" id="guest-restaurant-name">Laddar...</div>
@@ -349,8 +453,38 @@
     <button class="menu-cat-btn" onclick="filterGuestCat('desserter',this)">Desserter</button>
     <button class="menu-cat-btn" onclick="filterGuestCat('drycker',this)">Drycker</button>
   </div>
-  <div id="guest-menu-content"><div class="loading"><div class="spinner"></div></div></div>
+  <div id="guest-menu-content"><div class="loading"><div class="spinner spinner-dark"></div></div></div>
   <div class="menu-footer">Skapad med <a onclick="showView('view-home')">MenuQR</a> · Gratis digital meny</div>
+</div>
+
+<!-- GUEST MENU DEMO -->
+<div id="view-menu-demo" class="view">
+  <div class="menu-hero">
+    <div class="menu-restaurant-name">Trattoria Bella</div>
+    <div class="menu-restaurant-desc">Äkta italiensk mat sedan 1987 · Demo</div>
+    <div style="margin-top:16px"><button class="btn-gold" style="font-size:0.78rem;padding:8px 20px" onclick="showView('view-home')">← Tillbaka</button></div>
+  </div>
+  <div class="menu-cats-scroll">
+    <button class="menu-cat-btn active">Alla</button>
+    <button class="menu-cat-btn">Förrätter</button>
+    <button class="menu-cat-btn">Huvudrätter</button>
+    <button class="menu-cat-btn">Desserter</button>
+  </div>
+  <div class="menu-section">
+    <div class="menu-section-title">Förrätter</div>
+    <div class="menu-item"><div><div class="mi-name">Bruschetta al pomodoro</div><div class="mi-desc">Rostat bröd med tomat, basilika och olivolja</div></div><div class="mi-price">89 kr</div></div>
+    <div class="menu-item"><div><div class="mi-name">Carpaccio di manzo</div><div class="mi-desc">Tunt skivat nötkött med parmesan och rucola</div></div><div class="mi-price">135 kr</div></div>
+  </div>
+  <div class="menu-section">
+    <div class="menu-section-title">Huvudrätter</div>
+    <div class="menu-item"><div><div class="mi-name">Tagliatelle al ragù</div><div class="mi-desc">Hemgjord pasta med långkok bolognese</div></div><div class="mi-price">215 kr</div></div>
+    <div class="menu-item"><div><div class="mi-name">Saltimbocca alla romana</div><div class="mi-desc">Kalv med salvia, parmaskinka och vitt vin</div></div><div class="mi-price">265 kr</div></div>
+  </div>
+  <div class="menu-section">
+    <div class="menu-section-title">Desserter</div>
+    <div class="menu-item"><div><div class="mi-name">Tiramisù della casa</div><div class="mi-desc">Husets tiramisù med savoiardi och mascarpone</div></div><div class="mi-price">95 kr</div></div>
+  </div>
+  <div class="menu-footer">Skapad med <a onclick="showView('view-home')">MenuQR</a> · <a onclick="showView('view-auth')">Skapa din egen gratis →</a></div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -361,46 +495,121 @@ const SUPABASE_KEY = 'sb_publishable_tRUL5Upn7ooMgOWVRNeLsw_c2YXEaym';
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const SLUG = 'trattoria-bella';
 let restaurantId = null;
 let menuItems = [];
 let currentAdminCat = 'alla';
 let currentGuestCat = 'alla';
+let currentUser = null;
 
-async function init() {
-  try {
-    const { data, error } = await db.from('restaurants').select('*').eq('slug', SLUG).single();
-    if (error) throw error;
-    restaurantId = data.id;
-    document.getElementById('overview-subtitle').textContent = data.name + ' – din meny är aktiv';
-    document.getElementById('qr-restaurant-name').textContent = data.name;
-    document.getElementById('qr-url').textContent = 'menuqr.se/' + data.slug;
-    document.getElementById('guest-restaurant-name').textContent = data.name;
-    document.getElementById('guest-restaurant-desc').textContent = data.description || '';
-    await loadMenuItems();
-  } catch(e) {
-    document.getElementById('overview-subtitle').textContent = '⚠️ Kunde inte ansluta – har du kört SQL-scriptet?';
-    document.getElementById('menu-items-list').innerHTML = '<p style="color:var(--rust);padding:20px">⚠️ Kunde inte ladda menyn. Kontakta support.</p>';
-    document.getElementById('guest-menu-content').innerHTML = '<div class="menu-section"><p style="color:rgba(245,240,232,0.3)">Meny ej tillgänglig.</p></div>';
+// ── STARTUP ──
+async function startup() {
+  const { data: { session } } = await db.auth.getSession();
+  if (session) {
+    currentUser = session.user;
+    await loadUserRestaurant();
+  } else {
+    showView('view-auth');
   }
 }
 
-async function loadMenuItems() {
-  const { data, error } = await db.from('menu_items').select('*').eq('restaurant_id', restaurantId).order('created_at');
-  if (error) { showToast('Fel vid hämtning'); return; }
-  menuItems = data || [];
-  const cats = [...new Set(menuItems.map(i => i.category))];
-  document.getElementById('stat-items').textContent = menuItems.length;
-  document.getElementById('stat-cats').textContent = cats.length;
-  renderAdminMenu();
-  renderGuestMenu();
+async function loadUserRestaurant() {
+  const { data, error } = await db.from('restaurants').select('*').eq('user_id', currentUser.id).single();
+  if (error || !data) {
+    showView('view-setup');
+    return;
+  }
+  restaurantId = data.id;
+  document.getElementById('user-email-display').textContent = currentUser.email;
+  document.getElementById('overview-subtitle').textContent = data.name + ' – din meny är aktiv';
+  document.getElementById('qr-restaurant-name').textContent = data.name;
+  document.getElementById('qr-url').textContent = 'menuqr.se/' + data.slug;
+  document.getElementById('qr-url-display').textContent = 'menuqr.se/' + data.slug;
+  document.getElementById('guest-restaurant-name').textContent = data.name;
+  document.getElementById('guest-restaurant-desc').textContent = data.description || '';
+  await loadMenuItems();
+  showView('view-admin');
 }
 
+// ── AUTH ──
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active', (tab==='login'&&i===0)||(tab==='register'&&i===1)));
+  document.getElementById('auth-login').classList.toggle('hidden', tab !== 'login');
+  document.getElementById('auth-register').classList.toggle('hidden', tab !== 'register');
+}
+
+async function login() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  const btn = document.getElementById('login-btn');
+  errEl.style.display = 'none';
+  if (!email || !password) { errEl.style.display='block'; errEl.textContent='Fyll i e-post och lösenord'; return; }
+  btn.textContent = 'Loggar in...'; btn.disabled = true;
+  const { data, error } = await db.auth.signInWithPassword({ email, password });
+  btn.textContent = 'Logga in'; btn.disabled = false;
+  if (error) { errEl.style.display='block'; errEl.textContent='Fel e-post eller lösenord'; return; }
+  currentUser = data.user;
+  await loadUserRestaurant();
+}
+
+async function register() {
+  const email = document.getElementById('register-email').value.trim();
+  const password = document.getElementById('register-password').value;
+  const errEl = document.getElementById('register-error');
+  const sucEl = document.getElementById('register-success');
+  const btn = document.getElementById('register-btn');
+  errEl.style.display = 'none'; sucEl.style.display = 'none';
+  if (!email || !password) { errEl.style.display='block'; errEl.textContent='Fyll i e-post och lösenord'; return; }
+  if (password.length < 6) { errEl.style.display='block'; errEl.textContent='Lösenordet måste vara minst 6 tecken'; return; }
+  btn.textContent = 'Skapar konto...'; btn.disabled = true;
+  const { data, error } = await db.auth.signUp({ email, password });
+  btn.textContent = 'Skapa gratis konto'; btn.disabled = false;
+  if (error) { errEl.style.display='block'; errEl.textContent=error.message; return; }
+  currentUser = data.user;
+  showView('view-setup');
+}
+
+async function logout() {
+  await db.auth.signOut();
+  currentUser = null; restaurantId = null; menuItems = [];
+  showView('view-auth');
+  showToast('Du har loggats ut');
+}
+
+// ── SETUP ──
+async function setupRestaurant() {
+  const name = document.getElementById('setup-name').value.trim();
+  const description = document.getElementById('setup-desc').value.trim();
+  const slug = document.getElementById('setup-slug').value.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  const errEl = document.getElementById('setup-error');
+  const btn = document.getElementById('setup-btn');
+  errEl.style.display = 'none';
+  if (!name || !slug) { errEl.style.display='block'; errEl.textContent='Fyll i restaurangnamn och URL'; return; }
+  btn.textContent = 'Skapar...'; btn.disabled = true;
+  const { data, error } = await db.from('restaurants').insert([{ name, description, slug, user_id: currentUser.id }]).select().single();
+  btn.textContent = 'Skapa min meny →'; btn.disabled = false;
+  if (error) { errEl.style.display='block'; errEl.textContent = error.message.includes('unique') ? 'Den URL:en är redan tagen, prova en annan' : error.message; return; }
+  restaurantId = data.id;
+  document.getElementById('user-email-display').textContent = currentUser.email;
+  document.getElementById('overview-subtitle').textContent = data.name + ' – din meny är aktiv';
+  document.getElementById('qr-restaurant-name').textContent = data.name;
+  document.getElementById('qr-url').textContent = 'menuqr.se/' + data.slug;
+  document.getElementById('qr-url-display').textContent = 'menuqr.se/' + data.slug;
+  document.getElementById('guest-restaurant-name').textContent = data.name;
+  document.getElementById('guest-restaurant-desc').textContent = data.description || '';
+  await loadMenuItems();
+  showView('view-admin');
+  showToast('🎉 Din restaurang är skapad!');
+}
+
+// ── VIEWS ──
 function showView(id) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
 }
+
+function previewMenu() { showView('view-menu'); renderGuestMenu(); }
 
 function switchPanel(panelId, el) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
@@ -409,9 +618,20 @@ function switchPanel(panelId, el) {
   if (el) el.classList.add('active');
 }
 
+// ── MENU DATA ──
+async function loadMenuItems() {
+  const { data, error } = await db.from('menu_items').select('*').eq('restaurant_id', restaurantId).order('created_at');
+  if (error) return;
+  menuItems = data || [];
+  const cats = [...new Set(menuItems.map(i => i.category))];
+  document.getElementById('stat-items').textContent = menuItems.length;
+  document.getElementById('stat-cats').textContent = cats.length;
+  renderAdminMenu();
+}
+
 function renderAdminMenu() {
   const filtered = currentAdminCat === 'alla' ? menuItems : menuItems.filter(i => i.category === currentAdminCat);
-  if (!filtered.length) { document.getElementById('menu-items-list').innerHTML = '<p style="color:#999;padding:20px 0">Inga rätter här.</p>'; return; }
+  if (!filtered.length) { document.getElementById('menu-items-list').innerHTML = '<p style="color:#999;padding:20px 0">Inga rätter här ännu.</p>'; return; }
   document.getElementById('menu-items-list').innerHTML = filtered.map(item => `
     <div class="menu-item-row">
       <div><div class="item-name">${item.name}</div><div class="item-desc-small">${item.description||''} · <em>${item.category}</em></div></div>
@@ -429,11 +649,11 @@ function filterCat(cat, el) {
 
 async function deleteItem(id) {
   const { error } = await db.from('menu_items').delete().eq('id', id);
-  if (error) { showToast('Fel: ' + error.message); return; }
+  if (error) { showToast('Fel vid borttagning'); return; }
   menuItems = menuItems.filter(i => i.id !== id);
   document.getElementById('stat-items').textContent = menuItems.length;
-  renderAdminMenu(); renderGuestMenu();
-  showToast('✓ Rätten borttagen');
+  renderAdminMenu();
+  showToast('✓ Rätten har tagits bort');
 }
 
 function toggleAddForm() {
@@ -455,10 +675,11 @@ async function addItem() {
   document.getElementById('new-desc').value = '';
   toggleAddForm();
   document.getElementById('stat-items').textContent = menuItems.length;
-  renderAdminMenu(); renderGuestMenu();
+  renderAdminMenu();
   showToast('✓ Rätten sparad!');
 }
 
+// ── GUEST MENU ──
 function renderGuestMenu() {
   const cats = ['förrätter','huvudrätter','desserter','drycker'];
   const toShow = currentGuestCat === 'alla' ? cats : [currentGuestCat];
@@ -469,7 +690,7 @@ function renderGuestMenu() {
       ${items.map(item=>`<div class="menu-item"><div><div class="mi-name">${item.name}</div><div class="mi-desc">${item.description||''}</div></div><div class="mi-price">${item.price} kr</div></div>`).join('')}
     </div>`;
   }).join('');
-  document.getElementById('guest-menu-content').innerHTML = html || '<div class="menu-section"><p style="color:rgba(245,240,232,0.3)">Inga rätter.</p></div>';
+  document.getElementById('guest-menu-content').innerHTML = html || '<div class="menu-section"><p style="color:rgba(245,240,232,0.3)">Inga rätter ännu.</p></div>';
 }
 
 function filterGuestCat(cat, el) {
@@ -479,6 +700,7 @@ function filterGuestCat(cat, el) {
   renderGuestMenu();
 }
 
+// ── QR ──
 function buildQR() {
   const grid = document.getElementById('qr-grid');
   if (!grid) return;
@@ -486,47 +708,29 @@ function buildQR() {
   grid.innerHTML = p.map(v=>`<div class="qr-cell" style="opacity:${v?1:0}"></div>`).join('');
 }
 
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
-
 // ── STRIPE ──
 const STRIPE_KEY = 'pk_live_51TA4giH3mQ7LpxPl8dq6bZi7jLC1dB6Km7aPX8GxHqzv4anU17CRDaCSISaUzOHeK62AQeGEtQ5sROowNRIzjrDG00rYX00RAL';
-
 async function startCheckout() {
-  showToast('Öppnar betalning...');
-  // Ladda Stripe.js dynamiskt
   if (!window.Stripe) {
     const script = document.createElement('script');
     script.src = 'https://js.stripe.com/v3/';
     document.head.appendChild(script);
     await new Promise(r => script.onload = r);
   }
-  const stripe = Stripe(STRIPE_KEY);
-
-  // Visa betalningsmodal
-  showPaymentModal(stripe);
+  showPaymentModal(Stripe(STRIPE_KEY));
 }
 
 function showPaymentModal(stripe) {
-  // Ta bort befintlig modal om den finns
   const existing = document.getElementById('payment-modal');
   if (existing) existing.remove();
-
   const modal = document.createElement('div');
   modal.id = 'payment-modal';
-  modal.style.cssText = `
-    position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:2000;
-    display:flex;align-items:center;justify-content:center;padding:20px;
-  `;
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;';
   modal.innerHTML = `
     <div style="background:white;border-radius:16px;padding:40px;max-width:420px;width:100%;position:relative;">
       <button onclick="document.getElementById('payment-modal').remove()" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:1.2rem;cursor:pointer;color:#999;">✕</button>
       <div style="font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:8px;">MenuQR Pro</div>
       <div style="font-size:0.85rem;color:#888;margin-bottom:24px;">Allt du behöver för att växa</div>
-      
       <div style="background:#faf7f2;border-radius:12px;padding:20px;margin-bottom:24px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
           <span style="font-size:1rem;font-weight:500;">Pro-plan</span>
@@ -538,31 +742,18 @@ function showPaymentModal(stripe) {
           <div>✓ Flerspråkig meny</div>
           <div>✓ Ta bort MenuQR-logga</div>
           <div>✓ Anpassad domän</div>
-          <div>✓ Statistik & insikter</div>
         </div>
       </div>
-
-      <div style="margin-bottom:16px;">
-        <label style="font-size:0.78rem;color:#888;letter-spacing:0.05em;text-transform:uppercase;display:block;margin-bottom:6px;">E-postadress</label>
-        <input id="stripe-email" type="email" placeholder="din@email.se" style="width:100%;border:1px solid #ddd;border-radius:6px;padding:10px 14px;font-size:0.9rem;outline:none;font-family:'DM Sans',sans-serif;">
-      </div>
-
       <div id="stripe-card-element" style="border:1px solid #ddd;border-radius:6px;padding:12px;margin-bottom:16px;"></div>
       <div id="stripe-error" style="color:#b54a2a;font-size:0.82rem;margin-bottom:12px;display:none;"></div>
-
-      <button id="stripe-pay-btn" onclick="processPayment()" style="width:100%;background:#1a1208;color:#f5f0e8;border:none;padding:14px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;cursor:pointer;border-radius:8px;letter-spacing:0.05em;">
+      <button id="stripe-pay-btn" onclick="processPayment()" style="width:100%;background:#1a1208;color:#f5f0e8;border:none;padding:14px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;cursor:pointer;border-radius:8px;">
         Starta Pro – 199 kr/mån
       </button>
       <div style="text-align:center;font-size:0.72rem;color:#bbb;margin-top:12px;">Säker betalning via Stripe · Avsluta när som helst</div>
-    </div>
-  `;
+    </div>`;
   document.body.appendChild(modal);
-
-  // Montera Stripe card element
   const elements = stripe.elements();
-  const card = elements.create('card', {
-    style: { base: { fontFamily: 'DM Sans, sans-serif', fontSize: '16px', color: '#1a1208' } }
-  });
+  const card = elements.create('card', { style: { base: { fontFamily: 'DM Sans, sans-serif', fontSize: '16px', color: '#1a1208' } } });
   card.mount('#stripe-card-element');
   window._stripeCard = card;
   window._stripe = stripe;
@@ -570,37 +761,23 @@ function showPaymentModal(stripe) {
 
 async function processPayment() {
   const btn = document.getElementById('stripe-pay-btn');
-  const email = document.getElementById('stripe-email').value;
   const errEl = document.getElementById('stripe-error');
-
-  if (!email) { errEl.style.display='block'; errEl.textContent='Fyll i din e-postadress'; return; }
-
-  btn.textContent = 'Behandlar...';
-  btn.disabled = true;
-
-  const { paymentMethod, error } = await window._stripe.createPaymentMethod({
-    type: 'card',
-    card: window._stripeCard,
-    billing_details: { email }
-  });
-
-  if (error) {
-    errEl.style.display = 'block';
-    errEl.textContent = error.message;
-    btn.textContent = 'Starta Pro – 199 kr/mån';
-    btn.disabled = false;
-    return;
-  }
-
-  // I produktion: skicka paymentMethod.id till din backend för att skapa subscription
-  // För nu visar vi en bekräftelse
+  btn.textContent = 'Behandlar...'; btn.disabled = true;
+  const { paymentMethod, error } = await window._stripe.createPaymentMethod({ type: 'card', card: window._stripeCard, billing_details: { email: currentUser?.email } });
+  if (error) { errEl.style.display='block'; errEl.textContent=error.message; btn.textContent='Starta Pro – 199 kr/mån'; btn.disabled=false; return; }
   document.getElementById('payment-modal').remove();
   showToast('🎉 Tack! Din betalning behandlas. Pro aktiveras inom kort!');
-  console.log('Payment Method ID:', paymentMethod.id);
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
 }
 
 buildQR();
-init();
+startup();
 </script>
 </body>
 </html>
