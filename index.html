@@ -348,8 +348,8 @@
       <div class="stats-grid">
         <div class="stat-card"><div class="stat-label">Menyrätter totalt</div><div class="stat-value" id="stat-items">–</div><div class="stat-change">Din meny</div></div>
         <div class="stat-card"><div class="stat-label">Kategorier</div><div class="stat-value" id="stat-cats">–</div><div class="stat-change">Aktiva kategorier</div></div>
-        <div class="stat-card" style="cursor:pointer" onclick="switchPanel('panel-bookings',document.querySelectorAll('.sidebar-item')[3]);loadBookings()"><div class="stat-label">Bokningar idag</div><div class="stat-value" id="stat-bookings">–</div><div class="stat-change" id="stat-bookings-change" style="color:var(--gold)">Klicka för att se</div></div>
-        <div class="stat-card" style="cursor:pointer" onclick="switchPanel('panel-stats',document.querySelectorAll('.sidebar-item')[4]);loadStats()"><div class="stat-label">Sidvisningar idag</div><div class="stat-value" id="stat-views">–</div><div class="stat-change" style="color:var(--sage)">Se all statistik →</div></div>
+        <div class="stat-card" style="cursor:pointer" onclick="handleProNav('panel-bookings',document.querySelectorAll('.sidebar-item')[3])"><div class="stat-label">Bokningar idag</div><div class="stat-value" id="stat-bookings">–</div><div class="stat-change" id="stat-bookings-change" style="color:var(--gold)">Klicka för att se</div></div>
+        <div class="stat-card" style="cursor:pointer" onclick="handleProNav('panel-stats',document.querySelectorAll('.sidebar-item')[4])"><div class="stat-label">Sidvisningar idag</div><div class="stat-value" id="stat-views">–</div><div class="stat-change" style="color:var(--sage)">Se all statistik →</div></div>
       </div>
       <div class="section-header"><div class="section-title">Snabbåtgärder</div></div>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px">
