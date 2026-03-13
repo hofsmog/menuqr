@@ -590,6 +590,23 @@ let currentUser = null;
 
 // ── STARTUP ──
 async function startup() {
+  // Kolla om Stripe skickade tillbaka efter betalning
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('pro_success') === 'true') {
+    window.history.replaceState({}, '', '/');
+    const { data: { session } } = await db.auth.getSession();
+    if (session) {
+      currentUser = session.user;
+      await loadUserRestaurant();
+      await activatePro();
+      return;
+    }
+  }
+  if (params.get('pro_cancelled') === 'true') {
+    window.history.replaceState({}, '', '/');
+    showToast('Betalning avbruten.');
+  }
+
   // Kolla om URL:en har en slug, t.ex. menuqr.se/hofsmog
   const path = window.location.pathname.replace('/', '').trim();
   if (path && path !== 'index.html') {
@@ -872,66 +889,29 @@ function printQR() {
 }
 
 // ── STRIPE ──
-const STRIPE_KEY = 'pk_live_51TA4giH3mQ7LpxPl8dq6bZi7jLC1dB6Km7aPX8GxHqzv4anU17CRDaCSISaUzOHeK62AQeGEtQ5sROowNRIzjrDG00rYX00RAL';
+const STRIPE_KEY = 'pk_test_51TA4h3QeEVmd8NvFYq1DbYrptNglIfou2CbvzHya8KTZB6yo1VUXxo2eTH88Z8FXBfA11pFDT6BtWp0Nd27brnzB000Gfu0ORr';
+
 async function startCheckout() {
-  if (!window.Stripe) {
-    const script = document.createElement('script');
-    script.src = 'https://js.stripe.com/v3/';
-    document.head.appendChild(script);
-    await new Promise(r => script.onload = r);
+  if (!currentUser) { showView('view-auth'); return; }
+  const btn = document.getElementById('upgrade-btn');
+  if (btn) { btn.textContent = 'Laddar...'; btn.disabled = true; }
+  try {
+    const res = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: currentUser.email, restaurantId })
+    });
+    const data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      showToast('Fel: ' + (data.error || 'Okänt fel'));
+      if (btn) { btn.textContent = 'Uppgradera till Pro →'; btn.disabled = false; }
+    }
+  } catch(e) {
+    showToast('Kunde inte starta betalning');
+    if (btn) { btn.textContent = 'Uppgradera till Pro →'; btn.disabled = false; }
   }
-  showPaymentModal(Stripe(STRIPE_KEY));
-}
-
-function showPaymentModal(stripe) {
-  const existing = document.getElementById('payment-modal');
-  if (existing) existing.remove();
-  const modal = document.createElement('div');
-  modal.id = 'payment-modal';
-  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;';
-  modal.innerHTML = `
-    <div style="background:white;border-radius:16px;padding:40px;max-width:420px;width:100%;position:relative;">
-      <button onclick="document.getElementById('payment-modal').remove()" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:1.2rem;cursor:pointer;color:#999;">✕</button>
-      <div style="font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:8px;">MenuQR Pro</div>
-      <div style="font-size:0.85rem;color:#888;margin-bottom:24px;">Allt du behöver för att växa</div>
-      <div style="background:#faf7f2;border-radius:12px;padding:20px;margin-bottom:24px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-          <span style="font-size:1rem;font-weight:500;">Pro-plan</span>
-          <span style="font-family:'Playfair Display',serif;font-size:1.5rem;color:#c8973a;">199 kr<span style="font-size:0.7rem;color:#999;">/mån</span></span>
-        </div>
-        <div style="font-size:0.8rem;color:#666;display:flex;flex-direction:column;gap:8px;">
-          <div>✓ Obegränsade menyrätter</div>
-          <div>✓ Bordsbokning</div>
-          <div>✓ Flerspråkig meny</div>
-          <div>✓ Ta bort MenuQR-logga</div>
-          <div>✓ Anpassad domän</div>
-        </div>
-      </div>
-      <div id="stripe-card-element" style="border:1px solid #ddd;border-radius:6px;padding:12px;margin-bottom:16px;"></div>
-      <div id="stripe-error" style="color:#b54a2a;font-size:0.82rem;margin-bottom:12px;display:none;"></div>
-      <button id="stripe-pay-btn" onclick="processPayment()" style="width:100%;background:#1a1208;color:#f5f0e8;border:none;padding:14px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;cursor:pointer;border-radius:8px;">
-        Starta Pro – 199 kr/mån
-      </button>
-      <div style="text-align:center;font-size:0.72rem;color:#bbb;margin-top:12px;">Säker betalning via Stripe · Avsluta när som helst</div>
-    </div>`;
-  document.body.appendChild(modal);
-  const elements = stripe.elements();
-  const card = elements.create('card', { style: { base: { fontFamily: 'DM Sans, sans-serif', fontSize: '16px', color: '#1a1208' } } });
-  card.mount('#stripe-card-element');
-  window._stripeCard = card;
-  window._stripe = stripe;
-}
-
-async function processPayment() {
-  const btn = document.getElementById('stripe-pay-btn');
-  const errEl = document.getElementById('stripe-error');
-  btn.textContent = 'Behandlar...'; btn.disabled = true;
-  const { paymentMethod, error } = await window._stripe.createPaymentMethod({ type: 'card', card: window._stripeCard, billing_details: { email: currentUser?.email } });
-  if (error) { errEl.style.display='block'; errEl.textContent=error.message; btn.textContent='Starta Pro – 199 kr/mån'; btn.disabled=false; return; }
-  // Spara betalningsmetod och aktivera Pro
-  await db.from('restaurants').update({ stripe_customer_id: paymentMethod.id }).eq('id', restaurantId);
-  document.getElementById('payment-modal').remove();
-  await activatePro();
 }
 
 function updateProUI(isPro) {
