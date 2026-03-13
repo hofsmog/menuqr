@@ -325,6 +325,7 @@
       <div class="sidebar-item" onclick="switchPanel('panel-menu',this)"><span class="sidebar-icon">◉</span> Redigera meny</div>
       <div class="sidebar-item" onclick="switchPanel('panel-qr',this)"><span class="sidebar-icon">◫</span> QR-kod</div>
       <div class="sidebar-item" onclick="switchPanel('panel-bookings',this);loadBookings()"><span class="sidebar-icon">◷</span> Bokningar</div>
+      <div class="sidebar-item" onclick="switchPanel('panel-stats',this);loadStats()"><span class="sidebar-icon">◎</span> Statistik</div>
       <div class="sidebar-item" onclick="previewMenu()"><span class="sidebar-icon">◌</span> Förhandsgranska</div>
     </nav>
     <div class="sidebar-bottom">
@@ -348,6 +349,7 @@
         <div class="stat-card"><div class="stat-label">Menyrätter totalt</div><div class="stat-value" id="stat-items">–</div><div class="stat-change">Din meny</div></div>
         <div class="stat-card"><div class="stat-label">Kategorier</div><div class="stat-value" id="stat-cats">–</div><div class="stat-change">Aktiva kategorier</div></div>
         <div class="stat-card" style="cursor:pointer" onclick="switchPanel('panel-bookings',document.querySelectorAll('.sidebar-item')[3]);loadBookings()"><div class="stat-label">Bokningar idag</div><div class="stat-value" id="stat-bookings">–</div><div class="stat-change" id="stat-bookings-change" style="color:var(--gold)">Klicka för att se</div></div>
+        <div class="stat-card" style="cursor:pointer" onclick="switchPanel('panel-stats',document.querySelectorAll('.sidebar-item')[4]);loadStats()"><div class="stat-label">Sidvisningar idag</div><div class="stat-value" id="stat-views">–</div><div class="stat-change" style="color:var(--sage)">Se all statistik →</div></div>
       </div>
       <div class="section-header"><div class="section-title">Snabbåtgärder</div></div>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px">
@@ -432,6 +434,35 @@
         </div>
       </div>
       <div id="bookings-list"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+    <div id="panel-stats" class="panel">
+      <div class="admin-topbar">
+        <div><div class="admin-title">Statistik</div><div class="admin-subtitle">Hur många besöker din digitala meny?</div></div>
+        <select id="stats-range" onchange="loadStats()" style="border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:0.85rem;background:white;cursor:pointer;">
+          <option value="7">Senaste 7 dagarna</option>
+          <option value="30">Senaste 30 dagarna</option>
+        </select>
+      </div>
+
+      <!-- Sammanfattning -->
+      <div class="stats-grid" style="margin-bottom:32px;">
+        <div class="stat-card"><div class="stat-label">Totalt besök (perioden)</div><div class="stat-value" id="s-total">–</div><div class="stat-change">Sidvisningar</div></div>
+        <div class="stat-card"><div class="stat-label">Idag</div><div class="stat-value" id="s-today">–</div><div class="stat-change">Besök hittills</div></div>
+        <div class="stat-card"><div class="stat-label">Snitt per dag</div><div class="stat-value" id="s-avg">–</div><div class="stat-change">Under perioden</div></div>
+      </div>
+
+      <!-- Graf -->
+      <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:24px;">
+        <div class="section-title" style="margin-bottom:20px;">Besök per dag</div>
+        <div id="stats-chart" style="display:flex;align-items:flex-end;gap:6px;height:120px;"></div>
+        <div id="stats-labels" style="display:flex;gap:6px;margin-top:8px;"></div>
+      </div>
+
+      <!-- Topp-dagar -->
+      <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:28px;">
+        <div class="section-title" style="margin-bottom:16px;">Mest besökta dagar</div>
+        <div id="stats-top-days"></div>
+      </div>
     </div>
   </main>
 </div>
@@ -599,6 +630,8 @@ async function showGuestMenuBySlug(slug) {
   if (bookingSection) bookingSection.style.display = data.is_pro ? 'block' : 'none';
   // Spara restaurant_id för bokning
   window._guestRestaurantId = data.id;
+  // Registrera besök
+  trackPageView(data.id);
 
   const { data: items } = await db.from('menu_items').select('*').eq('restaurant_id', data.id).order('created_at');
   menuItems = items || [];
@@ -1062,6 +1095,89 @@ async function updateBooking(id, status) {
   }
   filterBookings();
   showToast(status === 'confirmed' ? '✓ Bokning bekräftad! Mail skickat.' : '✕ Bokning avbokad');
+}
+
+// ── ANALYTICS ──
+async function trackPageView(restaurantId) {
+  try {
+    await db.from('page_views').insert([{ restaurant_id: restaurantId }]);
+  } catch(e) { /* tyst fel */ }
+}
+
+async function loadStats() {
+  if (!restaurantId) return;
+  const days = parseInt(document.getElementById('stats-range')?.value || 7);
+  const from = new Date();
+  from.setDate(from.getDate() - days);
+  const fromStr = from.toISOString().split('T')[0];
+
+  const { data, error } = await db.from('page_views')
+    .select('date')
+    .eq('restaurant_id', restaurantId)
+    .gte('date', fromStr)
+    .order('date');
+
+  if (error) return;
+
+  // Räkna per dag
+  const counts = {};
+  const today = new Date().toISOString().split('T')[0];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    counts[d.toISOString().split('T')[0]] = 0;
+  }
+  (data || []).forEach(row => {
+    if (counts[row.date] !== undefined) counts[row.date]++;
+  });
+
+  const entries = Object.entries(counts);
+  const total = entries.reduce((s, [,v]) => s + v, 0);
+  const todayCount = counts[today] || 0;
+  const avg = Math.round(total / days);
+  const max = Math.max(...entries.map(([,v]) => v), 1);
+
+  document.getElementById('s-total').textContent = total;
+  document.getElementById('s-today').textContent = todayCount;
+  document.getElementById('s-avg').textContent = avg;
+  document.getElementById('stat-views').textContent = todayCount;
+
+  // Rita graf
+  const chart = document.getElementById('stats-chart');
+  const labels = document.getElementById('stats-labels');
+  chart.innerHTML = entries.map(([date, count]) => {
+    const h = Math.max((count / max) * 100, count > 0 ? 8 : 2);
+    const isToday = date === today;
+    return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+      <div style="font-size:0.7rem;color:#999;">${count > 0 ? count : ''}</div>
+      <div style="width:100%;height:${h}px;background:${isToday ? 'var(--gold)' : 'var(--ink)'};border-radius:4px 4px 0 0;opacity:${isToday ? 1 : 0.7};transition:all 0.3s;" title="${date}: ${count} besök"></div>
+    </div>`;
+  }).join('');
+
+  labels.innerHTML = entries.map(([date]) => {
+    const d = new Date(date);
+    const label = d.toLocaleDateString('sv-SE', { weekday: 'short', day: 'numeric' });
+    const isToday = date === today;
+    return `<div style="flex:1;text-align:center;font-size:0.65rem;color:${isToday ? 'var(--gold)' : '#bbb'};font-weight:${isToday ? '600' : '400'}">${label}</div>`;
+  }).join('');
+
+  // Topp-dagar
+  const sorted = [...entries].sort((a,b) => b[1] - a[1]).slice(0, 5);
+  document.getElementById('stats-top-days').innerHTML = sorted.map(([date, count], i) => {
+    const d = new Date(date);
+    const label = d.toLocaleDateString('sv-SE', { weekday: 'long', month: 'short', day: 'numeric' });
+    const pct = Math.round((count / max) * 100);
+    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
+      <div style="width:20px;text-align:center;font-size:0.75rem;color:#bbb;">${i+1}</div>
+      <div style="flex:1;">
+        <div style="font-size:0.85rem;font-weight:500;margin-bottom:4px;">${label}</div>
+        <div style="height:6px;background:var(--border);border-radius:3px;">
+          <div style="height:6px;width:${pct}%;background:var(--gold);border-radius:3px;"></div>
+        </div>
+      </div>
+      <div style="font-size:0.9rem;font-weight:600;color:var(--ink);min-width:40px;text-align:right;">${count}</div>
+    </div>`;
+  }).join('') || '<p style="color:#999;font-size:0.85rem;">Inga besök ännu.</p>';
 }
 
 // ── TOAST ──
