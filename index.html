@@ -1024,7 +1024,7 @@ let userIsPro = false;
 function handleProNav(panel, el) {
   if (!userIsPro) {
     showToast('🔒 Uppgradera till Pro för att använda denna funktion');
-    startCheckout();
+    setTimeout(() => startCheckout(), 500);
     return;
   }
   if (panel === 'panel-bookings') { switchPanel(panel, el); loadBookings(); }
@@ -1157,11 +1157,11 @@ async function loadStats() {
   const chart = document.getElementById('stats-chart');
   const labels = document.getElementById('stats-labels');
   chart.innerHTML = entries.map(([date, count]) => {
-    const h = Math.max((count / max) * 100, count > 0 ? 8 : 2);
+    const h = count > 0 ? Math.max((count / max) * 100, 8) : 4;
     const isToday = date === today;
     return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
-      <div style="font-size:0.7rem;color:#999;">${count > 0 ? count : ''}</div>
-      <div style="width:100%;height:${h}px;background:${isToday ? 'var(--gold)' : 'var(--ink)'};border-radius:4px 4px 0 0;opacity:${isToday ? 1 : 0.7};transition:all 0.3s;" title="${date}: ${count} besök"></div>
+      <div style="font-size:0.7rem;color:#999;min-height:16px;">${count > 0 ? count : ''}</div>
+      <div style="width:100%;height:${h}px;background:${isToday ? 'var(--gold)' : '#ccc'};border-radius:4px 4px 0 0;transition:all 0.3s;" title="${date}: ${count} besök"></div>
     </div>`;
   }).join('');
 
