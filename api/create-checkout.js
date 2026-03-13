@@ -5,7 +5,7 @@ export default async function handler(req, res) {
 
   const { email, restaurantId } = req.body;
   const STRIPE_SECRET = process.env.STRIPE_SECRET_KEY;
-  const PRICE_ID = 'price_1TARzfQeEVmd8NvFbmEwuOiX';
+  const PRICE_ID = 'price_1TAZb0H3mQ7LpxPls2Kv1WjU';
 
   try {
     const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
