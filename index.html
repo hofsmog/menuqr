@@ -415,8 +415,6 @@
           <div class="section-title" style="margin-bottom:20px">Information</div>
           <div class="info-row"><span class="info-label">Status</span><span class="info-value green">● Aktiv</span></div>
           <div class="info-row"><span class="info-label">Din meny-URL</span><span class="info-value" id="qr-url-display">–</span></div>
-          <div class="info-row"><span class="info-label">Anpassad domän</span><span class="info-value gold">Pro 🔒</span></div>
-          <div class="info-row"><span class="info-label">Ta bort logga</span><span class="info-value gold">Pro 🔒</span></div>
         </div>
       </div>
     </div>
@@ -956,6 +954,11 @@ function updateProUI(isPro) {
     if (statBookings) statBookings.textContent = '0';
     const statBookingsChange = document.querySelector('.stat-card:nth-child(3) .stat-change');
     if (statBookingsChange) { statBookingsChange.textContent = 'Bokningar idag'; statBookingsChange.style.color = 'var(--sage)'; }
+    // Uppdatera QR-infopanelen
+    const qrAnpassad = document.querySelector('.info-row:nth-child(3) .info-value');
+    const qrLogga = document.querySelector('.info-row:nth-child(4) .info-value');
+    if (qrAnpassad) { qrAnpassad.textContent = 'Kontakta support'; qrAnpassad.style.color = 'var(--sage)'; }
+    if (qrLogga) { qrLogga.textContent = '✓ Borttagen'; qrLogga.style.color = 'var(--sage)'; }
   } else {
     planName.innerHTML = '✦ Gratis plan';
     planName.style.color = 'var(--gold)';
