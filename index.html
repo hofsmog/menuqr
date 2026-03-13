@@ -324,8 +324,8 @@
       <div class="sidebar-item active" onclick="switchPanel('panel-overview',this)"><span class="sidebar-icon">◈</span> Översikt</div>
       <div class="sidebar-item" onclick="switchPanel('panel-menu',this)"><span class="sidebar-icon">◉</span> Redigera meny</div>
       <div class="sidebar-item" onclick="switchPanel('panel-qr',this)"><span class="sidebar-icon">◫</span> QR-kod</div>
-      <div class="sidebar-item" onclick="switchPanel('panel-bookings',this);loadBookings()"><span class="sidebar-icon">◷</span> Bokningar</div>
-      <div class="sidebar-item" onclick="switchPanel('panel-stats',this);loadStats()"><span class="sidebar-icon">◎</span> Statistik</div>
+      <div class="sidebar-item" id="nav-bookings" onclick="handleProNav('panel-bookings',this)"><span class="sidebar-icon">◷</span> Bokningar <span id="nav-bookings-lock" style="font-size:0.7rem;opacity:0.5;margin-left:4px;">🔒</span></div>
+      <div class="sidebar-item" id="nav-stats" onclick="handleProNav('panel-stats',this)"><span class="sidebar-icon">◎</span> Statistik <span id="nav-stats-lock" style="font-size:0.7rem;opacity:0.5;margin-left:4px;">🔒</span></div>
       <div class="sidebar-item" onclick="previewMenu()"><span class="sidebar-icon">◌</span> Förhandsgranska</div>
     </nav>
     <div class="sidebar-bottom">
@@ -935,10 +935,13 @@ async function processPayment() {
 }
 
 function updateProUI(isPro) {
+  userIsPro = isPro;
   const planName = document.getElementById('plan-name');
   const planDesc = document.getElementById('plan-desc');
   const upgradeBtn = document.getElementById('upgrade-btn');
   const footer = document.getElementById('guest-menu-footer');
+  const bookingsLock = document.getElementById('nav-bookings-lock');
+  const statsLock = document.getElementById('nav-stats-lock');
 
   if (isPro) {
     planName.innerHTML = '⭐ Pro-plan';
@@ -946,21 +949,19 @@ function updateProUI(isPro) {
     planDesc.textContent = 'Alla funktioner upplåsta';
     if (upgradeBtn) upgradeBtn.style.display = 'none';
     if (footer) footer.style.display = 'none';
-    // Lås upp bokningar
-    const lockOverlay = document.querySelector('.lock-overlay');
-    if (lockOverlay) lockOverlay.style.display = 'none';
+    if (bookingsLock) bookingsLock.style.display = 'none';
+    if (statsLock) statsLock.style.display = 'none';
     // Uppdatera stat-card för bokningar
-    const statBookings = document.querySelector('.stat-card:nth-child(3) .stat-value');
-    if (statBookings) statBookings.textContent = '0';
     const statBookingsChange = document.querySelector('.stat-card:nth-child(3) .stat-change');
     if (statBookingsChange) { statBookingsChange.textContent = 'Bokningar idag'; statBookingsChange.style.color = 'var(--sage)'; }
-    // Uppdatera QR-infopanelen – ta bort logga-raden är redan hanterad via footer
   } else {
     planName.innerHTML = '✦ Gratis plan';
     planName.style.color = 'var(--gold)';
     planDesc.textContent = '1 meny · Grundfunktioner';
     if (upgradeBtn) upgradeBtn.style.display = 'block';
     if (footer) footer.style.display = 'block';
+    if (bookingsLock) bookingsLock.style.display = 'inline';
+    if (statsLock) statsLock.style.display = 'inline';
   }
 }
 
@@ -1018,7 +1019,18 @@ function resetBookingForm() {
 }
 
 // ── BOOKINGS ADMIN ──
-let allBookings = [];
+let userIsPro = false;
+
+function handleProNav(panel, el) {
+  if (!userIsPro) {
+    showToast('🔒 Uppgradera till Pro för att använda denna funktion');
+    startCheckout();
+    return;
+  }
+  if (panel === 'panel-bookings') { switchPanel(panel, el); loadBookings(); }
+  else if (panel === 'panel-stats') { switchPanel(panel, el); loadStats(); }
+  else switchPanel(panel, el);
+}
 
 async function loadBookings() {
   if (!restaurantId) return;
