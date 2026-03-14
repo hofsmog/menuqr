@@ -1821,6 +1821,8 @@ function updateProUI(isPro) {
     if (footer) footer.style.display = 'none';
     if (bookingsLock) bookingsLock.style.display = 'none';
     if (statsLock) statsLock.style.display = 'none';
+    const bsettingsLock = document.getElementById('nav-bsettings-lock');
+    if (bsettingsLock) bsettingsLock.style.display = 'none';
     // Uppdatera stat-card för bokningar
     const statBookingsChange = document.querySelector('.stat-card:nth-child(3) .stat-change');
     if (statBookingsChange) { statBookingsChange.textContent = 'Bokningar idag'; statBookingsChange.style.color = 'var(--sage)'; }
