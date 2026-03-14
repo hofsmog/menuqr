@@ -29,7 +29,7 @@ module.exports = async function handler(req, res) {
       },
       body: JSON.stringify({
         from: 'MenuQR <support@menuqr.se>',
-        to: ['support@menuqr.se'],
+        to: ['menuqrse@outlook.com'],
         reply_to: email,
         subject: 'Ny kontakt fran ' + name + ' (' + typeLabel + ')',
         html
