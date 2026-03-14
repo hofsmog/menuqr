@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+const crypto = require('crypto');
 
 const SUPABASE_URL = 'https://bvqlgxkarepnpjzvpoqg.supabase.co';
 
@@ -33,7 +33,7 @@ async function supabaseUpdate(table, update, match) {
   return res.ok;
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
   const sig = req.headers['stripe-signature'];
@@ -70,6 +70,4 @@ export default async function handler(req, res) {
   res.status(200).json({ received: true });
 }
 
-export const config = {
-  api: { bodyParser: false }
-};
+module.exports.config = { api: { bodyParser: false } };
