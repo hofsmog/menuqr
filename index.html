@@ -325,6 +325,7 @@
       <div class="sidebar-item" onclick="switchPanel('panel-menu',this)"><span class="sidebar-icon">◉</span> Redigera meny</div>
       <div class="sidebar-item" onclick="switchPanel('panel-qr',this)"><span class="sidebar-icon">◫</span> QR-kod</div>
       <div class="sidebar-item" id="nav-bookings" onclick="handleProNav('panel-bookings',this)"><span class="sidebar-icon">◷</span> Bokningar <span id="nav-bookings-lock" style="font-size:0.7rem;opacity:0.5;margin-left:4px;">🔒</span></div>
+      <div class="sidebar-item" id="nav-bsettings" onclick="handleProNav('panel-booking-settings',this)"><span class="sidebar-icon">⚙</span> Bokningsinst. <span id="nav-bsettings-lock" style="font-size:0.7rem;opacity:0.5;margin-left:4px;">🔒</span></div>
       <div class="sidebar-item" id="nav-stats" onclick="handleProNav('panel-stats',this)"><span class="sidebar-icon">◎</span> Statistik <span id="nav-stats-lock" style="font-size:0.7rem;opacity:0.5;margin-left:4px;">🔒</span></div>
       <div class="sidebar-item" onclick="previewMenu()"><span class="sidebar-icon">◌</span> Förhandsgranska</div>
     </nav>
@@ -433,6 +434,80 @@
       </div>
       <div id="bookings-list"><div class="loading"><div class="spinner"></div></div></div>
     </div>
+    <!-- BOKNINGSINSTÄLLNINGAR -->
+    <div id="panel-booking-settings" class="panel">
+      <div class="admin-topbar">
+        <div><div class="admin-title">Bokningsinställningar</div><div class="admin-subtitle">Konfigurera bord, tider och kapacitet</div></div>
+        <button class="btn-gold" onclick="saveBookingSettings()">Spara inställningar</button>
+      </div>
+
+      <!-- Allmänna inställningar -->
+      <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:24px;">
+        <div class="section-title" style="margin-bottom:20px;">Allmänt</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;">
+          <div>
+            <label style="font-size:0.78rem;color:#888;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:8px;">Bokningslängd (min)</label>
+            <input type="number" id="bs-duration" value="90" min="30" max="360" step="15" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:0.9rem;">
+          </div>
+          <div>
+            <label style="font-size:0.78rem;color:#888;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:8px;">Tidsintervall (min)</label>
+            <input type="number" id="bs-interval" value="30" min="15" max="120" step="15" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:0.9rem;">
+          </div>
+          <div>
+            <label style="font-size:0.78rem;color:#888;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:8px;">Max gäster per bokning</label>
+            <input type="number" id="bs-max-guests" value="8" min="1" max="50" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:0.9rem;">
+          </div>
+        </div>
+      </div>
+
+      <!-- Öppettider -->
+      <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:24px;">
+        <div class="section-title" style="margin-bottom:20px;">Öppettider</div>
+        <div id="opening-hours-grid" style="display:flex;flex-direction:column;gap:12px;">
+          ${['Måndag','Tisdag','Onsdag','Torsdag','Fredag','Lördag','Söndag'].map((day,i) => `
+          <div style="display:grid;grid-template-columns:120px 60px 1fr;align-items:center;gap:16px;">
+            <div style="font-size:0.9rem;font-weight:500;">${day}</div>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+              <input type="checkbox" id="oh-open-${i}" checked onchange="toggleDayHours(${i})" style="width:16px;height:16px;accent-color:var(--gold);">
+              <span style="font-size:0.8rem;color:#888;">Öppen</span>
+            </label>
+            <div id="oh-times-${i}" style="display:flex;align-items:center;gap:12px;">
+              <input type="time" id="oh-from-${i}" value="11:00" style="border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:0.85rem;">
+              <span style="color:#999;">–</span>
+              <input type="time" id="oh-to-${i}" value="22:00" style="border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:0.85rem;">
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>
+
+      <!-- Bord -->
+      <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:24px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <div class="section-title">Bord</div>
+          <button class="btn-gold" style="padding:8px 16px;font-size:0.82rem;" onclick="addTableRow()">+ Lägg till bord</button>
+        </div>
+        <div style="display:grid;grid-template-columns:80px 1fr 80px;gap:8px;margin-bottom:8px;padding:0 4px;">
+          <div style="font-size:0.75rem;color:#888;text-transform:uppercase;letter-spacing:0.08em;">Bord nr</div>
+          <div style="font-size:0.75rem;color:#888;text-transform:uppercase;letter-spacing:0.08em;">Platser</div>
+          <div></div>
+        </div>
+        <div id="tables-list"></div>
+      </div>
+
+      <!-- Stängda dagar -->
+      <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:28px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <div class="section-title">Stängda dagar</div>
+        </div>
+        <div style="display:flex;gap:12px;margin-bottom:16px;">
+          <input type="date" id="closed-date-input" style="border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:0.9rem;flex:1;">
+          <input type="text" id="closed-reason-input" placeholder="Anledning (valfritt)" style="border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:0.9rem;flex:2;">
+          <button class="btn-gold" onclick="addClosedDate()">Lägg till</button>
+        </div>
+        <div id="closed-dates-list"></div>
+      </div>
+    </div>
+
     <div id="panel-stats" class="panel">
       <div class="admin-topbar">
         <div><div class="admin-title">Statistik</div><div class="admin-subtitle">Hur många besöker din digitala meny?</div></div>
@@ -492,16 +567,12 @@
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
             <div>
               <div style="font-size:0.72rem;color:rgba(245,240,232,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Datum</div>
-              <input type="date" id="book-date" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:11px 14px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;color-scheme:dark;">
+              <input type="date" id="book-date" onchange="onBookingDateChange()" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:11px 14px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;color-scheme:dark;">
             </div>
             <div>
               <div style="font-size:0.72rem;color:rgba(245,240,232,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Tid</div>
               <select id="book-time" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:11px 14px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;">
-                <option value="">Välj tid</option>
-                <option>11:00</option><option>11:30</option><option>12:00</option><option>12:30</option>
-                <option>13:00</option><option>13:30</option><option>17:00</option><option>17:30</option>
-                <option>18:00</option><option>18:30</option><option>19:00</option><option>19:30</option>
-                <option>20:00</option><option>20:30</option><option>21:00</option>
+                <option value="">Välj datum först</option>
               </select>
             </div>
           </div>
@@ -958,13 +1029,26 @@ async function activatePro() {
 }
 
 // ── BOOKINGS GUEST ──
+async function onBookingDateChange() {
+  const date = document.getElementById('book-date').value;
+  const timeEl = document.getElementById('book-time');
+  if (!date || !window._guestRestaurantId) return;
+  timeEl.innerHTML = '<option value="">Laddar tider...</option>';
+  const { slots, reason } = await loadAvailableSlots(window._guestRestaurantId, date);
+  if (!slots.length) {
+    timeEl.innerHTML = `<option value="">${reason || 'Inga lediga tider'}</option>`;
+    return;
+  }
+  timeEl.innerHTML = '<option value="">Välj tid</option>' + slots.map(s => `<option value="${s}">${s}</option>`).join('');
+}
+
 async function submitBooking() {
   const name = document.getElementById('book-name').value.trim();
   const phone = document.getElementById('book-phone').value.trim();
   const email = document.getElementById('book-email').value.trim();
   const date = document.getElementById('book-date').value;
   const time = document.getElementById('book-time').value;
-  const guests = document.getElementById('book-guests').value;
+  const guests = parseInt(document.getElementById('book-guests').value);
   const message = document.getElementById('book-message').value.trim();
   const errEl = document.getElementById('booking-error');
   const btn = document.getElementById('book-submit-btn');
@@ -975,10 +1059,21 @@ async function submitBooking() {
     return;
   }
   btn.textContent = 'Skickar...'; btn.disabled = true;
+
+  // Hitta ledigt bord
+  const table = await findAvailableTable(window._guestRestaurantId, date, time, guests);
+  if (!table) {
+    errEl.style.display = 'block';
+    errEl.textContent = 'Tyvärr är det fullbokat vid denna tid. Välj en annan tid.';
+    btn.textContent = 'Skicka bokningsförfrågan'; btn.disabled = false;
+    return;
+  }
+
   const { error } = await db.from('bookings').insert([{
     restaurant_id: window._guestRestaurantId,
+    table_id: table.id,
     name, phone, email, date, time,
-    guests: parseInt(guests),
+    guests,
     message,
     status: 'pending'
   }]);
@@ -994,7 +1089,7 @@ function resetBookingForm() {
   document.getElementById('book-name').value = '';
   document.getElementById('book-phone').value = '';
   document.getElementById('book-date').value = '';
-  document.getElementById('book-time').value = '';
+  document.getElementById('book-time').innerHTML = '<option value="">Välj datum först</option>';
   document.getElementById('book-message').value = '';
 }
 
@@ -1009,11 +1104,15 @@ function handleProNav(panel, el) {
   }
   if (panel === 'panel-bookings') { switchPanel(panel, el); loadBookings(); }
   else if (panel === 'panel-stats') { switchPanel(panel, el); loadStats(); }
+  else if (panel === 'panel-booking-settings') { switchPanel(panel, el); loadBookingSettings(); }
   else switchPanel(panel, el);
 }
 
 async function loadBookings() {
   if (!restaurantId) return;
+  // Ladda bord för att visa bordsnummer
+  const { data: tables } = await db.from('restaurant_tables').select('*').eq('restaurant_id', restaurantId);
+  restaurantTables = tables || [];
   const { data, error } = await db.from('bookings')
     .select('*')
     .eq('restaurant_id', restaurantId)
@@ -1046,7 +1145,7 @@ function renderBookings(bookings) {
     <div class="menu-item-row" style="grid-template-columns:1fr auto auto;margin-bottom:12px;">
       <div>
         <div class="item-name">${b.name}</div>
-        <div class="item-desc-small">${b.guests} personer · ${dateStr} kl ${b.time}${b.phone ? ' · ' + b.phone : ''}${b.message ? '<br><em>' + b.message + '</em>' : ''}</div>
+        <div class="item-desc-small">${b.guests} personer · ${dateStr} kl ${b.time}${b.table_id ? ' · Bord ' + (restaurantTables.find(t=>t.id===b.table_id)?.table_number||'?') : ''}${b.phone ? ' · ' + b.phone : ''}${b.message ? '<br><em>' + b.message + '</em>' : ''}</div>
       </div>
       <div style="font-size:0.82rem;font-weight:500;color:${statusColor};white-space:nowrap;">${statusLabel}</div>
       <div class="item-actions">
@@ -1088,7 +1187,239 @@ async function updateBooking(id, status) {
   showToast(status === 'confirmed' ? '✓ Bokning bekräftad! Mail skickat.' : '✕ Bokning avbokad');
 }
 
-// ── ANALYTICS ──
+// ── BOKNINGSINSTÄLLNINGAR ──
+let bookingSettings = null;
+let restaurantTables = [];
+let openingHours = [];
+let closedDates = [];
+
+function toggleDayHours(i) {
+  const isOpen = document.getElementById(`oh-open-${i}`).checked;
+  document.getElementById(`oh-times-${i}`).style.opacity = isOpen ? '1' : '0.3';
+  document.getElementById(`oh-times-${i}`).style.pointerEvents = isOpen ? 'auto' : 'none';
+}
+
+function addTableRow(tableNumber = '', seats = 4, id = null) {
+  const list = document.getElementById('tables-list');
+  const div = document.createElement('div');
+  div.style.cssText = 'display:grid;grid-template-columns:80px 1fr 80px;gap:8px;margin-bottom:8px;align-items:center;';
+  div.dataset.id = id || '';
+  div.innerHTML = `
+    <input type="number" value="${tableNumber}" placeholder="1" min="1" class="table-number" style="border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:0.88rem;width:100%;">
+    <input type="number" value="${seats}" placeholder="4" min="1" max="20" class="table-seats" style="border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:0.88rem;width:100%;">
+    <button onclick="this.parentElement.remove()" style="background:none;border:1px solid var(--border);border-radius:6px;padding:8px;cursor:pointer;color:var(--rust);font-size:1rem;">✕</button>`;
+  list.appendChild(div);
+}
+
+async function loadBookingSettings() {
+  if (!restaurantId) return;
+
+  // Ladda inställningar
+  const { data: settings } = await db.from('booking_settings').select('*').eq('restaurant_id', restaurantId).single();
+  if (settings) {
+    document.getElementById('bs-duration').value = settings.booking_duration;
+    document.getElementById('bs-interval').value = settings.slot_interval;
+    document.getElementById('bs-max-guests').value = settings.max_guests_per_booking;
+    bookingSettings = settings;
+  }
+
+  // Ladda öppettider
+  const { data: hours } = await db.from('opening_hours').select('*').eq('restaurant_id', restaurantId).order('day_of_week');
+  if (hours && hours.length) {
+    openingHours = hours;
+    hours.forEach(h => {
+      // day_of_week: 1=måndag ... 0=söndag → vi visar mån(0) till sön(6)
+      const i = h.day_of_week === 0 ? 6 : h.day_of_week - 1;
+      const openEl = document.getElementById(`oh-open-${i}`);
+      const fromEl = document.getElementById(`oh-from-${i}`);
+      const toEl = document.getElementById(`oh-to-${i}`);
+      if (openEl) openEl.checked = h.is_open;
+      if (fromEl) fromEl.value = h.open_time?.slice(0,5) || '11:00';
+      if (toEl) toEl.value = h.close_time?.slice(0,5) || '22:00';
+      toggleDayHours(i);
+    });
+  }
+
+  // Ladda bord
+  const { data: tables } = await db.from('restaurant_tables').select('*').eq('restaurant_id', restaurantId).order('table_number');
+  document.getElementById('tables-list').innerHTML = '';
+  if (tables && tables.length) {
+    restaurantTables = tables;
+    tables.forEach(t => addTableRow(t.table_number, t.seats, t.id));
+  }
+
+  // Ladda stängda dagar
+  const { data: closed } = await db.from('closed_dates').select('*').eq('restaurant_id', restaurantId).order('date');
+  closedDates = closed || [];
+  renderClosedDates();
+}
+
+function renderClosedDates() {
+  const el = document.getElementById('closed-dates-list');
+  if (!closedDates.length) { el.innerHTML = '<p style="color:#999;font-size:0.85rem;">Inga stängda dagar tillagda.</p>'; return; }
+  el.innerHTML = closedDates.map(d => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--border);">
+      <div>
+        <span style="font-weight:500;">${new Date(d.date).toLocaleDateString('sv-SE', {weekday:'long',year:'numeric',month:'long',day:'numeric'})}</span>
+        ${d.reason ? `<span style="color:#888;font-size:0.82rem;margin-left:12px;">${d.reason}</span>` : ''}
+      </div>
+      <button onclick="removeClosedDate('${d.id}')" style="background:none;border:none;cursor:pointer;color:var(--rust);font-size:1rem;">✕</button>
+    </div>`).join('');
+}
+
+async function addClosedDate() {
+  const date = document.getElementById('closed-date-input').value;
+  const reason = document.getElementById('closed-reason-input').value;
+  if (!date) { showToast('Välj ett datum'); return; }
+  const { data, error } = await db.from('closed_dates').insert([{ restaurant_id: restaurantId, date, reason }]).select().single();
+  if (error) { showToast('Fel: ' + error.message); return; }
+  closedDates.push(data);
+  renderClosedDates();
+  document.getElementById('closed-date-input').value = '';
+  document.getElementById('closed-reason-input').value = '';
+  showToast('Stängt datum tillagt');
+}
+
+async function removeClosedDate(id) {
+  await db.from('closed_dates').delete().eq('id', id);
+  closedDates = closedDates.filter(d => d.id !== id);
+  renderClosedDates();
+  showToast('Datum borttaget');
+}
+
+async function saveBookingSettings() {
+  if (!restaurantId) return;
+  const duration = parseInt(document.getElementById('bs-duration').value);
+  const interval = parseInt(document.getElementById('bs-interval').value);
+  const maxGuests = parseInt(document.getElementById('bs-max-guests').value);
+
+  // Spara/uppdatera inställningar
+  const { error: settingsError } = await db.from('booking_settings').upsert({
+    restaurant_id: restaurantId,
+    booking_duration: duration,
+    slot_interval: interval,
+    max_guests_per_booking: maxGuests
+  }, { onConflict: 'restaurant_id' });
+  if (settingsError) { showToast('Fel vid sparande: ' + settingsError.message); return; }
+
+  // Spara öppettider
+  const days = ['Måndag','Tisdag','Onsdag','Torsdag','Fredag','Lördag','Söndag'];
+  for (let i = 0; i < 7; i++) {
+    const dayOfWeek = i === 6 ? 0 : i + 1; // konvertera till 0=sön, 1=mån...
+    const isOpen = document.getElementById(`oh-open-${i}`).checked;
+    const openTime = document.getElementById(`oh-from-${i}`).value;
+    const closeTime = document.getElementById(`oh-to-${i}`).value;
+    await db.from('opening_hours').upsert({
+      restaurant_id: restaurantId,
+      day_of_week: dayOfWeek,
+      is_open: isOpen,
+      open_time: openTime,
+      close_time: closeTime
+    }, { onConflict: 'restaurant_id,day_of_week' });
+  }
+
+  // Spara bord – ta bort gamla och lägg till nya
+  await db.from('restaurant_tables').delete().eq('restaurant_id', restaurantId);
+  const rows = document.querySelectorAll('#tables-list > div');
+  const tablesData = [];
+  rows.forEach(row => {
+    const num = parseInt(row.querySelector('.table-number').value);
+    const seats = parseInt(row.querySelector('.table-seats').value);
+    if (num && seats) tablesData.push({ restaurant_id: restaurantId, table_number: num, seats });
+  });
+  if (tablesData.length) {
+    const { error: tablesError } = await db.from('restaurant_tables').insert(tablesData);
+    if (tablesError) { showToast('Fel vid sparande av bord'); return; }
+  }
+
+  showToast('✓ Inställningar sparade!');
+  await loadBookingSettings(); // reload
+}
+
+// ── SMART TIDSLOTS FÖR GÄST ──
+async function loadAvailableSlots(restaurantId, date) {
+  const dateObj = new Date(date);
+  const dayOfWeek = dateObj.getDay(); // 0=sön, 1=mån...
+
+  // Kolla om stängt denna dag
+  const { data: closed } = await db.from('closed_dates').select('id').eq('restaurant_id', restaurantId).eq('date', date);
+  if (closed && closed.length) return { slots: [], reason: 'Restaurangen är stängd denna dag.' };
+
+  // Hämta öppettider för veckodagen
+  const { data: hours } = await db.from('opening_hours').select('*').eq('restaurant_id', restaurantId).eq('day_of_week', dayOfWeek).single();
+  if (!hours || !hours.is_open) return { slots: [], reason: 'Restaurangen är stängd denna dag.' };
+
+  // Hämta inställningar
+  const { data: settings } = await db.from('booking_settings').select('*').eq('restaurant_id', restaurantId).single();
+  const duration = settings?.booking_duration || 90;
+  const interval = settings?.slot_interval || 30;
+
+  // Hämta bord
+  const { data: tables } = await db.from('restaurant_tables').select('*').eq('restaurant_id', restaurantId).eq('is_active', true);
+  if (!tables || !tables.length) return { slots: [], reason: 'Inga bord konfigurerade.' };
+
+  // Hämta befintliga bokningar denna dag
+  const { data: existingBookings } = await db.from('bookings')
+    .select('time, guests, table_id')
+    .eq('restaurant_id', restaurantId)
+    .eq('date', date)
+    .neq('status', 'cancelled');
+
+  // Generera tidslots
+  const [openH, openM] = hours.open_time.slice(0,5).split(':').map(Number);
+  const [closeH, closeM] = hours.close_time.slice(0,5).split(':').map(Number);
+  const openMinutes = openH * 60 + openM;
+  const closeMinutes = closeH * 60 + closeM - duration; // sista möjliga starttid
+
+  const slots = [];
+  for (let t = openMinutes; t <= closeMinutes; t += interval) {
+    const slotH = String(Math.floor(t / 60)).padStart(2, '0');
+    const slotM = String(t % 60).padStart(2, '0');
+    const slotTime = `${slotH}:${slotM}`;
+
+    // Räkna bokade bord denna slot (överlappande bokningar)
+    const bookedTableIds = (existingBookings || []).filter(b => {
+      const [bH, bM] = b.time.split(':').map(Number);
+      const bStart = bH * 60 + bM;
+      const bEnd = bStart + duration;
+      return t < bEnd && (t + duration) > bStart;
+    }).map(b => b.table_id).filter(Boolean);
+
+    const freeTables = tables.filter(tb => !bookedTableIds.includes(tb.id));
+    if (freeTables.length > 0) slots.push(slotTime);
+  }
+
+  return { slots, reason: slots.length ? '' : 'Fullbokat denna dag.' };
+}
+
+async function findAvailableTable(restaurantId, date, time, guests) {
+  const { data: settings } = await db.from('booking_settings').select('*').eq('restaurant_id', restaurantId).single();
+  const duration = settings?.booking_duration || 90;
+  const [h, m] = time.split(':').map(Number);
+  const startMin = h * 60 + m;
+  const endMin = startMin + duration;
+
+  const { data: tables } = await db.from('restaurant_tables')
+    .select('*').eq('restaurant_id', restaurantId).eq('is_active', true).gte('seats', guests).order('seats');
+
+  const { data: existingBookings } = await db.from('bookings')
+    .select('table_id, time')
+    .eq('restaurant_id', restaurantId).eq('date', date).neq('status', 'cancelled');
+
+  for (const table of (tables || [])) {
+    const isBooked = (existingBookings || []).some(b => {
+      if (b.table_id !== table.id) return false;
+      const [bH, bM] = b.time.split(':').map(Number);
+      const bStart = bH * 60 + bM;
+      const bEnd = bStart + duration;
+      return startMin < bEnd && endMin > bStart;
+    });
+    if (!isBooked) return table;
+  }
+  return null;
+}
+
+      
 async function trackPageView(restaurantId) {
   try {
     await db.from('page_views').insert([{ restaurant_id: restaurantId }]);
