@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
   const { customerId, restaurantId } = req.body;
   const STRIPE_SECRET = process.env.STRIPE_SECRET_KEY;
