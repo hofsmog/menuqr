@@ -1322,7 +1322,9 @@ async function saveBookingSettings() {
   }
 
   // Spara bord – ta bort gamla och lägg till nya
-  await db.from('restaurant_tables').delete().eq('restaurant_id', restaurantId);
+  const { error: deleteError } = await db.from('restaurant_tables').delete().eq('restaurant_id', restaurantId);
+  if (deleteError) { showToast('Fel vid borttagning av gamla bord: ' + deleteError.message); return; }
+
   const rows = document.querySelectorAll('#tables-list > div');
   const tablesData = [];
   rows.forEach(row => {
