@@ -611,6 +611,15 @@
         <button class="btn-gold" onclick="showManualBookingModal()">+ Ny bokning</button>
       </div>
 
+      <!-- Väntande bokningar -->
+      <div id="pending-bookings-section" style="display:none;margin-bottom:28px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <div style="background:var(--rust);color:white;font-size:0.7rem;font-weight:600;padding:3px 8px;border-radius:10px;" id="pending-count-badge">0</div>
+          <div style="font-family:'Playfair Display',serif;font-size:1.1rem;">Väntar på bekräftelse</div>
+        </div>
+        <div id="pending-bookings-list" style="display:flex;flex-direction:column;gap:10px;"></div>
+      </div>
+
       <!-- Datumnavigering -->
       <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px;">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
@@ -1987,17 +1996,14 @@ function changeBookingDate(days) {
 async function loadBookings() {
   if (!restaurantId) return;
 
-  // Sätt datum till idag om inget är valt
   const dateInput = document.getElementById('bookings-date');
   if (!dateInput.value) dateInput.value = new Date().toISOString().split('T')[0];
   const selectedDate = dateInput.value;
   const dateStr = new Date(selectedDate).toLocaleDateString('sv-SE', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
 
-  // Ladda bord
   const { data: tables } = await db.from('restaurant_tables').select('*').eq('restaurant_id', restaurantId).order('table_number');
   restaurantTables = tables || [];
 
-  // Ladda bokningar för valt datum
   const { data, error } = await db.from('bookings')
     .select('*')
     .eq('restaurant_id', restaurantId)
@@ -2011,8 +2017,56 @@ async function loadBookings() {
   const confirmed = allBookings.filter(b => b.status === 'confirmed').length;
   document.getElementById('bookings-subtitle').textContent = `${dateStr} · ${allBookings.length} bokningar · ${pending} väntar · ${confirmed} bekräftade`;
 
+  await renderPendingBookings();
   renderTableView(selectedDate);
   filterBookings();
+}
+
+async function renderPendingBookings() {
+  // Hämta ALLA väntande bokningar oavsett datum
+  const { data: pending } = await db.from('bookings')
+    .select('*')
+    .eq('restaurant_id', restaurantId)
+    .eq('status', 'pending')
+    .order('date', { ascending: true })
+    .order('time', { ascending: true });
+
+  const section = document.getElementById('pending-bookings-section');
+  const list = document.getElementById('pending-bookings-list');
+  const badge = document.getElementById('pending-count-badge');
+
+  if (!pending || !pending.length) {
+    section.style.display = 'none';
+    return;
+  }
+
+  section.style.display = 'block';
+  badge.textContent = pending.length;
+
+  list.innerHTML = pending.map(b => {
+    const dateStr = new Date(b.date).toLocaleDateString('sv-SE', { weekday:'short', month:'short', day:'numeric' });
+    const tableNum = restaurantTables.find(t => t.id === b.table_id)?.table_number;
+    return `
+    <div style="background:white;border:2px solid rgba(181,74,42,0.2);border-left:4px solid var(--rust);border-radius:10px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+      <div>
+        <div style="font-weight:600;font-size:0.92rem;">${b.name}</div>
+        <div style="font-size:0.82rem;color:#888;margin-top:2px;">
+          ${dateStr} kl ${b.time} · ${b.guests} pers.${tableNum ? ' · Bord ' + tableNum : ''}${b.phone ? ' · ' + b.phone : ''}
+        </div>
+        ${b.message ? `<div style="font-size:0.78rem;color:#aaa;margin-top:2px;font-style:italic;">${b.message}</div>` : ''}
+      </div>
+      <div style="display:flex;gap:8px;flex-shrink:0;">
+        <button onclick="updateBooking('${b.id}','confirmed')" style="background:var(--sage);color:white;border:none;border-radius:8px;padding:8px 16px;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:500;cursor:pointer;">✓ Bekräfta</button>
+        <button onclick="updateBooking('${b.id}','cancelled')" style="background:none;border:1px solid var(--border);border-radius:8px;padding:8px 16px;font-family:'DM Sans',sans-serif;font-size:0.82rem;cursor:pointer;color:#888;">✕ Avboka</button>
+        <button onclick="goToBookingDate('${b.date}')" style="background:none;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:0.82rem;cursor:pointer;color:#888;" title="Visa i kalender">📅</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function goToBookingDate(date) {
+  const dateInput = document.getElementById('bookings-date');
+  if (dateInput) { dateInput.value = date; loadBookings(); }
 }
 
 function renderTableView(date) {
@@ -2245,6 +2299,7 @@ async function updateBooking(id, status) {
   }
   filterBookings();
   renderTableView(document.getElementById('bookings-date')?.value || new Date().toISOString().split('T')[0]);
+  await renderPendingBookings();
   showToast(status === 'confirmed' ? '✓ Bokning bekräftad! Mail skickat.' : '✕ Bokning avbokad');
 }
 
