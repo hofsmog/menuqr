@@ -547,46 +547,62 @@
     <div style="padding:32px;border-top:1px solid rgba(200,151,58,0.15);">
       <div id="booking-form-container">
         <div style="font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--cream);margin-bottom:8px;">Boka bord</div>
-        <div style="font-size:0.82rem;color:rgba(245,240,232,0.4);margin-bottom:24px;">Fyll i dina uppgifter så bekräftar vi din bokning</div>
+        <div style="font-size:0.82rem;color:rgba(245,240,232,0.4);margin-bottom:24px;">Välj datum och antal gäster för att se lediga tider</div>
         <div id="booking-error" style="background:rgba(181,74,42,0.15);border:1px solid rgba(181,74,42,0.3);border-radius:6px;padding:10px 14px;font-size:0.82rem;color:#e07a5f;display:none;margin-bottom:16px;"></div>
-        <div style="display:flex;flex-direction:column;gap:14px;">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+
+        <!-- Steg 1: Datum + gäster -->
+        <div id="booking-step1">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
             <div>
               <div style="font-size:0.72rem;color:rgba(245,240,232,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Datum</div>
-              <input type="date" id="book-date" onchange="onBookingDateChange()" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:11px 14px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;color-scheme:dark;">
+              <input type="date" id="book-date" onchange="onBookingParamsChange()" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:11px 14px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;color-scheme:dark;">
             </div>
             <div>
-              <div style="font-size:0.72rem;color:rgba(245,240,232,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Tid</div>
-              <select id="book-time" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:11px 14px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;">
-                <option value="">Välj datum först</option>
+              <div style="font-size:0.72rem;color:rgba(245,240,232,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Antal gäster</div>
+              <select id="book-guests" onchange="onBookingParamsChange()" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:11px 14px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;">
+                <option value="1">1 person</option><option value="2" selected>2 personer</option><option value="3">3 personer</option>
+                <option value="4">4 personer</option><option value="5">5 personer</option><option value="6">6 personer</option>
+                <option value="7">7 personer</option><option value="8">8 personer</option>
               </select>
             </div>
           </div>
-          <div>
-            <div style="font-size:0.72rem;color:rgba(245,240,232,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Antal gäster</div>
-            <select id="book-guests" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:11px 14px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;">
-              <option value="1">1 person</option><option value="2">2 personer</option><option value="3">3 personer</option>
-              <option value="4">4 personer</option><option value="5">5 personer</option><option value="6">6 personer</option>
-              <option value="7">7 personer</option><option value="8">8+ personer</option>
-            </select>
+
+          <!-- Lediga tider -->
+          <div id="time-slots-container" style="display:none;margin-bottom:20px;">
+            <div style="font-size:0.72rem;color:rgba(245,240,232,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;">Lediga tider</div>
+            <div id="time-slots-grid" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
           </div>
-          <div>
-            <div style="font-size:0.72rem;color:rgba(245,240,232,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Ditt namn</div>
-            <input type="text" id="book-name" placeholder="För- och efternamn" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:11px 14px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;">
+          <div id="time-slots-message" style="font-size:0.85rem;color:rgba(245,240,232,0.4);margin-bottom:16px;display:none;"></div>
+        </div>
+
+        <!-- Steg 2: Kontaktuppgifter (visas när tid är vald) -->
+        <div id="booking-step2" style="display:none;">
+          <div style="background:rgba(200,151,58,0.1);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:12px 16px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <span style="color:var(--gold);font-weight:500;" id="selected-slot-display"></span>
+              <span style="color:rgba(245,240,232,0.4);font-size:0.82rem;" id="selected-guests-display"></span>
+            </div>
+            <button onclick="resetToStep1()" style="background:none;border:none;color:rgba(245,240,232,0.4);cursor:pointer;font-size:0.82rem;text-decoration:underline;">Ändra</button>
           </div>
-          <div>
-            <div style="font-size:0.72rem;color:rgba(245,240,232,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Telefon</div>
-            <input type="tel" id="book-phone" placeholder="07X-XXX XX XX" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:11px 14px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;">
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div>
+              <div style="font-size:0.72rem;color:rgba(245,240,232,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Ditt namn</div>
+              <input type="text" id="book-name" placeholder="För- och efternamn" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:11px 14px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;">
+            </div>
+            <div>
+              <div style="font-size:0.72rem;color:rgba(245,240,232,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Telefon</div>
+              <input type="tel" id="book-phone" placeholder="07X-XXX XX XX" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:11px 14px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;">
+            </div>
+            <div>
+              <div style="font-size:0.72rem;color:rgba(245,240,232,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">E-post (för bekräftelse)</div>
+              <input type="email" id="book-email" placeholder="din@email.se" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:11px 14px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;">
+            </div>
+            <div>
+              <div style="font-size:0.72rem;color:rgba(245,240,232,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Meddelande (valfritt)</div>
+              <textarea id="book-message" placeholder="Allergier, önskemål..." rows="2" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:11px 14px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;resize:none;"></textarea>
+            </div>
+            <button onclick="submitBooking()" id="book-submit-btn" style="background:var(--gold);color:var(--ink);border:none;padding:14px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;cursor:pointer;border-radius:8px;margin-top:4px;">Skicka bokningsförfrågan</button>
           </div>
-          <div>
-            <div style="font-size:0.72rem;color:rgba(245,240,232,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">E-post (för bekräftelse)</div>
-            <input type="email" id="book-email" placeholder="din@email.se" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:11px 14px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;">
-          </div>
-          <div>
-            <div style="font-size:0.72rem;color:rgba(245,240,232,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Meddelande (valfritt)</div>
-            <textarea id="book-message" placeholder="Allergier, önskemål..." rows="2" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:11px 14px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;resize:none;"></textarea>
-          </div>
-          <button onclick="submitBooking()" id="book-submit-btn" style="background:var(--gold);color:var(--ink);border:none;padding:14px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;cursor:pointer;border-radius:8px;margin-top:4px;">Skicka bokningsförfrågan</button>
         </div>
       </div>
       <div id="booking-success" style="display:none;text-align:center;padding:24px 0;">
@@ -1015,17 +1031,73 @@ async function activatePro() {
 }
 
 // ── BOOKINGS GUEST ──
-async function onBookingDateChange() {
+let selectedBookingTime = null;
+
+async function onBookingParamsChange() {
   const date = document.getElementById('book-date').value;
-  const timeEl = document.getElementById('book-time');
+  const guests = parseInt(document.getElementById('book-guests').value);
+  const slotsContainer = document.getElementById('time-slots-container');
+  const slotsGrid = document.getElementById('time-slots-grid');
+  const slotsMsg = document.getElementById('time-slots-message');
+
+  selectedBookingTime = null;
+  document.getElementById('booking-step2').style.display = 'none';
+  slotsContainer.style.display = 'none';
+  slotsMsg.style.display = 'none';
+
   if (!date || !window._guestRestaurantId) return;
-  timeEl.innerHTML = '<option value="">Laddar tider...</option>';
-  const { slots, reason } = await loadAvailableSlots(window._guestRestaurantId, date);
+
+  slotsMsg.style.display = 'block';
+  slotsMsg.textContent = 'Letar efter lediga tider...';
+
+  const { slots, reason } = await loadAvailableSlots(window._guestRestaurantId, date, guests);
+
   if (!slots.length) {
-    timeEl.innerHTML = `<option value="">${reason || 'Inga lediga tider'}</option>`;
+    slotsMsg.textContent = reason || 'Inga lediga tider detta datum.';
     return;
   }
-  timeEl.innerHTML = '<option value="">Välj tid</option>' + slots.map(s => `<option value="${s}">${s}</option>`).join('');
+
+  slotsMsg.style.display = 'none';
+  slotsContainer.style.display = 'block';
+  slotsGrid.innerHTML = slots.map(s => `
+    <button onclick="selectTimeSlot('${s}')" id="slot-${s.replace(':','-')}"
+      style="background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.3);border-radius:8px;padding:10px 16px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;cursor:pointer;transition:all 0.2s;">
+      ${s}
+    </button>`).join('');
+}
+
+function selectTimeSlot(time) {
+  selectedBookingTime = time;
+  // Markera vald tid
+  document.querySelectorAll('#time-slots-grid button').forEach(btn => {
+    btn.style.background = 'rgba(255,255,255,0.05)';
+    btn.style.borderColor = 'rgba(200,151,58,0.3)';
+    btn.style.color = 'var(--cream)';
+  });
+  const btn = document.getElementById(`slot-${time.replace(':','-')}`);
+  if (btn) {
+    btn.style.background = 'var(--gold)';
+    btn.style.borderColor = 'var(--gold)';
+    btn.style.color = 'var(--ink)';
+  }
+  // Visa kontaktformulär
+  const date = document.getElementById('book-date').value;
+  const guests = document.getElementById('book-guests').value;
+  const dateStr = new Date(date).toLocaleDateString('sv-SE', {weekday:'long', month:'long', day:'numeric'});
+  document.getElementById('selected-slot-display').textContent = `${dateStr} kl ${time} · `;
+  document.getElementById('selected-guests-display').textContent = `${guests} ${guests == 1 ? 'person' : 'personer'}`;
+  document.getElementById('booking-step2').style.display = 'block';
+  document.getElementById('booking-step2').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function resetToStep1() {
+  selectedBookingTime = null;
+  document.getElementById('booking-step2').style.display = 'none';
+  document.querySelectorAll('#time-slots-grid button').forEach(btn => {
+    btn.style.background = 'rgba(255,255,255,0.05)';
+    btn.style.borderColor = 'rgba(200,151,58,0.3)';
+    btn.style.color = 'var(--cream)';
+  });
 }
 
 async function submitBooking() {
@@ -1033,7 +1105,7 @@ async function submitBooking() {
   const phone = document.getElementById('book-phone').value.trim();
   const email = document.getElementById('book-email').value.trim();
   const date = document.getElementById('book-date').value;
-  const time = document.getElementById('book-time').value;
+  const time = selectedBookingTime;
   const guests = parseInt(document.getElementById('book-guests').value);
   const message = document.getElementById('book-message').value.trim();
   const errEl = document.getElementById('booking-error');
@@ -1041,26 +1113,25 @@ async function submitBooking() {
   errEl.style.display = 'none';
   if (!name || !phone || !date || !time) {
     errEl.style.display = 'block';
-    errEl.textContent = 'Fyll i namn, telefon, datum och tid';
+    errEl.textContent = 'Fyll i namn och telefon';
     return;
   }
   btn.textContent = 'Skickar...'; btn.disabled = true;
 
-  // Hitta ledigt bord
   const table = await findAvailableTable(window._guestRestaurantId, date, time, guests);
   if (!table) {
     errEl.style.display = 'block';
-    errEl.textContent = 'Tyvärr är det fullbokat vid denna tid. Välj en annan tid.';
+    errEl.textContent = 'Tyvärr hann någon annan boka denna tid. Välj en annan tid.';
     btn.textContent = 'Skicka bokningsförfrågan'; btn.disabled = false;
+    resetToStep1();
+    onBookingParamsChange();
     return;
   }
 
   const { error } = await db.from('bookings').insert([{
     restaurant_id: window._guestRestaurantId,
     table_id: table.id,
-    name, phone, email, date, time,
-    guests,
-    message,
+    name, phone, email, date, time, guests, message,
     status: 'pending'
   }]);
   btn.textContent = 'Skicka bokningsförfrågan'; btn.disabled = false;
@@ -1070,12 +1141,15 @@ async function submitBooking() {
 }
 
 function resetBookingForm() {
+  selectedBookingTime = null;
   document.getElementById('booking-form-container').style.display = 'block';
   document.getElementById('booking-success').style.display = 'none';
+  document.getElementById('booking-step2').style.display = 'none';
+  document.getElementById('time-slots-container').style.display = 'none';
+  document.getElementById('time-slots-message').style.display = 'none';
   document.getElementById('book-name').value = '';
   document.getElementById('book-phone').value = '';
   document.getElementById('book-date').value = '';
-  document.getElementById('book-time').innerHTML = '<option value="">Välj datum först</option>';
   document.getElementById('book-message').value = '';
 }
 
@@ -1343,7 +1417,7 @@ async function saveBookingSettings() {
 }
 
 // ── SMART TIDSLOTS FÖR GÄST ──
-async function loadAvailableSlots(restaurantId, date) {
+async function loadAvailableSlots(restaurantId, date, guests = 1) {
   const dateObj = new Date(date);
   const dayOfWeek = dateObj.getDay(); // 0=sön, 1=mån...
 
@@ -1360,8 +1434,8 @@ async function loadAvailableSlots(restaurantId, date) {
   const duration = settings?.booking_duration || 90;
   const interval = settings?.slot_interval || 30;
 
-  // Hämta bord
-  const { data: tables } = await db.from('restaurant_tables').select('*').eq('restaurant_id', restaurantId).eq('is_active', true);
+  // Hämta bord som rymmer tillräckligt med gäster
+  const { data: tables } = await db.from('restaurant_tables').select('*').eq('restaurant_id', restaurantId).eq('is_active', true).gte('seats', guests);
   if (!tables || !tables.length) return { slots: [], reason: 'Inga bord konfigurerade.' };
 
   // Hämta befintliga bokningar denna dag
