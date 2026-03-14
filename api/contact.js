@@ -15,7 +15,7 @@ module.exports = async function handler(req, res) {
     + '<table style="width:100%;border-collapse:collapse;background:#faf7f2;border-radius:8px;">'
     + '<tr><td style="padding:10px 14px;color:#888;width:35%;">Typ</td><td style="padding:10px 14px;font-weight:600;">' + typeLabel + '</td></tr>'
     + '<tr style="border-top:1px solid #eee;"><td style="padding:10px 14px;color:#888;">Namn</td><td style="padding:10px 14px;font-weight:600;">' + name + '</td></tr>'
-    + '<tr style="border-top:1px solid #eee;"><td style="padding:10px 14px;color:#888;">E-post</td><td style="padding:10px 14px;font-weight:600;"><a href="mailto:' + email + '">' + email + '</a></td></tr>'
+    + '<tr style="border-top:1px solid #eee;"><td style="padding:10px 14px;color:#888;">E-post</td><td style="padding:10px 14px;font-weight:600;">' + email + '</td></tr>'
     + '<tr style="border-top:1px solid #eee;"><td style="padding:10px 14px;color:#888;vertical-align:top;">Meddelande</td><td style="padding:10px 14px;">' + message.replace(/\n/g, '<br>') + '</td></tr>'
     + '</table>'
     + '</div></div></body></html>';
