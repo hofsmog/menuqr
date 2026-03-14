@@ -269,6 +269,10 @@
         <label>Din meny-URL (menuqr.se/...)</label>
         <input type="text" id="setup-slug" placeholder="t.ex. trattoria-bella" style="background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:12px 16px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;">
       </div>
+      <div class="auth-field">
+        <label>Adress</label>
+        <input type="text" id="setup-address" placeholder="t.ex. Storgatan 1, Malmö" style="background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:12px 16px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;">
+      </div>
       <button class="auth-btn" onclick="setupRestaurant()" id="setup-btn">Skapa min meny →</button>
     </div>
   </div>
@@ -313,6 +317,20 @@
     <div class="feature-item"><div class="feature-dot"></div><div class="feature-text">Ingen app behövs</div></div>
     <div class="feature-item"><div class="feature-dot"></div><div class="feature-text">Uppdatera i realtid</div></div>
     <div class="feature-item"><div class="feature-dot"></div><div class="feature-text">Bordsbokning i Pro</div></div>
+  </div>
+
+  <!-- Nearby restaurants -->
+  <div style="background:var(--surface);padding:60px 40px;border-top:1px solid rgba(200,151,58,0.1);">
+    <div style="max-width:900px;margin:0 auto;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;flex-wrap:wrap;gap:16px;">
+        <div>
+          <div style="font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--ink);">Restauranger nära dig</div>
+          <div style="font-size:0.85rem;color:#888;margin-top:4px;" id="nearby-subtitle">Letar efter restauranger...</div>
+        </div>
+        <button onclick="loadNearbyRestaurants()" style="background:none;border:1px solid var(--border);border-radius:8px;padding:8px 16px;font-family:'DM Sans',sans-serif;font-size:0.82rem;cursor:pointer;color:#666;">↻ Uppdatera</button>
+      </div>
+      <div id="nearby-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;"></div>
+    </div>
   </div>
 </div>
 
@@ -708,7 +726,7 @@ async function startup() {
     currentUser = session.user;
     await loadUserRestaurant();
   } else {
-    showView('view-auth');
+    showView('view-home');
   }
 }
 
@@ -814,12 +832,24 @@ async function setupRestaurant() {
   const name = document.getElementById('setup-name').value.trim();
   const description = document.getElementById('setup-desc').value.trim();
   const slug = document.getElementById('setup-slug').value.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  const address = document.getElementById('setup-address').value.trim();
   const errEl = document.getElementById('setup-error');
   const btn = document.getElementById('setup-btn');
   errEl.style.display = 'none';
   if (!name || !slug) { errEl.style.display='block'; errEl.textContent='Fyll i restaurangnamn och URL'; return; }
   btn.textContent = 'Skapar...'; btn.disabled = true;
-  const { data, error } = await db.from('restaurants').insert([{ name, description, slug, user_id: currentUser.id }]).select().single();
+
+  // Geokoda adressen
+  let lat = null, lng = null;
+  if (address) {
+    try {
+      const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`);
+      const geoData = await geoRes.json();
+      if (geoData.length) { lat = parseFloat(geoData[0].lat); lng = parseFloat(geoData[0].lon); }
+    } catch(e) { /* tyst fel */ }
+  }
+
+  const { data, error } = await db.from('restaurants').insert([{ name, description, slug, user_id: currentUser.id, address, lat, lng }]).select().single();
   btn.textContent = 'Skapa min meny →'; btn.disabled = false;
   if (error) { errEl.style.display='block'; errEl.textContent = error.message.includes('unique') ? 'Den URL:en är redan tagen, prova en annan' : error.message; return; }
   restaurantId = data.id;
@@ -836,11 +866,77 @@ async function setupRestaurant() {
   showToast('🎉 Din restaurang är skapad!');
 }
 
+// ── NEARBY RESTAURANTS ──
+async function loadNearbyRestaurants() {
+  const list = document.getElementById('nearby-list');
+  const subtitle = document.getElementById('nearby-subtitle');
+  if (!list) return;
+
+  list.innerHTML = '<div style="color:#888;font-size:0.85rem;grid-column:1/-1;">Letar efter restauranger nära dig...</div>';
+
+  // Hämta alla restauranger med koordinater
+  const { data: restaurants } = await db.from('restaurants').select('id,name,description,slug,is_pro,address,lat,lng');
+  if (!restaurants || !restaurants.length) {
+    list.innerHTML = '<div style="color:#888;font-size:0.85rem;grid-column:1/-1;">Inga restauranger hittades.</div>';
+    return;
+  }
+
+  // Försök hämta användarens position
+  let userLat = null, userLng = null;
+  try {
+    const pos = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 }));
+    userLat = pos.coords.latitude;
+    userLng = pos.coords.longitude;
+  } catch(e) { /* ingen position */ }
+
+  // Beräkna avstånd och sortera
+  function distKm(lat1, lng1, lat2, lng2) {
+    const R = 6371;
+    const dLat = (lat2-lat1) * Math.PI/180;
+    const dLng = (lng2-lng1) * Math.PI/180;
+    const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  }
+
+  let sorted = restaurants.map(r => {
+    const dist = (userLat && r.lat && r.lng) ? distKm(userLat, userLng, r.lat, r.lng) : null;
+    return { ...r, dist };
+  }).sort((a, b) => {
+    // Pro visas överst, sen sorterat på avstånd
+    if (a.is_pro !== b.is_pro) return b.is_pro ? 1 : -1;
+    if (a.dist === null && b.dist === null) return 0;
+    if (a.dist === null) return 1;
+    if (b.dist === null) return -1;
+    return a.dist - b.dist;
+  });
+
+  if (userLat) {
+    subtitle.textContent = `${sorted.length} restauranger hittades`;
+  } else {
+    subtitle.textContent = `${sorted.length} restauranger – tillåt platsåtkomst för avstånd`;
+  }
+
+  list.innerHTML = sorted.map(r => `
+    <div onclick="window.location.href='/${r.slug}'" style="background:white;border:${r.is_pro ? '2px solid var(--gold)' : '1px solid var(--border)'};border-radius:16px;padding:24px;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;"
+      onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.08)'"
+      onmouseout="this.style.transform='';this.style.boxShadow=''">
+      ${r.is_pro ? '<div style="position:absolute;top:12px;right:12px;background:var(--gold);color:var(--ink);font-size:0.65rem;font-weight:600;padding:3px 8px;border-radius:10px;letter-spacing:0.05em;">PRO</div>' : ''}
+      <div style="font-family:\'Playfair Display\',serif;font-size:1.1rem;margin-bottom:6px;padding-right:${r.is_pro ? '40px' : '0'};">${r.name}</div>
+      ${r.description ? `<div style="font-size:0.82rem;color:#888;margin-bottom:10px;line-height:1.5;">${r.description}</div>` : ''}
+      ${r.address ? `<div style="font-size:0.78rem;color:#aaa;margin-bottom:8px;">📍 ${r.address}</div>` : ''}
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
+        <span style="font-size:0.78rem;color:var(--gold);font-weight:500;">Se meny →</span>
+        ${r.dist !== null ? `<span style="font-size:0.78rem;color:#aaa;">${r.dist < 1 ? Math.round(r.dist*1000) + ' m' : r.dist.toFixed(1) + ' km'}</span>` : ''}
+      </div>
+    </div>`).join('');
+}
+
 // ── VIEWS ──
 function showView(id) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
+  if (id === 'view-home') loadNearbyRestaurants();
 }
 
 function previewMenu() { showView('view-menu'); renderGuestMenu(); }
