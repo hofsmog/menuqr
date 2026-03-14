@@ -1405,6 +1405,8 @@ async function submitManualBooking() {
   showToast('✓ Bokning tillagd!');
   loadBookings();
 }
+
+function handleProNav(panel, el) {
   if (!userIsPro) {
     showToast('🔒 Uppgradera till Pro för att använda denna funktion');
     setTimeout(() => startCheckout(), 500);
