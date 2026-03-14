@@ -388,6 +388,7 @@
     <div class="home-nav-links">
       <button class="nav-link" onclick="document.getElementById('customer-section').scrollIntoView({behavior:'smooth'})">Hitta restauranger</button>
       <button class="nav-link" onclick="document.getElementById('restaurant-section').scrollIntoView({behavior:'smooth'})">För restauranger</button>
+      <button class="nav-link" onclick="document.getElementById('contact-section').scrollIntoView({behavior:'smooth'})">Kontakt</button>
       <button class="btn-outline" onclick="showView('view-auth')">Logga in</button>
       <button class="btn-gold" onclick="showView('view-auth')">Kom igång gratis</button>
     </div>
@@ -477,9 +478,39 @@
     </div>
   </div>
 
+  <!-- Kontakt -->
+  <div id="contact-section" style="background:var(--ink);color:var(--cream);padding:80px 48px;">
+    <div style="max-width:600px;margin:0 auto;">
+      <div style="font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;">Kontakt</div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:400;margin-bottom:12px;">Hur kan vi hjälpa dig?</h2>
+      <p style="color:rgba(245,240,232,0.5);margin-bottom:40px;line-height:1.7;">Har du frågor om MenuQR? Hör av dig så återkommer vi inom 1-2 arbetsdagar.</p>
+
+      <div id="contact-success" style="display:none;background:rgba(90,122,90,0.2);border:1px solid rgba(90,122,90,0.4);border-radius:12px;padding:24px;text-align:center;margin-bottom:24px;">
+        <div style="font-size:1.5rem;margin-bottom:8px;">✓</div>
+        <div style="font-weight:500;">Meddelande skickat!</div>
+        <div style="font-size:0.85rem;color:rgba(245,240,232,0.5);margin-top:4px;">Vi återkommer inom 1-2 arbetsdagar.</div>
+      </div>
+
+      <div id="contact-form">
+        <div style="display:flex;gap:12px;margin-bottom:16px;">
+          <button id="contact-type-customer" onclick="setContactType('customer')" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(200,151,58,0.4);background:rgba(200,151,58,0.15);color:var(--gold);font-family:'DM Sans',sans-serif;font-size:0.85rem;cursor:pointer;">👤 Jag är kund</button>
+          <button id="contact-type-restaurant" onclick="setContactType('restaurant')" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(245,240,232,0.1);background:transparent;color:rgba(245,240,232,0.5);font-family:'DM Sans',sans-serif;font-size:0.85rem;cursor:pointer;">🍽 Jag är restaurang</button>
+        </div>
+        <input type="hidden" id="contact-type-value" value="customer">
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <input type="text" id="contact-name" placeholder="Ditt namn" style="background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:12px 16px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;">
+          <input type="email" id="contact-email" placeholder="Din e-post" style="background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:12px 16px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;">
+          <textarea id="contact-message" placeholder="Ditt meddelande..." rows="4" style="background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.2);border-radius:8px;padding:12px 16px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;resize:none;"></textarea>
+          <button onclick="submitContact()" id="contact-btn" style="background:var(--gold);color:var(--ink);border:none;padding:14px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;cursor:pointer;border-radius:8px;">Skicka meddelande</button>
+          <div id="contact-error" style="color:#e07a5f;font-size:0.82rem;display:none;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Footer -->
   <div style="background:var(--ink);color:rgba(245,240,232,0.3);padding:24px 48px;text-align:center;font-size:0.78rem;border-top:1px solid rgba(200,151,58,0.1);">
-    © 2026 MenuQR · <span style="cursor:pointer;color:var(--gold);" onclick="showView('view-auth')">Logga in</span>
+    © 2026 MenuQR · <span style="cursor:pointer;color:var(--gold);" onclick="showView('view-auth')">Logga in</span> · <span style="cursor:pointer;color:rgba(245,240,232,0.3);" onclick="document.getElementById('contact-section').scrollIntoView({behavior:'smooth'})">Kontakt</span>
   </div>
 </div>
 
@@ -2691,6 +2722,61 @@ function showToast(msg, onClick) {
   if (onClick) t.textContent = msg + ' →';
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+// ── KONTAKTFORMULÄR ──
+function setContactType(type) {
+  document.getElementById('contact-type-value').value = type;
+  const custBtn = document.getElementById('contact-type-customer');
+  const restBtn = document.getElementById('contact-type-restaurant');
+  if (type === 'customer') {
+    custBtn.style.background = 'rgba(200,151,58,0.15)';
+    custBtn.style.borderColor = 'rgba(200,151,58,0.4)';
+    custBtn.style.color = 'var(--gold)';
+    restBtn.style.background = 'transparent';
+    restBtn.style.borderColor = 'rgba(245,240,232,0.1)';
+    restBtn.style.color = 'rgba(245,240,232,0.5)';
+  } else {
+    restBtn.style.background = 'rgba(200,151,58,0.15)';
+    restBtn.style.borderColor = 'rgba(200,151,58,0.4)';
+    restBtn.style.color = 'var(--gold)';
+    custBtn.style.background = 'transparent';
+    custBtn.style.borderColor = 'rgba(245,240,232,0.1)';
+    custBtn.style.color = 'rgba(245,240,232,0.5)';
+  }
+}
+
+async function submitContact() {
+  const name = document.getElementById('contact-name').value.trim();
+  const email = document.getElementById('contact-email').value.trim();
+  const message = document.getElementById('contact-message').value.trim();
+  const type = document.getElementById('contact-type-value').value;
+  const btn = document.getElementById('contact-btn');
+  const errEl = document.getElementById('contact-error');
+  errEl.style.display = 'none';
+
+  if (!name || !email || !message) {
+    errEl.style.display = 'block';
+    errEl.textContent = 'Fyll i alla fält';
+    return;
+  }
+
+  btn.textContent = 'Skickar...'; btn.disabled = true;
+  try {
+    const res = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, message, type })
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'Okänt fel');
+    document.getElementById('contact-form').style.display = 'none';
+    document.getElementById('contact-success').style.display = 'block';
+  } catch(e) {
+    errEl.style.display = 'block';
+    errEl.textContent = 'Kunde inte skicka: ' + e.message;
+    btn.textContent = 'Skicka meddelande'; btn.disabled = false;
+  }
 }
 
 startup();
