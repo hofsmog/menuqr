@@ -700,6 +700,7 @@
   <div class="menu-hero">
     <div class="menu-restaurant-name" id="guest-restaurant-name">Laddar...</div>
     <div class="menu-restaurant-desc" id="guest-restaurant-desc"></div>
+    <div id="guest-restaurant-address" style="font-size:0.82rem;color:rgba(200,151,58,0.7);margin-top:6px;display:none;">📍 <span></span></div>
   </div>
   <div class="menu-cats-scroll" id="guest-cats">
     <button class="menu-cat-btn active" onclick="filterGuestCat('alla',this)">Alla</button>
@@ -879,6 +880,8 @@ async function showGuestMenuBySlug(slug) {
   }
   document.getElementById('guest-restaurant-name').textContent = data.name;
   document.getElementById('guest-restaurant-desc').textContent = data.description || '';
+  const addrEl = document.getElementById('guest-restaurant-address');
+  if (addrEl) { if (data.address) { addrEl.style.display='block'; addrEl.querySelector('span').textContent = data.address; } else { addrEl.style.display='none'; } }
   // Dölj logga om Pro
   const footer = document.getElementById('guest-menu-footer');
   if (footer) footer.style.display = data.is_pro ? 'none' : 'block';
@@ -910,6 +913,8 @@ async function loadUserRestaurant() {
   document.getElementById('qr-url-display').textContent = 'menuqr.se/' + data.slug;
   document.getElementById('guest-restaurant-name').textContent = data.name;
   document.getElementById('guest-restaurant-desc').textContent = data.description || '';
+  const addrEl2 = document.getElementById('guest-restaurant-address');
+  if (addrEl2) { if (data.address) { addrEl2.style.display='block'; addrEl2.querySelector('span').textContent = data.address; } else { addrEl2.style.display='none'; } }
   updateProUI(data.is_pro);
   await loadMenuItems();
   showView('view-admin');
@@ -1073,8 +1078,8 @@ async function loadNearbyRestaurants() {
       onmouseout="this.style.transform='';this.style.boxShadow=''">
       ${r.is_pro ? '<div style="position:absolute;top:12px;right:12px;background:var(--gold);color:var(--ink);font-size:0.65rem;font-weight:600;padding:3px 8px;border-radius:10px;letter-spacing:0.05em;">PRO</div>' : ''}
       <div style="font-family:\'Playfair Display\',serif;font-size:1.1rem;margin-bottom:6px;padding-right:${r.is_pro ? '40px' : '0'};">${r.name}</div>
-      ${r.description ? `<div style="font-size:0.82rem;color:#888;margin-bottom:10px;line-height:1.5;">${r.description}</div>` : ''}
-      ${r.address ? `<div style="font-size:0.78rem;color:#aaa;margin-bottom:8px;">📍 ${r.address}</div>` : ''}
+      ${r.description ? `<div style="font-size:0.82rem;color:#888;margin-bottom:8px;line-height:1.5;">${r.description}</div>` : ''}
+      ${r.address ? `<div style="font-size:0.82rem;color:var(--gold);margin-bottom:10px;font-weight:500;">📍 ${r.address}</div>` : ''}
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
         <span style="font-size:0.78rem;color:var(--gold);font-weight:500;">Se meny →</span>
         ${r.dist !== null ? `<span style="font-size:0.78rem;color:#aaa;">${r.dist < 1 ? Math.round(r.dist*1000) + ' m' : r.dist.toFixed(1) + ' km'}</span>` : ''}
