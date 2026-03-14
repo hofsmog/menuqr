@@ -957,20 +957,27 @@ async function startup() {
     showToast('Betalning avbruten.');
   }
 
-  // Kolla om URL:en har en slug, t.ex. menuqr.se/hofsmog
+  // Kolla session FÖRST – inloggad användare ska alltid till admin
+  const { data: { session } } = await db.auth.getSession();
+  if (session) {
+    currentUser = session.user;
+    // Rensa slug från URL om inloggad (t.ex. menuqr.se/hofsmog → menuqr.se)
+    const path = window.location.pathname.replace('/', '').trim();
+    if (path && path !== 'index.html') {
+      window.history.replaceState({}, '', '/');
+    }
+    await loadUserRestaurant();
+    return;
+  }
+
+  // Ej inloggad – kolla om URL:en har en slug (gästmeny)
   const path = window.location.pathname.replace('/', '').trim();
   if (path && path !== 'index.html') {
     await showGuestMenuBySlug(path);
     return;
   }
 
-  const { data: { session } } = await db.auth.getSession();
-  if (session) {
-    currentUser = session.user;
-    await loadUserRestaurant();
-  } else {
-    showView('view-home');
-  }
+  showView('view-home');
 }
 
 async function showGuestMenuBySlug(slug) {
