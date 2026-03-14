@@ -957,16 +957,30 @@ async function startup() {
     showToast('Betalning avbruten.');
   }
 
+  // Kolla om man kom från bokningsmail
+  const bookingDate = params.get('booking_date');
+
   // Kolla session FÖRST – inloggad användare ska alltid till admin
   const { data: { session } } = await db.auth.getSession();
   if (session) {
     currentUser = session.user;
-    // Rensa slug från URL om inloggad (t.ex. menuqr.se/hofsmog → menuqr.se)
     const path = window.location.pathname.replace('/', '').trim();
     if (path && path !== 'index.html') {
       window.history.replaceState({}, '', '/');
     }
     await loadUserRestaurant();
+    // Om man kom från bokningsmail – gå direkt till bokningsdatumet
+    if (bookingDate) {
+      window.history.replaceState({}, '', '/');
+      setTimeout(() => {
+        const navEl = document.getElementById('nav-bookings');
+        handleProNav('panel-bookings', navEl);
+        setTimeout(() => {
+          const dateInput = document.getElementById('bookings-date');
+          if (dateInput) { dateInput.value = bookingDate; loadBookings(); }
+        }, 300);
+      }, 600);
+    }
     return;
   }
 
@@ -2515,7 +2529,12 @@ async function checkPendingBookings() {
   // Visa toast om nya bokningar kommit in (inte vid första laddning)
   if (lastKnownPendingCount >= 0 && count > lastKnownPendingCount) {
     const newCount = count - lastKnownPendingCount;
-    showToast(`🔔 ${newCount} ny${newCount > 1 ? 'a' : ''} bokningsförfrågan!`);
+    showToast(`🔔 ${newCount} ny${newCount > 1 ? 'a' : ''} bokningsförfrågan!`, () => {
+      const navEl = document.getElementById('nav-bookings');
+      handleProNav('panel-bookings', navEl);
+      // Navigera till idag
+      setTimeout(() => setBookingDateToday(), 100);
+    });
   }
   lastKnownPendingCount = count;
 }
@@ -2609,10 +2628,14 @@ async function loadStats() {
 }
 
 // ── TOAST ──
-function showToast(msg) {
+function showToast(msg, onClick) {
   const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
+  t.textContent = msg;
+  t.style.cursor = onClick ? 'pointer' : 'default';
+  t.onclick = onClick || null;
+  if (onClick) t.textContent = msg + ' →';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 4000);
 }
 
 startup();
