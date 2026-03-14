@@ -324,7 +324,7 @@
       <div class="sidebar-item active" onclick="switchPanel('panel-overview',this)"><span class="sidebar-icon">◈</span> Översikt</div>
       <div class="sidebar-item" onclick="switchPanel('panel-menu',this)"><span class="sidebar-icon">◉</span> Redigera meny</div>
       <div class="sidebar-item" onclick="switchPanel('panel-qr',this)"><span class="sidebar-icon">◫</span> QR-kod</div>
-      <div class="sidebar-item" id="nav-bookings" onclick="handleProNav('panel-bookings',this)"><span class="sidebar-icon">◷</span> Bokningar <span id="nav-bookings-lock" style="font-size:0.7rem;opacity:0.5;margin-left:4px;">🔒</span></div>
+      <div class="sidebar-item" id="nav-bookings" onclick="handleProNav('panel-bookings',this)"><span class="sidebar-icon">◷</span> Bokningar <span id="nav-bookings-lock" style="font-size:0.7rem;opacity:0.5;margin-left:4px;">🔒</span><span id="bookings-badge" style="display:none;background:var(--rust);color:white;font-size:0.65rem;font-weight:600;padding:2px 6px;border-radius:10px;margin-left:auto;">0</span></div>
       <div class="sidebar-item" id="nav-bsettings" onclick="handleProNav('panel-booking-settings',this)"><span class="sidebar-icon">⚙</span> Bokningsinst. <span id="nav-bsettings-lock" style="font-size:0.7rem;opacity:0.5;margin-left:4px;">🔒</span></div>
       <div class="sidebar-item" id="nav-stats" onclick="handleProNav('panel-stats',this)"><span class="sidebar-icon">◎</span> Statistik <span id="nav-stats-lock" style="font-size:0.7rem;opacity:0.5;margin-left:4px;">🔒</span></div>
       <div class="sidebar-item" onclick="previewMenu()"><span class="sidebar-icon">◌</span> Förhandsgranska</div>
@@ -1023,6 +1023,8 @@ function updateProUI(isPro) {
     // Uppdatera stat-card för bokningar
     const statBookingsChange = document.querySelector('.stat-card:nth-child(3) .stat-change');
     if (statBookingsChange) { statBookingsChange.textContent = 'Bokningar idag'; statBookingsChange.style.color = 'var(--sage)'; }
+    // Starta polling för nya bokningar
+    startBookingPolling();
   } else {
     planName.innerHTML = '✦ Gratis plan';
     planName.style.color = 'var(--gold)';
@@ -1418,23 +1420,6 @@ function handleProNav(panel, el) {
   else switchPanel(panel, el);
 }
 
-async function loadBookings() {
-  if (!restaurantId) return;
-  // Ladda bord för att visa bordsnummer
-  const { data: tables } = await db.from('restaurant_tables').select('*').eq('restaurant_id', restaurantId);
-  restaurantTables = tables || [];
-  const { data, error } = await db.from('bookings')
-    .select('*')
-    .eq('restaurant_id', restaurantId)
-    .order('date', { ascending: true })
-    .order('time', { ascending: true });
-  if (error) { document.getElementById('bookings-list').innerHTML = '<p style="color:var(--rust);padding:20px">Fel vid hämtning av bokningar.</p>'; return; }
-  allBookings = data || [];
-  renderBookings(allBookings);
-  const pending = allBookings.filter(b => b.status === 'pending').length;
-  document.getElementById('bookings-subtitle').textContent = `${allBookings.length} bokningar totalt · ${pending} väntar på bekräftelse`;
-}
-
 async function updateBooking(id, status) {
   const { error } = await db.from('bookings').update({ status }).eq('id', id);
   if (error) { showToast('Fel vid uppdatering'); return; }
@@ -1727,6 +1712,36 @@ async function findAvailableTable(restaurantId, date, time, guests) {
 }
 
       
+// ── BOKNINGSNOTIFIKATIONER ──
+let lastKnownPendingCount = -1;
+let bookingPollingInterval = null;
+
+async function checkPendingBookings() {
+  if (!restaurantId || !userIsPro) return;
+  const { data } = await db.from('bookings')
+    .select('id')
+    .eq('restaurant_id', restaurantId)
+    .eq('status', 'pending');
+  const count = data?.length || 0;
+  const badge = document.getElementById('bookings-badge');
+  if (badge) {
+    badge.style.display = count > 0 ? 'inline' : 'none';
+    badge.textContent = count;
+  }
+  // Visa toast om nya bokningar kommit in (inte vid första laddning)
+  if (lastKnownPendingCount >= 0 && count > lastKnownPendingCount) {
+    const newCount = count - lastKnownPendingCount;
+    showToast(`🔔 ${newCount} ny${newCount > 1 ? 'a' : ''} bokningsförfrågan!`);
+  }
+  lastKnownPendingCount = count;
+}
+
+function startBookingPolling() {
+  checkPendingBookings();
+  if (bookingPollingInterval) clearInterval(bookingPollingInterval);
+  bookingPollingInterval = setInterval(checkPendingBookings, 30000);
+}
+
 async function trackPageView(restaurantId) {
   try {
     await db.from('page_views').insert([{ restaurant_id: restaurantId }]);
