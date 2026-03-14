@@ -1332,7 +1332,7 @@ async function saveBookingSettings() {
   });
   if (tablesData.length) {
     const { error: tablesError } = await db.from('restaurant_tables').insert(tablesData);
-    if (tablesError) { showToast('Fel vid sparande av bord'); return; }
+    if (tablesError) { showToast('Fel vid sparande av bord: ' + tablesError.message); return; }
   }
 
   showToast('✓ Inställningar sparade!');
