@@ -55,36 +55,46 @@
   .setup-form { display: flex; flex-direction: column; gap: 16px; }
 
   /* ── HOME ── */
-  #view-home { background: var(--ink); color: var(--cream); flex-direction: column; }
+  /* ── HOME ── */
+  #view-home { background: var(--cream); color: var(--ink); flex-direction: column; }
   #view-home.active { display: flex; }
-  .home-nav { padding: 28px 48px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(200,151,58,0.2); }
-  .logo { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--gold); }
-  .logo span { color: var(--cream); font-style: italic; }
-  .btn-gold { background: var(--gold); color: var(--ink); border: none; padding: 12px 28px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
+  .home-nav { padding: 20px 48px; display: flex; justify-content: space-between; align-items: center; background: white; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  .logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--gold); cursor: pointer; }
+  .logo span { color: var(--ink); font-style: italic; }
+  .home-nav-links { display: flex; align-items: center; gap: 32px; }
+  .nav-link { font-size: 0.85rem; color: #666; cursor: pointer; transition: color 0.2s; background: none; border: none; font-family: 'DM Sans', sans-serif; }
+  .nav-link:hover { color: var(--ink); }
+  .btn-gold { background: var(--gold); color: var(--ink); border: none; padding: 11px 24px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: background 0.2s; border-radius: 8px; }
   .btn-gold:hover { background: var(--gold-light); }
-  .btn-outline { background: transparent; border: 1px solid rgba(200,151,58,0.4); color: var(--cream); padding: 12px 28px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+  .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--ink); padding: 11px 24px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; border-radius: 8px; }
   .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
-  .home-hero { flex: 1; display: grid; grid-template-columns: 1fr 1fr; }
-  .hero-left { padding: 80px 48px; display: flex; flex-direction: column; justify-content: center; border-right: 1px solid rgba(200,151,58,0.15); }
-  .hero-tag { font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 24px; }
-  .hero-title { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem,4vw,3.8rem); line-height: 1.1; margin-bottom: 24px; font-weight: 400; }
-  .hero-title em { color: var(--gold); font-style: italic; }
-  .hero-sub { font-size: 1.05rem; font-weight: 300; line-height: 1.7; color: rgba(245,240,232,0.65); max-width: 420px; margin-bottom: 48px; }
-  .hero-actions { display: flex; gap: 16px; align-items: center; }
-  .hero-right { padding: 60px 48px; display: flex; align-items: center; justify-content: center; }
-  .mock-phone { width: 240px; background: #0d0d0d; border-radius: 36px; border: 2px solid rgba(200,151,58,0.3); padding: 20px 16px; box-shadow: 0 40px 80px rgba(0,0,0,0.5); }
-  .phone-notch { width: 60px; height: 6px; background: #1a1a1a; border-radius: 3px; margin: 0 auto 16px; }
-  .phone-header { background: var(--ink); border-radius: 12px 12px 0 0; padding: 12px; text-align: center; border-bottom: 1px solid rgba(200,151,58,0.2); }
-  .phone-restaurant { font-family: 'Playfair Display', serif; font-size: 0.9rem; color: var(--gold); }
-  .phone-subtitle { font-size: 0.6rem; color: rgba(245,240,232,0.4); margin-top: 2px; }
-  .phone-items { padding: 8px; background: #111; border-radius: 0 0 12px 12px; }
-  .phone-item { display: flex; justify-content: space-between; padding: 8px; border-radius: 8px; margin-bottom: 4px; background: rgba(255,255,255,0.03); }
-  .phone-item-name { font-size: 0.6rem; color: var(--cream); }
-  .phone-item-price { font-size: 0.65rem; color: var(--gold); font-weight: 500; }
-  .features-bar { padding: 24px 48px; border-top: 1px solid rgba(200,151,58,0.15); display: flex; gap: 40px; flex-wrap: wrap; }
-  .feature-item { display: flex; align-items: center; gap: 10px; }
-  .feature-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
-  .feature-text { font-size: 0.8rem; color: rgba(245,240,232,0.5); }
+
+  /* Kundsektion */
+  .customer-hero { background: var(--ink); color: var(--cream); padding: 80px 48px 60px; text-align: center; }
+  .customer-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem,4vw,3.2rem); font-weight: 400; margin-bottom: 16px; }
+  .customer-hero h1 em { color: var(--gold); font-style: italic; }
+  .customer-hero p { font-size: 1rem; color: rgba(245,240,232,0.6); max-width: 500px; margin: 0 auto 40px; line-height: 1.7; }
+  .search-bar { display: flex; gap: 0; max-width: 520px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+  .search-bar input { flex: 1; border: none; padding: 16px 20px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; outline: none; color: var(--ink); }
+  .search-bar button { background: var(--gold); border: none; padding: 16px 24px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; color: var(--ink); white-space: nowrap; }
+  .search-bar button:hover { background: var(--gold-light); }
+
+  /* Restaurangsektion */
+  .restaurant-hero { background: var(--surface); padding: 80px 48px; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; border-top: 1px solid var(--border); }
+  .mock-phone { width: 220px; background: #0d0d0d; border-radius: 32px; border: 2px solid rgba(200,151,58,0.3); padding: 18px 14px; box-shadow: 0 40px 80px rgba(0,0,0,0.15); margin: 0 auto; }
+  .phone-notch { width: 50px; height: 5px; background: #1a1a1a; border-radius: 3px; margin: 0 auto 14px; }
+  .phone-header { background: var(--ink); border-radius: 10px 10px 0 0; padding: 10px; text-align: center; border-bottom: 1px solid rgba(200,151,58,0.2); }
+  .phone-restaurant { font-family: 'Playfair Display', serif; font-size: 0.85rem; color: var(--gold); }
+  .phone-subtitle { font-size: 0.55rem; color: rgba(245,240,232,0.4); margin-top: 2px; }
+  .phone-items { padding: 8px; background: #111; border-radius: 0 0 10px 10px; }
+  .phone-item { display: flex; justify-content: space-between; padding: 7px 8px; border-radius: 6px; margin-bottom: 3px; background: rgba(255,255,255,0.03); }
+  .phone-item-name { font-size: 0.55rem; color: var(--cream); }
+  .phone-item-price { font-size: 0.6rem; color: var(--gold); font-weight: 500; }
+  .features-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 32px; }
+  .feature-item { display: flex; align-items: flex-start; gap: 12px; padding: 16px; background: white; border-radius: 10px; border: 1px solid var(--border); }
+  .feature-dot { width: 32px; height: 32px; border-radius: 8px; background: rgba(200,151,58,0.1); display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+  .feature-text { font-size: 0.82rem; font-weight: 500; color: var(--ink); }
+  .feature-desc { font-size: 0.75rem; color: #888; margin-top: 2px; line-height: 1.4; }
 
   /* ── ADMIN ── */
   #view-admin { background: var(--surface); }
@@ -280,24 +290,69 @@
 
 <!-- HOME -->
 <div id="view-home" class="view">
+  <!-- Nav -->
   <nav class="home-nav">
-    <div class="logo">Menu<span>QR</span></div>
-    <div style="display:flex;gap:16px;align-items:center">
-      <button class="btn-outline" onclick="showView('view-menu-demo')">Se demo</button>
-      <button class="btn-gold" onclick="showView('view-auth')">Logga in / Registrera</button>
+    <div class="logo" onclick="document.getElementById('customer-section').scrollIntoView({behavior:'smooth'})">Menu<span>QR</span></div>
+    <div class="home-nav-links">
+      <button class="nav-link" onclick="document.getElementById('customer-section').scrollIntoView({behavior:'smooth'})">Hitta restauranger</button>
+      <button class="nav-link" onclick="document.getElementById('restaurant-section').scrollIntoView({behavior:'smooth'})">För restauranger</button>
+      <button class="btn-outline" onclick="showView('view-auth')">Logga in</button>
+      <button class="btn-gold" onclick="showView('view-auth')">Kom igång gratis</button>
     </div>
   </nav>
-  <div class="home-hero">
-    <div class="hero-left">
-      <div class="hero-tag">✦ Digital meny för restauranger</div>
-      <h1 class="hero-title">Din meny.<br><em>Alltid uppdaterad.</em><br>Alltid tillgänglig.</h1>
-      <p class="hero-sub">Skapa en vacker digital meny på minuter. Gästerna scannar QR-koden – och ser alltid det senaste. Inga appar, inga utskrifter.</p>
-      <div class="hero-actions">
-        <button class="btn-gold" onclick="showView('view-auth')">Skapa gratis konto</button>
-        <button class="btn-outline" onclick="showView('view-menu-demo')">Se demo →</button>
+
+  <!-- Kundsektion -->
+  <div id="customer-section" class="customer-hero">
+    <div style="font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;">Hitta & boka bord</div>
+    <h1>Hitta restauranger<br><em>nära dig</em></h1>
+    <p>Bläddra bland restauranger, se menyer och boka bord direkt – utan app.</p>
+    <div class="search-bar">
+      <input type="text" id="restaurant-search" placeholder="Sök restaurang eller stad..." onkeydown="if(event.key==='Enter') filterNearbyRestaurants()">
+      <button onclick="filterNearbyRestaurants()">Sök →</button>
+    </div>
+  </div>
+
+  <!-- Restauranglista -->
+  <div style="background:white;padding:48px;">
+    <div style="max-width:960px;margin:0 auto;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+        <div id="nearby-subtitle" style="font-size:0.88rem;color:#888;">Letar efter restauranger...</div>
+        <button onclick="loadNearbyRestaurants()" style="background:none;border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-family:'DM Sans',sans-serif;font-size:0.8rem;cursor:pointer;color:#666;">↻ Uppdatera position</button>
+      </div>
+      <div id="nearby-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;"></div>
+    </div>
+  </div>
+
+  <!-- Restaurangsektion -->
+  <div id="restaurant-section" class="restaurant-hero">
+    <div>
+      <div style="font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;">För restauranger</div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:clamp(2rem,3vw,2.8rem);font-weight:400;line-height:1.2;margin-bottom:16px;">Din meny.<br><em style="color:var(--gold);font-style:italic;">Alltid uppdaterad.</em></h2>
+      <p style="font-size:0.95rem;color:#666;line-height:1.7;margin-bottom:36px;max-width:440px;">Skapa en vacker digital meny på minuter. Gästerna scannar QR-koden och ser alltid det senaste. Inga appar, inga utskrifter.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:48px;">
+        <button class="btn-gold" onclick="showView('view-auth')" style="border-radius:8px;">Skapa gratis konto →</button>
+        <button class="btn-outline" onclick="showView('view-menu-demo')" style="border-radius:8px;">Se demo</button>
+      </div>
+      <div class="features-bar">
+        <div class="feature-item">
+          <div class="feature-dot">📋</div>
+          <div><div class="feature-text">Digital meny</div><div class="feature-desc">Uppdatera i realtid, inga utskrifter</div></div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-dot">📅</div>
+          <div><div class="feature-text">Bordsbokning</div><div class="feature-desc">Smart bokningssystem utan dubbelbookning</div></div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-dot">📊</div>
+          <div><div class="feature-text">Statistik</div><div class="feature-desc">Se hur många som besöker din meny</div></div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-dot">✉️</div>
+          <div><div class="feature-text">Bokningsmail</div><div class="feature-desc">Automatiska bekräftelser till gästerna</div></div>
+        </div>
       </div>
     </div>
-    <div class="hero-right">
+    <div style="text-align:center;">
       <div class="mock-phone">
         <div class="phone-notch"></div>
         <div class="phone-header">
@@ -310,27 +365,29 @@
           <div class="phone-item"><div class="phone-item-name">Tiramisù della casa</div><div class="phone-item-price">95 kr</div></div>
         </div>
       </div>
+      <!-- Pris -->
+      <div style="background:var(--ink);color:var(--cream);border-radius:16px;padding:28px;margin-top:32px;text-align:left;">
+        <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(245,240,232,0.4);margin-bottom:12px;">Priser</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div style="padding:16px;border:1px solid rgba(200,151,58,0.2);border-radius:10px;">
+            <div style="font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:4px;">Gratis</div>
+            <div style="font-size:1.4rem;font-weight:500;color:var(--cream);margin-bottom:8px;">0 kr</div>
+            <div style="font-size:0.75rem;color:rgba(245,240,232,0.4);line-height:1.6;">Digital meny<br>QR-kod<br>Obegränsade rätter</div>
+          </div>
+          <div style="padding:16px;border:2px solid var(--gold);border-radius:10px;position:relative;">
+            <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--ink);font-size:0.65rem;font-weight:600;padding:3px 10px;border-radius:10px;white-space:nowrap;">POPULÄRAST</div>
+            <div style="font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:4px;color:var(--gold);">Pro</div>
+            <div style="font-size:1.4rem;font-weight:500;color:var(--cream);margin-bottom:8px;">199 kr<span style="font-size:0.7rem;color:rgba(245,240,232,0.4);">/mån</span></div>
+            <div style="font-size:0.75rem;color:rgba(245,240,232,0.4);line-height:1.6;">Bordsbokning<br>Statistik<br>Bokningsmail</div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="features-bar">
-    <div class="feature-item"><div class="feature-dot"></div><div class="feature-text">Gratis att starta</div></div>
-    <div class="feature-item"><div class="feature-dot"></div><div class="feature-text">Ingen app behövs</div></div>
-    <div class="feature-item"><div class="feature-dot"></div><div class="feature-text">Uppdatera i realtid</div></div>
-    <div class="feature-item"><div class="feature-dot"></div><div class="feature-text">Bordsbokning i Pro</div></div>
   </div>
 
-  <!-- Nearby restaurants -->
-  <div style="background:var(--surface);padding:60px 40px;border-top:1px solid rgba(200,151,58,0.1);">
-    <div style="max-width:900px;margin:0 auto;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;flex-wrap:wrap;gap:16px;">
-        <div>
-          <div style="font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--ink);">Restauranger nära dig</div>
-          <div style="font-size:0.85rem;color:#888;margin-top:4px;" id="nearby-subtitle">Letar efter restauranger...</div>
-        </div>
-        <button onclick="loadNearbyRestaurants()" style="background:none;border:1px solid var(--border);border-radius:8px;padding:8px 16px;font-family:'DM Sans',sans-serif;font-size:0.82rem;cursor:pointer;color:#666;">↻ Uppdatera</button>
-      </div>
-      <div id="nearby-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;"></div>
-    </div>
+  <!-- Footer -->
+  <div style="background:var(--ink);color:rgba(245,240,232,0.3);padding:24px 48px;text-align:center;font-size:0.78rem;border-top:1px solid rgba(200,151,58,0.1);">
+    © 2026 MenuQR · <span style="cursor:pointer;color:var(--gold);" onclick="showView('view-auth')">Logga in</span>
   </div>
 </div>
 
@@ -866,6 +923,22 @@ async function setupRestaurant() {
   showToast('🎉 Din restaurang är skapad!');
 }
 
+function filterNearbyRestaurants() {
+  const query = document.getElementById('restaurant-search')?.value.toLowerCase().trim() || '';
+  const list = document.getElementById('nearby-list');
+  if (!list) return;
+  const cards = list.querySelectorAll('[data-name]');
+  let visible = 0;
+  cards.forEach(card => {
+    const name = card.dataset.name.toLowerCase();
+    const addr = card.dataset.address.toLowerCase();
+    const match = !query || name.includes(query) || addr.includes(query);
+    card.style.display = match ? '' : 'none';
+    if (match) visible++;
+  });
+  document.getElementById('nearby-subtitle').textContent = `${visible} restauranger visas`;
+}
+
 // ── NEARBY RESTAURANTS ──
 async function loadNearbyRestaurants() {
   const list = document.getElementById('nearby-list');
@@ -917,7 +990,7 @@ async function loadNearbyRestaurants() {
   }
 
   list.innerHTML = sorted.map(r => `
-    <div onclick="window.location.href='/${r.slug}'" style="background:white;border:${r.is_pro ? '2px solid var(--gold)' : '1px solid var(--border)'};border-radius:16px;padding:24px;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;"
+    <div data-name="${r.name}" data-address="${r.address||''}" onclick="window.location.href='/${r.slug}'" style="background:white;border:${r.is_pro ? '2px solid var(--gold)' : '1px solid var(--border)'};border-radius:16px;padding:24px;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;"
       onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.08)'"
       onmouseout="this.style.transform='';this.style.boxShadow=''">
       ${r.is_pro ? '<div style="position:absolute;top:12px;right:12px;background:var(--gold);color:var(--ink);font-size:0.65rem;font-weight:600;padding:3px 8px;border-radius:10px;letter-spacing:0.05em;">PRO</div>' : ''}
