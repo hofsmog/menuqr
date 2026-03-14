@@ -879,8 +879,6 @@ async function showGuestMenuBySlug(slug) {
   }
   document.getElementById('guest-restaurant-name').textContent = data.name;
   document.getElementById('guest-restaurant-desc').textContent = data.description || '';
-  // Dölj "tillbaka"-knappen för gäster – visa bara menyn
-  document.querySelector('.menu-hero button').style.display = 'none';
   // Dölj logga om Pro
   const footer = document.getElementById('guest-menu-footer');
   if (footer) footer.style.display = data.is_pro ? 'none' : 'block';
