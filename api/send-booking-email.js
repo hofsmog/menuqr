@@ -48,7 +48,7 @@ export default async function handler(req, res) {
           </div>
           <div style="padding:36px;">
             <p style="color:#444;font-size:0.95rem;line-height:1.7;margin:0 0 24px;">
-              Du har fått en ny bokningsförfrågan på <strong>${restaurantName}</strong>. Logga in på MenuQR för att bekräfta eller avboka.
+              Du har fått en ny bokningsförfrågan på <strong>${restaurantName}</strong>.
             </p>
             <div style="background:#faf7f2;border-radius:12px;padding:24px;margin-bottom:24px;">
               <table style="width:100%;border-collapse:collapse;">
@@ -56,10 +56,12 @@ export default async function handler(req, res) {
                 <tr style="border-top:1px solid #eee;"><td style="padding:8px 0;color:#888;font-size:0.85rem;">Datum</td><td style="padding:8px 0;font-weight:600;font-size:0.9rem;">${dateFormatted}</td></tr>
                 <tr style="border-top:1px solid #eee;"><td style="padding:8px 0;color:#888;font-size:0.85rem;">Tid</td><td style="padding:8px 0;font-weight:600;font-size:0.9rem;">${time}</td></tr>
                 <tr style="border-top:1px solid #eee;"><td style="padding:8px 0;color:#888;font-size:0.85rem;">Gäster</td><td style="padding:8px 0;font-weight:600;font-size:0.9rem;">${guests} personer</td></tr>
-                <tr style="border-top:1px solid #eee;"><td style="padding:8px 0;color:#888;font-size:0.85rem;">Telefon</td><td style="padding:8px 0;font-weight:600;font-size:0.9rem;">${phone}</td></tr>
+                <tr style="border-top:1px solid #eee;"><td style="padding:8px 0;color:#888;font-size:0.85rem;">Telefon</td><td style="padding:8px 0;font-weight:600;font-size:0.9rem;">${phone || '–'}</td></tr>
               </table>
             </div>
-            <a href="https://menuqr.se" style="display:block;background:#1a1208;color:#f5f0e8;text-align:center;padding:14px;border-radius:8px;text-decoration:none;font-weight:500;">Hantera bokning på MenuQR →</a>
+            <a href="https://menuqr.se?booking_date=${date}" style="display:block;background:#1a1208;color:#f5f0e8;text-align:center;padding:14px;border-radius:8px;text-decoration:none;font-weight:500;font-size:0.95rem;">
+              Visa bokning på MenuQR →
+            </a>
           </div>
         </div>
       </body></html>`;
