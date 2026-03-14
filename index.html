@@ -1457,20 +1457,18 @@ async function loadAvailableSlots(restaurantId, date, guests = 1) {
     const slotM = String(t % 60).padStart(2, '0');
     const slotTime = `${slotH}:${slotM}`;
 
-    // Räkna bokade bord denna slot (överlappande bokningar)
-    const overlapping = (existingBookings || []).filter(b => {
+    // Hitta bord-IDs som är bokade under denna tidsslot
+    const bookedTableIds = new Set((existingBookings || []).filter(b => {
+      if (!b.table_id) return false;
       const [bH, bM] = b.time.split(':').map(Number);
       const bStart = bH * 60 + bM;
       const bEnd = bStart + duration;
       return t < bEnd && (t + duration) > bStart;
-    });
+    }).map(b => b.table_id));
 
-    const bookedTableIds = overlapping.map(b => b.table_id).filter(Boolean);
-    // Bord utan table_id räknas också som bokade (äldre bokningar)
-    const unboundBookings = overlapping.filter(b => !b.table_id).length;
-    const freeTables = tables.filter(tb => !bookedTableIds.includes(tb.id));
-    // Dra bort obundna bokningar från lediga bord
-    if (freeTables.length - unboundBookings > 0) slots.push(slotTime);
+    // Kolla om det finns minst ett ledigt bord som rymmer gästerna
+    const hasFreeTables = tables.some(tb => !bookedTableIds.has(tb.id));
+    if (hasFreeTables) slots.push(slotTime);
   }
 
   return { slots, reason: slots.length ? '' : 'Fullbokat denna dag.' };
