@@ -206,14 +206,84 @@
   .toast { position: fixed; bottom: 32px; right: 32px; background: var(--ink); color: var(--cream); padding: 14px 20px; border-radius: 8px; font-size: 0.85rem; border-left: 3px solid var(--gold); transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); z-index: 1000; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
   .toast.show { transform: translateX(0); }
 
+  /* ── RESPONSIV ── */
+  * { box-sizing: border-box; }
+  body { overflow-x: hidden; }
+
   @media (max-width: 900px) {
-    .home-hero { grid-template-columns: 1fr; }
-    .hero-right { display: none; }
+    /* Admin */
     .stats-grid { grid-template-columns: repeat(2,1fr); }
     #view-admin.active { grid-template-columns: 1fr; }
     .admin-sidebar { display: none; }
     .qr-container { grid-template-columns: 1fr; }
-    .home-nav, .hero-left, .features-bar { padding-left: 24px; padding-right: 24px; }
+
+    /* Startsida nav */
+    .home-nav { padding: 16px 20px; }
+    .home-nav-links { gap: 8px; }
+    .home-nav-links .nav-link { display: none; }
+    .btn-gold, .btn-outline { padding: 9px 14px; font-size: 0.78rem; }
+
+    /* Kundhero */
+    .customer-hero { padding: 48px 20px 40px; }
+    .customer-hero h1 { font-size: 2rem; }
+    .search-bar { margin: 0 4px; }
+
+    /* Restauranglista */
+    #nearby-list { grid-template-columns: 1fr !important; padding: 0; }
+    #view-home > div:nth-child(3) { padding: 32px 20px !important; }
+
+    /* Restauranghero */
+    .restaurant-hero { grid-template-columns: 1fr !important; gap: 40px; padding: 48px 20px; }
+    .features-bar { grid-template-columns: 1fr !important; }
+    .mock-phone { width: 180px; }
+
+    /* Bokningsinställningar */
+    #panel-booking-settings .admin-topbar { flex-direction: column; align-items: flex-start; gap: 12px; }
+    #bs-duration, #bs-interval, #bs-max-guests { width: 100%; }
+  }
+
+  @media (max-width: 600px) {
+    /* Nav – visa bara logga + en knapp */
+    .home-nav { padding: 14px 16px; }
+    .home-nav-links .btn-outline { display: none; }
+    .home-nav-links .btn-gold { font-size: 0.75rem; padding: 8px 12px; }
+
+    /* Auth */
+    .auth-box { padding: 32px 24px; }
+
+    /* Kundhero */
+    .customer-hero { padding: 36px 16px 32px; }
+    .search-bar input { font-size: 0.85rem; padding: 13px 14px; }
+    .search-bar button { padding: 13px 16px; font-size: 0.78rem; }
+
+    /* Restauranglista */
+    #view-home > div:nth-child(3) { padding: 24px 16px !important; }
+
+    /* Restauranghero */
+    .restaurant-hero { padding: 36px 16px; }
+
+    /* Admin */
+    .admin-content { padding: 20px 16px; }
+    .admin-topbar { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .stats-grid { grid-template-columns: 1fr !important; }
+    .menu-item-row { grid-template-columns: 1fr auto !important; }
+
+    /* Bokningar tabell – göm kolumner */
+    table th:nth-child(4), table td:nth-child(4),
+    table th:nth-child(5), table td:nth-child(5) { display: none; }
+
+    /* Bokningsformulär */
+    #booking-settings-general > div { grid-template-columns: 1fr !important; }
+    #opening-hours-grid > div { grid-template-columns: 80px 60px 1fr !important; }
+
+    /* Toast */
+    .toast { bottom: 16px; right: 16px; left: 16px; transform: translateY(120%); }
+    .toast.show { transform: translateY(0); }
+
+    /* Meny */
+    .menu-hero { padding: 20px 20px 24px; }
+    .menu-cats-scroll { padding: 16px 20px; }
+    .menu-section { padding: 20px; }
   }
 </style>
 </head>
@@ -329,7 +399,7 @@
 
   <!-- Restaurangsektion -->
   <div id="restaurant-section" class="restaurant-hero">
-    <div>
+    <div style="min-width:0;">
       <div style="font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;">För restauranger</div>
       <h2 style="font-family:'Playfair Display',serif;font-size:clamp(2rem,3vw,2.8rem);font-weight:400;line-height:1.2;margin-bottom:16px;">Din meny.<br><em style="color:var(--gold);font-style:italic;">Alltid uppdaterad.</em></h2>
       <p style="font-size:0.95rem;color:#666;line-height:1.7;margin-bottom:36px;max-width:440px;">Skapa en vacker digital meny på minuter. Gästerna scannar QR-koden och ser alltid det senaste. Inga appar, inga utskrifter.</p>
@@ -356,7 +426,7 @@
         </div>
       </div>
     </div>
-    <div style="text-align:center;">
+    <div style="text-align:center;width:100%;min-width:0;">
       <div class="mock-phone">
         <div class="phone-notch"></div>
         <div class="phone-header">
@@ -370,15 +440,15 @@
         </div>
       </div>
       <!-- Pris -->
-      <div style="background:var(--ink);color:var(--cream);border-radius:16px;padding:28px;margin-top:32px;text-align:left;">
+      <div style="background:var(--ink);color:var(--cream);border-radius:16px;padding:28px;margin-top:32px;text-align:left;width:100%;max-width:100%;">
         <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(245,240,232,0.4);margin-bottom:12px;">Priser</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-          <div style="padding:16px;border:1px solid rgba(200,151,58,0.2);border-radius:10px;">
+          <div style="padding:16px;border:1px solid rgba(200,151,58,0.2);border-radius:10px;min-width:0;">
             <div style="font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:4px;">Gratis</div>
             <div style="font-size:1.4rem;font-weight:500;color:var(--cream);margin-bottom:8px;">0 kr</div>
             <div style="font-size:0.75rem;color:rgba(245,240,232,0.4);line-height:1.6;">Digital meny<br>QR-kod<br>Obegränsade rätter</div>
           </div>
-          <div style="padding:16px;border:2px solid var(--gold);border-radius:10px;position:relative;">
+          <div style="padding:16px;border:2px solid var(--gold);border-radius:10px;position:relative;min-width:0;">
             <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--ink);font-size:0.65rem;font-weight:600;padding:3px 10px;border-radius:10px;white-space:nowrap;">POPULÄRAST</div>
             <div style="font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:4px;color:var(--gold);">Pro</div>
             <div style="font-size:1.4rem;font-weight:500;color:var(--cream);margin-bottom:8px;">199 kr<span style="font-size:0.7rem;color:rgba(245,240,232,0.4);">/mån</span></div>
