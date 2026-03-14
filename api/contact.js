@@ -28,8 +28,8 @@ module.exports = async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: 'MenuQR <hej@menuqr.se>',
-        to: ['hej@menuqr.se'],
+        from: 'MenuQR <support@menuqr.se>',
+        to: ['support@menuqr.se'],
         reply_to: email,
         subject: 'Ny kontakt fran ' + name + ' (' + typeLabel + ')',
         html
@@ -46,7 +46,7 @@ module.exports = async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: 'MenuQR <hej@menuqr.se>',
+        from: 'MenuQR <support@menuqr.se>',
         to: [email],
         subject: 'Vi har tagit emot ditt meddelande!',
         html: '<html><body style="font-family:Arial,sans-serif;background:#f5f0e8;">'
