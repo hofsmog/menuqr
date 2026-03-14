@@ -2777,4 +2777,15 @@ async function submitContact() {
     const data = await res.json();
     if (!data.ok) throw new Error(data.error || 'Okänt fel');
     document.getElementById('contact-form').style.display = 'none';
-    document.getElementById('contact-success').styl
+    document.getElementById('contact-success').style.display = 'block';
+  } catch(e) {
+    errEl.style.display = 'block';
+    errEl.textContent = 'Kunde inte skicka: ' + e.message;
+    btn.textContent = 'Skicka meddelande'; btn.disabled = false;
+  }
+}
+
+startup();
+</script>
+</body>
+</html>
