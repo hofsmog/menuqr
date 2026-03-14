@@ -1384,15 +1384,19 @@ async function loadAvailableSlots(restaurantId, date) {
     const slotTime = `${slotH}:${slotM}`;
 
     // Räkna bokade bord denna slot (överlappande bokningar)
-    const bookedTableIds = (existingBookings || []).filter(b => {
+    const overlapping = (existingBookings || []).filter(b => {
       const [bH, bM] = b.time.split(':').map(Number);
       const bStart = bH * 60 + bM;
       const bEnd = bStart + duration;
       return t < bEnd && (t + duration) > bStart;
-    }).map(b => b.table_id).filter(Boolean);
+    });
 
+    const bookedTableIds = overlapping.map(b => b.table_id).filter(Boolean);
+    // Bord utan table_id räknas också som bokade (äldre bokningar)
+    const unboundBookings = overlapping.filter(b => !b.table_id).length;
     const freeTables = tables.filter(tb => !bookedTableIds.includes(tb.id));
-    if (freeTables.length > 0) slots.push(slotTime);
+    // Dra bort obundna bokningar från lediga bord
+    if (freeTables.length - unboundBookings > 0) slots.push(slotTime);
   }
 
   return { slots, reason: slots.length ? '' : 'Fullbokat denna dag.' };
@@ -1408,19 +1412,24 @@ async function findAvailableTable(restaurantId, date, time, guests) {
   const { data: tables } = await db.from('restaurant_tables')
     .select('*').eq('restaurant_id', restaurantId).eq('is_active', true).gte('seats', guests).order('seats');
 
+  if (!tables || !tables.length) return null;
+
   const { data: existingBookings } = await db.from('bookings')
     .select('table_id, time')
     .eq('restaurant_id', restaurantId).eq('date', date).neq('status', 'cancelled');
 
-  for (const table of (tables || [])) {
-    const isBooked = (existingBookings || []).some(b => {
-      if (b.table_id !== table.id) return false;
-      const [bH, bM] = b.time.split(':').map(Number);
-      const bStart = bH * 60 + bM;
-      const bEnd = bStart + duration;
-      return startMin < bEnd && endMin > bStart;
-    });
-    if (!isBooked) return table;
+  // Hitta bord som är bokade under denna tidsslot
+  const bookedTableIds = new Set((existingBookings || []).filter(b => {
+    if (!b.table_id) return false;
+    const [bH, bM] = b.time.split(':').map(Number);
+    const bStart = bH * 60 + bM;
+    const bEnd = bStart + duration;
+    return startMin < bEnd && endMin > bStart;
+  }).map(b => b.table_id));
+
+  // Returnera första lediga bord
+  for (const table of tables) {
+    if (!bookedTableIds.has(table.id)) return table;
   }
   return null;
 }
