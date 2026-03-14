@@ -1068,20 +1068,37 @@ async function onBookingParamsChange() {
   slotsMsg.style.display = 'block';
   slotsMsg.textContent = 'Letar efter lediga tider...';
 
-  const { slots, reason } = await loadAvailableSlots(window._guestRestaurantId, date, guests);
+  // Hämta alla slots och fullbokade slots
+  const { slots: availableSlots, allSlots, reason } = await loadAvailableSlots(window._guestRestaurantId, date, guests);
 
-  if (!slots.length) {
-    slotsMsg.textContent = reason || 'Inga lediga tider detta datum.';
+  if (!allSlots || !allSlots.length) {
+    slotsMsg.textContent = reason || 'Inga tider detta datum.';
     return;
   }
 
   slotsMsg.style.display = 'none';
   slotsContainer.style.display = 'block';
-  slotsGrid.innerHTML = slots.map(s => `
-    <button onclick="selectTimeSlot('${s}')" id="slot-${s.replace(':','-')}"
-      style="background:rgba(255,255,255,0.05);border:1px solid rgba(200,151,58,0.3);border-radius:8px;padding:10px 16px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:0.88rem;cursor:pointer;transition:all 0.2s;">
+
+  slotsGrid.innerHTML = allSlots.map(s => {
+    const isAvailable = availableSlots.includes(s);
+    return `<button
+      onclick="${isAvailable ? `selectTimeSlot('${s}')` : ''}"
+      id="slot-${s.replace(':','-')}"
+      ${!isAvailable ? 'disabled' : ''}
+      title="${isAvailable ? '' : 'Fullbokat'}"
+      style="
+        border-radius:8px;padding:10px 16px;
+        font-family:'DM Sans',sans-serif;font-size:0.88rem;
+        cursor:${isAvailable ? 'pointer' : 'not-allowed'};
+        transition:all 0.2s;
+        background:${isAvailable ? 'rgba(255,255,255,0.05)' : 'rgba(181,74,42,0.15)'};
+        border:1px solid ${isAvailable ? 'rgba(200,151,58,0.3)' : 'rgba(181,74,42,0.4)'};
+        color:${isAvailable ? 'var(--cream)' : 'rgba(181,74,42,0.7)'};
+        text-decoration:${isAvailable ? 'none' : 'line-through'};
+      ">
       ${s}
-    </button>`).join('');
+    </button>`;
+  }).join('');
 }
 
 function selectTimeSlot(time) {
@@ -1657,10 +1674,12 @@ async function loadAvailableSlots(restaurantId, date, guests = 1) {
   const closeMinutes = closeH * 60 + closeM - duration; // sista möjliga starttid
 
   const slots = [];
+  const allSlots = [];
   for (let t = openMinutes; t <= closeMinutes; t += interval) {
     const slotH = String(Math.floor(t / 60)).padStart(2, '0');
     const slotM = String(t % 60).padStart(2, '0');
     const slotTime = `${slotH}:${slotM}`;
+    allSlots.push(slotTime);
 
     // Hitta bord-IDs som är bokade under denna tidsslot
     const bookedTableIds = new Set((existingBookings || []).filter(b => {
@@ -1676,7 +1695,7 @@ async function loadAvailableSlots(restaurantId, date, guests = 1) {
     if (hasFreeTables) slots.push(slotTime);
   }
 
-  return { slots, reason: slots.length ? '' : 'Fullbokat denna dag.' };
+  return { slots, allSlots, reason: slots.length ? '' : 'Fullbokat denna dag.' };
 }
 
 async function findAvailableTable(restaurantId, date, time, guests) {
