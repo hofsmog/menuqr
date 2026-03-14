@@ -538,10 +538,6 @@
       </div>
       <div class="categories-row" id="cat-filter">
         <div class="cat-chip active" onclick="filterCat('alla',this)">Alla</div>
-        <div class="cat-chip" onclick="filterCat('förrätter',this)">Förrätter</div>
-        <div class="cat-chip" onclick="filterCat('huvudrätter',this)">Huvudrätter</div>
-        <div class="cat-chip" onclick="filterCat('desserter',this)">Desserter</div>
-        <div class="cat-chip" onclick="filterCat('drycker',this)">Drycker</div>
       </div>
       <div class="menu-items-list" id="menu-items-list"><div class="loading"><div class="spinner"></div></div></div>
       <div id="add-item-form" class="add-item-form" style="display:none;margin-top:20px">
@@ -553,17 +549,42 @@
         <div class="form-row">
           <div class="form-group"><label>Beskrivning</label><input type="text" id="new-desc" placeholder="Kort beskrivning"></div>
           <div class="form-group"><label>Kategori</label>
-            <select id="new-cat">
-              <option value="förrätter">Förrätter</option>
-              <option value="huvudrätter">Huvudrätter</option>
-              <option value="desserter">Desserter</option>
-              <option value="drycker">Drycker</option>
-            </select>
+            <input type="text" id="new-cat" placeholder="t.ex. Förrätter, Pizza, Sallader..." list="cat-suggestions">
+            <datalist id="cat-suggestions">
+              <option value="Förrätter">
+              <option value="Huvudrätter">
+              <option value="Desserter">
+              <option value="Drycker">
+              <option value="Pizza">
+              <option value="Pasta">
+              <option value="Sallader">
+              <option value="Smårätter">
+              <option value="Barnmeny">
+              <option value="Veckans lunch">
+            </datalist>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group" style="flex:2">
+            <label>Allergener</label>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="allergen-checkboxes">
+              ${['Gluten','Mjölk','Ägg','Nötter','Jordnötter','Fisk','Skaldjur','Soja','Selleri','Sesam'].map(a =>
+                `<label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;cursor:pointer;background:#f5f0e8;padding:4px 10px;border-radius:20px;border:1px solid var(--border);">
+                  <input type="checkbox" value="${a}" style="accent-color:var(--gold);"> ${a}
+                </label>`).join('')}
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group" style="flex:2">
+            <label>Bild (valfritt)</label>
+            <input type="file" id="new-image" accept="image/*" style="border:1px solid var(--border);border-radius:8px;padding:8px;width:100%;">
+            <div id="new-image-preview" style="margin-top:8px;display:none;"><img style="width:80px;height:60px;object-fit:cover;border-radius:6px;"></div>
           </div>
         </div>
         <div class="form-actions">
           <button class="btn-secondary" onclick="toggleAddForm()">Avbryt</button>
-          <button class="btn-primary" onclick="addItem()">Spara rätt</button>
+          <button class="btn-primary" onclick="addItem()" id="add-item-btn">Spara rätt</button>
         </div>
       </div>
     </div>
@@ -578,6 +599,7 @@
           <div class="qr-actions">
             <button class="btn-primary" onclick="downloadQR()">Ladda ned PNG</button>
             <button class="btn-secondary" onclick="printQR()">Skriv ut</button>
+            <button class="btn-secondary" onclick="shareRestaurantMenu()">↗ Dela länk</button>
           </div>
         </div>
         <div class="qr-info-card">
@@ -730,6 +752,10 @@
               <input type="text" id="account-desc" placeholder="t.ex. Italiensk mat sedan 1987" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:0.9rem;">
             </div>
             <div>
+              <label style="font-size:0.75rem;color:#888;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:6px;">Telefonnummer</label>
+              <input type="tel" id="account-phone" placeholder="t.ex. 040-12 34 56" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:0.9rem;">
+            </div>
+            <div>
               <label style="font-size:0.75rem;color:#888;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:6px;">Adress</label>
               <input type="text" id="account-address" placeholder="t.ex. Storgatan 1, Malmö" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:0.9rem;">
             </div>
@@ -780,6 +806,11 @@
     <div class="menu-restaurant-name" id="guest-restaurant-name">Laddar...</div>
     <div class="menu-restaurant-desc" id="guest-restaurant-desc"></div>
     <div id="guest-restaurant-address" style="font-size:0.82rem;color:rgba(200,151,58,0.7);margin-top:6px;display:none;">📍 <span></span></div>
+    <div id="guest-restaurant-phone" style="font-size:0.82rem;color:rgba(245,240,232,0.5);margin-top:4px;display:none;">📞 <a id="guest-phone-link" href="#" style="color:rgba(245,240,232,0.5);text-decoration:none;"></a></div>
+    <div id="guest-opening-hours" style="margin-top:12px;display:none;"></div>
+    <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
+      <button id="guest-share-btn" onclick="shareMenu()" style="background:rgba(200,151,58,0.15);border:1px solid rgba(200,151,58,0.3);color:var(--gold);padding:8px 16px;border-radius:20px;font-family:'DM Sans',sans-serif;font-size:0.78rem;cursor:pointer;">↗ Dela meny</button>
+    </div>
   </div>
   <div class="menu-cats-scroll" id="guest-cats">
     <button class="menu-cat-btn active" onclick="filterGuestCat('alla',this)">Alla</button>
@@ -961,6 +992,44 @@ async function showGuestMenuBySlug(slug) {
   document.getElementById('guest-restaurant-desc').textContent = data.description || '';
   const addrEl = document.getElementById('guest-restaurant-address');
   if (addrEl) { if (data.address) { addrEl.style.display='block'; addrEl.querySelector('span').textContent = data.address; } else { addrEl.style.display='none'; } }
+
+  // Telefon
+  const phoneEl = document.getElementById('guest-restaurant-phone');
+  if (phoneEl) {
+    if (data.phone) {
+      phoneEl.style.display = 'block';
+      const link = document.getElementById('guest-phone-link');
+      link.textContent = data.phone;
+      link.href = `tel:${data.phone}`;
+    } else { phoneEl.style.display = 'none'; }
+  }
+
+  // Öppettider
+  const hoursEl = document.getElementById('guest-opening-hours');
+  if (hoursEl) {
+    const { data: hours } = await db.from('opening_hours').select('*').eq('restaurant_id', data.id).order('day_of_week');
+    if (hours && hours.length) {
+      const dayNames = ['Söndag','Måndag','Tisdag','Onsdag','Torsdag','Fredag','Lördag'];
+      const todayDay = new Date().getDay();
+      hoursEl.style.display = 'block';
+      hoursEl.innerHTML = `
+        <details style="cursor:pointer;">
+          <summary style="font-size:0.8rem;color:rgba(245,240,232,0.5);list-style:none;display:flex;align-items:center;gap:8px;">
+            <span style="width:8px;height:8px;border-radius:50%;background:${hours.find(h=>h.day_of_week===todayDay)?.is_open?'#5a7a5a':'#b54a2a'};display:inline-block;"></span>
+            ${hours.find(h=>h.day_of_week===todayDay)?.is_open ? `Öppet idag ${hours.find(h=>h.day_of_week===todayDay).open_time?.slice(0,5)}–${hours.find(h=>h.day_of_week===todayDay).close_time?.slice(0,5)}` : 'Stängt idag'}
+            <span style="opacity:0.5;">▾</span>
+          </summary>
+          <div style="margin-top:8px;display:flex;flex-direction:column;gap:4px;">
+            ${hours.map(h => `
+              <div style="display:flex;justify-content:space-between;font-size:0.78rem;color:rgba(245,240,232,${h.day_of_week===todayDay?'0.7':'0.35'});">
+                <span${h.day_of_week===todayDay?' style="color:var(--gold);"':''}>${dayNames[h.day_of_week]}</span>
+                <span>${h.is_open ? h.open_time?.slice(0,5)+' – '+h.close_time?.slice(0,5) : 'Stängt'}</span>
+              </div>`).join('')}
+          </div>
+        </details>`;
+    } else { hoursEl.style.display = 'none'; }
+  }
+
   // Dölj logga om Pro
   const footer = document.getElementById('guest-menu-footer');
   if (footer) footer.style.display = data.is_pro ? 'none' : 'block';
@@ -1076,6 +1145,7 @@ function loadAccountPanel() {
   if (!data) return;
   document.getElementById('account-name').value = data.name || '';
   document.getElementById('account-desc').value = data.description || '';
+  document.getElementById('account-phone').value = data.phone || '';
   document.getElementById('account-address').value = data.address || '';
   document.getElementById('account-slug').value = data.slug || '';
   // Visa prenumerationsinfo
@@ -1104,10 +1174,10 @@ function loadAccountPanel() {
 async function saveRestaurantInfo() {
   const name = document.getElementById('account-name').value.trim();
   const description = document.getElementById('account-desc').value.trim();
+  const phone = document.getElementById('account-phone').value.trim();
   const address = document.getElementById('account-address').value.trim();
   if (!name) { showToast('Namn får inte vara tomt'); return; }
 
-  // Geokoda ny adress om den ändrats
   let lat = window._restaurantData?.lat || null;
   let lng = window._restaurantData?.lng || null;
   if (address && address !== window._restaurantData?.address) {
@@ -1118,11 +1188,10 @@ async function saveRestaurantInfo() {
     } catch(e) {}
   }
 
-  const { error } = await db.from('restaurants').update({ name, description, address, lat, lng }).eq('id', restaurantId);
+  const { error } = await db.from('restaurants').update({ name, description, phone, address, lat, lng }).eq('id', restaurantId);
   if (error) { showToast('Fel: ' + error.message); return; }
 
-  // Uppdatera lokalt
-  window._restaurantData = { ...window._restaurantData, name, description, address, lat, lng };
+  window._restaurantData = { ...window._restaurantData, name, description, phone, address, lat, lng };
   document.getElementById('overview-subtitle').textContent = name + ' – din meny är aktiv';
   document.getElementById('qr-restaurant-name').textContent = name;
   document.getElementById('guest-restaurant-name').textContent = name;
@@ -1231,7 +1300,7 @@ async function loadNearbyRestaurants() {
   list.innerHTML = '<div style="color:#888;font-size:0.85rem;grid-column:1/-1;">Letar efter restauranger nära dig...</div>';
 
   // Hämta alla restauranger med koordinater
-  const { data: restaurants } = await db.from('restaurants').select('id,name,description,slug,is_pro,address,lat,lng');
+  const { data: restaurants } = await db.from('restaurants').select('id,name,description,slug,is_pro,address,lat,lng,phone');
   if (!restaurants || !restaurants.length) {
     list.innerHTML = '<div style="color:#888;font-size:0.85rem;grid-column:1/-1;">Inga restauranger hittades.</div>';
     return;
@@ -1279,7 +1348,8 @@ async function loadNearbyRestaurants() {
       ${r.is_pro ? '<div style="position:absolute;top:12px;right:12px;background:var(--gold);color:var(--ink);font-size:0.65rem;font-weight:600;padding:3px 8px;border-radius:10px;letter-spacing:0.05em;">PRO</div>' : ''}
       <div style="font-family:\'Playfair Display\',serif;font-size:1.1rem;margin-bottom:6px;padding-right:${r.is_pro ? '40px' : '0'};">${r.name}</div>
       ${r.description ? `<div style="font-size:0.82rem;color:#888;margin-bottom:8px;line-height:1.5;">${r.description}</div>` : ''}
-      ${r.address ? `<div style="font-size:0.82rem;color:var(--gold);margin-bottom:10px;font-weight:500;">📍 ${r.address}</div>` : ''}
+      ${r.address ? `<div style="font-size:0.82rem;color:var(--gold);margin-bottom:4px;font-weight:500;">📍 ${r.address}</div>` : ''}
+      ${r.phone ? `<div style="font-size:0.78rem;color:#aaa;margin-bottom:8px;">📞 ${r.phone}</div>` : ''}
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
         <span style="font-size:0.78rem;color:var(--gold);font-weight:500;">Se meny →</span>
         ${r.dist !== null ? `<span style="font-size:0.78rem;color:#aaa;">${r.dist < 1 ? Math.round(r.dist*1000) + ' m' : r.dist.toFixed(1) + ' km'}</span>` : ''}
@@ -1322,7 +1392,16 @@ async function loadMenuItems() {
   const cats = [...new Set(menuItems.map(i => i.category))];
   document.getElementById('stat-items').textContent = menuItems.length;
   document.getElementById('stat-cats').textContent = cats.length;
+  updateCatFilter();
   renderAdminMenu();
+}
+
+function updateCatFilter() {
+  const cats = ['alla', ...new Set(menuItems.map(i => i.category).filter(Boolean))];
+  const filter = document.getElementById('cat-filter');
+  filter.innerHTML = cats.map((c, i) =>
+    `<div class="cat-chip${i===0?' active':''}" onclick="filterCat('${c}',this)">${c.charAt(0).toUpperCase()+c.slice(1)}</div>`
+  ).join('');
 }
 
 function renderAdminMenu() {
@@ -1330,7 +1409,12 @@ function renderAdminMenu() {
   if (!filtered.length) { document.getElementById('menu-items-list').innerHTML = '<p style="color:#999;padding:20px 0">Inga rätter här ännu.</p>'; return; }
   document.getElementById('menu-items-list').innerHTML = filtered.map(item => `
     <div class="menu-item-row">
-      <div><div class="item-name">${item.name}</div><div class="item-desc-small">${item.description||''} · <em>${item.category}</em></div></div>
+      ${item.image_url ? `<img src="${item.image_url}" style="width:48px;height:48px;object-fit:cover;border-radius:8px;flex-shrink:0;">` : `<div style="width:48px;height:48px;background:var(--surface);border-radius:8px;flex-shrink:0;border:1px solid var(--border);"></div>`}
+      <div style="flex:1;min-width:0;">
+        <div class="item-name">${item.name}</div>
+        <div class="item-desc-small">${item.description||''} · <em>${item.category}</em></div>
+        ${item.allergens?.length ? `<div style="font-size:0.72rem;color:#888;margin-top:2px;">⚠️ ${item.allergens.join(', ')}</div>` : ''}
+      </div>
       <div class="item-price">${item.price} kr</div>
       <div class="item-actions"><button class="icon-btn danger" onclick="deleteItem('${item.id}')">✕</button></div>
     </div>`).join('');
@@ -1357,33 +1441,90 @@ function toggleAddForm() {
   f.style.display = f.style.display === 'none' ? 'block' : 'none';
 }
 
+// Förhandsgranska bild när fil väljs
+document.addEventListener('DOMContentLoaded', () => {
+  const fileInput = document.getElementById('new-image');
+  if (fileInput) {
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+      const preview = document.getElementById('new-image-preview');
+      const img = preview.querySelector('img');
+      img.src = URL.createObjectURL(file);
+      preview.style.display = 'block';
+    });
+  }
+});
+
 async function addItem() {
   const name = document.getElementById('new-name').value.trim();
   const price = parseInt(document.getElementById('new-price').value);
   const description = document.getElementById('new-desc').value.trim();
-  const category = document.getElementById('new-cat').value;
+  const category = document.getElementById('new-cat').value.trim().toLowerCase() || 'övrigt';
+  const btn = document.getElementById('add-item-btn');
   if (!name || !price) { showToast('Fyll i namn och pris'); return; }
-  const { data, error } = await db.from('menu_items').insert([{ restaurant_id: restaurantId, name, description, price, category }]).select().single();
+
+  // Hämta allergener
+  const allergens = [...document.querySelectorAll('#allergen-checkboxes input:checked')].map(c => c.value);
+
+  // Ladda upp bild om vald
+  let image_url = null;
+  const fileInput = document.getElementById('new-image');
+  if (fileInput.files.length > 0) {
+    btn.textContent = 'Laddar upp bild...'; btn.disabled = true;
+    const file = fileInput.files[0];
+    const ext = file.name.split('.').pop();
+    const fileName = `${restaurantId}/${Date.now()}.${ext}`;
+    const { data: uploadData, error: uploadError } = await db.storage.from('menu-images').upload(fileName, file, { upsert: true });
+    if (!uploadError) {
+      const { data: urlData } = db.storage.from('menu-images').getPublicUrl(fileName);
+      image_url = urlData.publicUrl;
+    }
+    btn.textContent = 'Spara rätt'; btn.disabled = false;
+  }
+
+  const { data, error } = await db.from('menu_items').insert([{ restaurant_id: restaurantId, name, description, price, category, allergens, image_url }]).select().single();
   if (error) { showToast('Fel: ' + error.message); return; }
   menuItems.push(data);
   document.getElementById('new-name').value = '';
   document.getElementById('new-price').value = '';
   document.getElementById('new-desc').value = '';
+  document.getElementById('new-cat').value = '';
+  document.getElementById('new-image').value = '';
+  document.getElementById('new-image-preview').style.display = 'none';
+  document.querySelectorAll('#allergen-checkboxes input').forEach(c => c.checked = false);
   toggleAddForm();
   document.getElementById('stat-items').textContent = menuItems.length;
   renderAdminMenu();
+  updateCatFilter();
   showToast('✓ Rätten sparad!');
 }
 
 // ── GUEST MENU ──
 function renderGuestMenu() {
-  const cats = ['förrätter','huvudrätter','desserter','drycker'];
+  const cats = [...new Set(menuItems.map(i => i.category).filter(Boolean))];
   const toShow = currentGuestCat === 'alla' ? cats : [currentGuestCat];
+
+  // Uppdatera kategorimenyn dynamiskt
+  const catScroll = document.getElementById('guest-cats');
+  catScroll.innerHTML = `<button class="menu-cat-btn${currentGuestCat==='alla'?' active':''}" onclick="filterGuestCat('alla',this)">Alla</button>` +
+    cats.map(c => `<button class="menu-cat-btn${currentGuestCat===c?' active':''}" onclick="filterGuestCat('${c}',this)">${c.charAt(0).toUpperCase()+c.slice(1)}</button>`).join('');
+
   const html = toShow.map(cat => {
     const items = menuItems.filter(i => i.category === cat);
     if (!items.length) return '';
-    return `<div class="menu-section"><div class="menu-section-title">${cat.charAt(0).toUpperCase()+cat.slice(1)}</div>
-      ${items.map(item=>`<div class="menu-item"><div><div class="mi-name">${item.name}</div><div class="mi-desc">${item.description||''}</div></div><div class="mi-price">${item.price} kr</div></div>`).join('')}
+    return `<div class="menu-section">
+      <div class="menu-section-title">${cat.charAt(0).toUpperCase()+cat.slice(1)}</div>
+      ${items.map(item => `
+        <div class="menu-item" style="align-items:flex-start;gap:16px;">
+          ${item.image_url ? `<img src="${item.image_url}" style="width:72px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;">` : ''}
+          <div style="flex:1;min-width:0;">
+            <div class="mi-name">${item.name}</div>
+            <div class="mi-desc">${item.description||''}</div>
+            ${item.allergens?.length ? `<div style="font-size:0.7rem;color:rgba(245,240,232,0.3);margin-top:4px;">⚠️ ${item.allergens.join(', ')}</div>` : ''}
+          </div>
+          <div class="mi-price" style="flex-shrink:0;">${item.price} kr</div>
+        </div>`).join('')}
     </div>`;
   }).join('');
   document.getElementById('guest-menu-content').innerHTML = html || '<div class="menu-section"><p style="color:rgba(245,240,232,0.3)">Inga rätter ännu.</p></div>';
@@ -1394,6 +1535,28 @@ function filterGuestCat(cat, el) {
   document.querySelectorAll('#guest-cats .menu-cat-btn').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
   renderGuestMenu();
+}
+
+function shareRestaurantMenu() {
+  const slug = window._restaurantData?.slug;
+  if (!slug) return;
+  const url = `https://menuqr.se/${slug}`;
+  const name = window._restaurantData?.name || 'min restaurang';
+  if (navigator.share) {
+    navigator.share({ title: name, text: `Se menyn för ${name}`, url });
+  } else {
+    navigator.clipboard.writeText(url).then(() => showToast('✓ Länk kopierad!'));
+  }
+}
+
+function shareMenu() {
+  const url = window.location.href;
+  const name = document.getElementById('guest-restaurant-name').textContent;
+  if (navigator.share) {
+    navigator.share({ title: name, text: `Se menyn för ${name}`, url });
+  } else {
+    navigator.clipboard.writeText(url).then(() => showToast('✓ Länk kopierad!'));
+  }
 }
 
 // ── QR ──
@@ -1633,6 +1796,28 @@ async function submitBooking() {
   }]);
   btn.textContent = 'Skicka bokningsförfrågan'; btn.disabled = false;
   if (error) { errEl.style.display='block'; errEl.textContent='Något gick fel, försök igen'; return; }
+
+  // Skicka notifikationsmail till restaurangen
+  try {
+    const { data: restData } = await db.from('restaurants').select('name, email:user_id').eq('id', window._guestRestaurantId).single();
+    const { data: userData } = await db.auth.admin ? {} : { data: null };
+    // Hämta restaurangens e-post via en separat query
+    const { data: ownerData } = await db.from('restaurants').select('*').eq('id', window._guestRestaurantId).single();
+    if (ownerData) {
+      await fetch('/api/send-booking-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name, email: window._ownerEmail || '', phone, date, time, guests, message,
+          restaurantName: ownerData.name,
+          status: 'new_booking',
+          toRestaurant: true,
+          restaurantId: window._guestRestaurantId
+        })
+      });
+    }
+  } catch(e) { /* tyst */ }
+
   document.getElementById('booking-form-container').style.display = 'none';
   document.getElementById('booking-success').style.display = 'block';
 }
