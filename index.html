@@ -309,11 +309,29 @@
       </div>
       <div class="auth-field">
         <label>Lösenord</label>
-        <input type="password" id="login-password" placeholder="••••••••">
+        <input type="password" id="login-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')login()">
       </div>
       <button class="auth-btn" onclick="login()" id="login-btn">Logga in</button>
+      <div style="text-align:center;margin-top:8px;">
+        <button onclick="showForgotPassword()" style="background:none;border:none;color:rgba(245,240,232,0.4);font-family:'DM Sans',sans-serif;font-size:0.8rem;cursor:pointer;text-decoration:underline;">Glömt lösenord?</button>
+      </div>
       <div class="auth-divider">eller</div>
-      <button class="auth-btn" style="background:transparent;border:1px solid rgba(200,151,58,0.3);color:var(--cream);" onclick="showView('view-home')">Se demo utan konto →</button>
+      <button class="auth-btn" style="background:transparent;border:1px solid rgba(200,151,58,0.3);color:var(--cream);" onclick="showView('view-home')">Se restauranger →</button>
+    </div>
+
+    <!-- GLÖMT LÖSENORD -->
+    <div id="auth-forgot" class="auth-form hidden">
+      <div id="forgot-error" class="auth-error"></div>
+      <div id="forgot-success" class="auth-success"></div>
+      <div style="font-size:0.85rem;color:rgba(245,240,232,0.5);margin-bottom:20px;line-height:1.6;">Ange din e-postadress så skickar vi en länk för att återställa ditt lösenord.</div>
+      <div class="auth-field">
+        <label>E-postadress</label>
+        <input type="email" id="forgot-email" placeholder="din@email.se">
+      </div>
+      <button class="auth-btn" onclick="sendPasswordReset()" id="forgot-btn">Skicka återställningslänk</button>
+      <div style="text-align:center;margin-top:8px;">
+        <button onclick="showForgotPassword(false)" style="background:none;border:none;color:rgba(245,240,232,0.4);font-family:'DM Sans',sans-serif;font-size:0.8rem;cursor:pointer;text-decoration:underline;">← Tillbaka till inloggning</button>
+      </div>
     </div>
 
     <!-- REGISTER -->
@@ -477,6 +495,7 @@
       <div class="sidebar-item" id="nav-bsettings" onclick="handleProNav('panel-booking-settings',this)"><span class="sidebar-icon">⚙</span> Bokningsinst. <span id="nav-bsettings-lock" style="font-size:0.7rem;opacity:0.5;margin-left:4px;">🔒</span></div>
       <div class="sidebar-item" id="nav-stats" onclick="handleProNav('panel-stats',this)"><span class="sidebar-icon">◎</span> Statistik <span id="nav-stats-lock" style="font-size:0.7rem;opacity:0.5;margin-left:4px;">🔒</span></div>
       <div class="sidebar-item" onclick="previewMenu()"><span class="sidebar-icon">◌</span> Förhandsgranska</div>
+      <div class="sidebar-item" onclick="switchPanel('panel-account',this)"><span class="sidebar-icon">◐</span> Inställningar</div>
     </nav>
     <div class="sidebar-bottom">
       <div class="user-info">Inloggad som:<br><span class="user-email" id="user-email-display">–</span></div>
@@ -687,6 +706,64 @@
         <div class="section-title" style="margin-bottom:16px;">Mest besökta dagar</div>
         <div id="stats-top-days"></div>
       </div>
+      <!-- KONTOINSTÄLLNINGAR -->
+      <div id="panel-account" class="panel">
+        <div class="admin-topbar">
+          <div><div class="admin-title">Inställningar</div><div class="admin-subtitle">Hantera din restaurang och ditt konto</div></div>
+        </div>
+
+        <!-- Restauranginfo -->
+        <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:24px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <div class="section-title">Restauranginfo</div>
+            <button class="btn-gold" onclick="saveRestaurantInfo()" style="padding:8px 20px;font-size:0.82rem;">Spara</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div>
+              <label style="font-size:0.75rem;color:#888;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:6px;">Restaurangnamn</label>
+              <input type="text" id="account-name" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:0.9rem;">
+            </div>
+            <div>
+              <label style="font-size:0.75rem;color:#888;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:6px;">Beskrivning</label>
+              <input type="text" id="account-desc" placeholder="t.ex. Italiensk mat sedan 1987" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:0.9rem;">
+            </div>
+            <div>
+              <label style="font-size:0.75rem;color:#888;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:6px;">Adress</label>
+              <input type="text" id="account-address" placeholder="t.ex. Storgatan 1, Malmö" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:0.9rem;">
+            </div>
+            <div>
+              <label style="font-size:0.75rem;color:#888;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:6px;">Meny-URL (menuqr.se/...)</label>
+              <input type="text" id="account-slug" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:#fafafa;" readonly>
+              <div style="font-size:0.75rem;color:#aaa;margin-top:4px;">URL kan inte ändras efter att den är satt.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lösenord -->
+        <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:24px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <div class="section-title">Byt lösenord</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div>
+              <label style="font-size:0.75rem;color:#888;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:6px;">Nytt lösenord</label>
+              <input type="password" id="account-new-password" placeholder="Minst 6 tecken" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:0.9rem;">
+            </div>
+            <div>
+              <label style="font-size:0.75rem;color:#888;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:6px;">Bekräfta lösenord</label>
+              <input type="password" id="account-confirm-password" placeholder="Upprepa lösenordet" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:0.9rem;">
+            </div>
+            <button onclick="changePassword()" style="background:var(--ink);color:var(--cream);border:none;border-radius:8px;padding:11px 24px;font-family:'DM Sans',sans-serif;font-size:0.88rem;cursor:pointer;align-self:flex-start;">Byt lösenord</button>
+          </div>
+        </div>
+
+        <!-- Prenumeration -->
+        <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:28px;" id="subscription-section">
+          <div class="section-title" style="margin-bottom:16px;">Prenumeration</div>
+          <div id="subscription-info"></div>
+        </div>
+      </div>
+
     </div>
   </main>
 </div>
@@ -963,8 +1040,129 @@ async function register() {
 async function logout() {
   await db.auth.signOut();
   currentUser = null; restaurantId = null; menuItems = [];
-  showView('view-auth');
+  showView('view-home');
   showToast('Du har loggats ut');
+}
+
+// ── GLÖMT LÖSENORD ──
+function showForgotPassword(show = true) {
+  document.getElementById('auth-login').classList.toggle('hidden', show);
+  document.getElementById('auth-forgot').classList.toggle('hidden', !show);
+  document.getElementById('auth-register').classList.add('hidden');
+}
+
+async function sendPasswordReset() {
+  const email = document.getElementById('forgot-email').value.trim();
+  const errEl = document.getElementById('forgot-error');
+  const sucEl = document.getElementById('forgot-success');
+  const btn = document.getElementById('forgot-btn');
+  errEl.style.display = 'none'; sucEl.style.display = 'none';
+  if (!email) { errEl.style.display='block'; errEl.textContent='Ange din e-postadress'; return; }
+  btn.textContent = 'Skickar...'; btn.disabled = true;
+  const { error } = await db.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://menuqr.se'
+  });
+  btn.textContent = 'Skicka återställningslänk'; btn.disabled = false;
+  if (error) { errEl.style.display='block'; errEl.textContent=error.message; return; }
+  sucEl.style.display = 'block';
+  sucEl.textContent = '✓ Återställningslänk skickad! Kolla din e-post.';
+}
+
+// ── KONTOINSTÄLLNINGAR ──
+function loadAccountPanel() {
+  const data = window._restaurantData;
+  if (!data) return;
+  document.getElementById('account-name').value = data.name || '';
+  document.getElementById('account-desc').value = data.description || '';
+  document.getElementById('account-address').value = data.address || '';
+  document.getElementById('account-slug').value = data.slug || '';
+  // Visa prenumerationsinfo
+  const subInfo = document.getElementById('subscription-info');
+  if (data.is_pro) {
+    subInfo.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+        <div>
+          <div style="font-weight:500;color:var(--sage);">⭐ Pro-plan aktiv</div>
+          <div style="font-size:0.82rem;color:#888;margin-top:4px;">199 kr/månad · Avsluta när som helst</div>
+        </div>
+        <button onclick="cancelSubscription()" style="background:none;border:1px solid var(--rust);color:var(--rust);border-radius:8px;padding:9px 18px;font-family:'DM Sans',sans-serif;font-size:0.82rem;cursor:pointer;">Avsluta prenumeration</button>
+      </div>`;
+  } else {
+    subInfo.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+        <div>
+          <div style="font-weight:500;">Gratis plan</div>
+          <div style="font-size:0.82rem;color:#888;margin-top:4px;">Uppgradera för bokningar, statistik och mer</div>
+        </div>
+        <button onclick="startCheckout()" class="btn-gold" style="border-radius:8px;">Uppgradera till Pro →</button>
+      </div>`;
+  }
+}
+
+async function saveRestaurantInfo() {
+  const name = document.getElementById('account-name').value.trim();
+  const description = document.getElementById('account-desc').value.trim();
+  const address = document.getElementById('account-address').value.trim();
+  if (!name) { showToast('Namn får inte vara tomt'); return; }
+
+  // Geokoda ny adress om den ändrats
+  let lat = window._restaurantData?.lat || null;
+  let lng = window._restaurantData?.lng || null;
+  if (address && address !== window._restaurantData?.address) {
+    try {
+      const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`);
+      const geoData = await geoRes.json();
+      if (geoData.length) { lat = parseFloat(geoData[0].lat); lng = parseFloat(geoData[0].lon); }
+    } catch(e) {}
+  }
+
+  const { error } = await db.from('restaurants').update({ name, description, address, lat, lng }).eq('id', restaurantId);
+  if (error) { showToast('Fel: ' + error.message); return; }
+
+  // Uppdatera lokalt
+  window._restaurantData = { ...window._restaurantData, name, description, address, lat, lng };
+  document.getElementById('overview-subtitle').textContent = name + ' – din meny är aktiv';
+  document.getElementById('qr-restaurant-name').textContent = name;
+  document.getElementById('guest-restaurant-name').textContent = name;
+  document.getElementById('guest-restaurant-desc').textContent = description;
+  const addrEl = document.getElementById('guest-restaurant-address');
+  if (addrEl) { if (address) { addrEl.style.display='block'; addrEl.querySelector('span').textContent = address; } else { addrEl.style.display='none'; } }
+  showToast('✓ Restauranginfo sparad!');
+}
+
+async function changePassword() {
+  const newPass = document.getElementById('account-new-password').value;
+  const confirmPass = document.getElementById('account-confirm-password').value;
+  if (!newPass || newPass.length < 6) { showToast('Lösenordet måste vara minst 6 tecken'); return; }
+  if (newPass !== confirmPass) { showToast('Lösenorden matchar inte'); return; }
+  const { error } = await db.auth.updateUser({ password: newPass });
+  if (error) { showToast('Fel: ' + error.message); return; }
+  document.getElementById('account-new-password').value = '';
+  document.getElementById('account-confirm-password').value = '';
+  showToast('✓ Lösenord bytt!');
+}
+
+async function cancelSubscription() {
+  if (!confirm('Är du säker på att du vill avsluta din Pro-prenumeration? Du förlorar tillgång till Bokningar, Statistik och andra Pro-funktioner.')) return;
+  const customerId = window._restaurantData?.stripe_customer_id;
+  if (!customerId) { showToast('Ingen prenumeration hittades'); return; }
+  try {
+    const res = await fetch('/api/cancel-subscription', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ customerId, restaurantId })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      await db.from('restaurants').update({ is_pro: false }).eq('id', restaurantId);
+      window._restaurantData.is_pro = false;
+      updateProUI(false);
+      loadAccountPanel();
+      showToast('Prenumeration avslutad');
+    } else {
+      showToast('Fel: ' + (data.error || 'Okänt fel'));
+    }
+  } catch(e) { showToast('Kunde inte avsluta prenumeration'); }
 }
 
 // ── SETUP ──
@@ -1111,6 +1309,7 @@ function switchPanel(panelId, el) {
   document.getElementById(panelId).classList.add('active');
   document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
   if (el) el.classList.add('active');
+  if (panelId === 'panel-account') loadAccountPanel();
 }
 
 // ── MENU DATA ──
