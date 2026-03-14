@@ -567,12 +567,7 @@
         <div class="form-row">
           <div class="form-group" style="flex:2">
             <label>Allergener</label>
-            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="allergen-checkboxes">
-              ${['Gluten','Mjölk','Ägg','Nötter','Jordnötter','Fisk','Skaldjur','Soja','Selleri','Sesam'].map(a =>
-                `<label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;cursor:pointer;background:#f5f0e8;padding:4px 10px;border-radius:20px;border:1px solid var(--border);">
-                  <input type="checkbox" value="${a}" style="accent-color:var(--gold);"> ${a}
-                </label>`).join('')}
-            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="allergen-checkboxes"></div>
           </div>
         </div>
         <div class="form-row">
@@ -1438,7 +1433,19 @@ async function deleteItem(id) {
 
 function toggleAddForm() {
   const f = document.getElementById('add-item-form');
-  f.style.display = f.style.display === 'none' ? 'block' : 'none';
+  const isHidden = f.style.display === 'none';
+  f.style.display = isHidden ? 'block' : 'none';
+
+  // Bygg allergen-checkboxar med JS första gången
+  const box = document.getElementById('allergen-checkboxes');
+  if (isHidden && !box.children.length) {
+    ['Gluten','Mjölk','Ägg','Nötter','Jordnötter','Fisk','Skaldjur','Soja','Selleri','Sesam'].forEach(a => {
+      const label = document.createElement('label');
+      label.style.cssText = 'display:flex;align-items:center;gap:4px;font-size:0.8rem;cursor:pointer;background:#f5f0e8;padding:4px 10px;border-radius:20px;border:1px solid var(--border);';
+      label.innerHTML = `<input type="checkbox" value="${a}" style="accent-color:var(--gold);"> ${a}`;
+      box.appendChild(label);
+    });
+  }
 }
 
 // Förhandsgranska bild när fil väljs
