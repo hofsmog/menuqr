@@ -538,7 +538,7 @@
       <button class="logout-btn" onclick="logout()">Logga ut</button>
       <div style="padding:12px 16px;border-top:1px solid rgba(200,151,58,0.1);margin-top:8px;">
         <div style="font-size:0.7rem;color:rgba(245,240,232,0.25);margin-bottom:4px;">Support</div>
-        <a href="mailto:support@menuqr.se" style="font-size:0.78rem;color:rgba(200,151,58,0.6);text-decoration:none;">support@menuqr.se</a>
+        <a href="/cdn-cgi/l/email-protection#6b181e1b1b04191f2b060e051e1a1945180e" style="font-size:0.78rem;color:rgba(200,151,58,0.6);text-decoration:none;"><span class="__cf_email__" data-cfemail="0b787e7b7b64797f4b666e657e7a7925786e">[email&#160;protected]</span></a>
       </div>
     </div>
   </aside>
@@ -970,7 +970,7 @@
 
 <div class="toast" id="toast"></div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 const SUPABASE_URL = 'https://bvqlgxkarepnpjzvpoqg.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_tRUL5Upn7ooMgOWVRNeLsw_c2YXEaym';
 const { createClient } = supabase;
@@ -1319,7 +1319,7 @@ async function setupRestaurant() {
     } catch(e) { /* tyst fel */ }
   }
 
-  const { data, error } = await db.from('restaurants').insert([{ name, description, slug, user_id: currentUser.id, address, lat, lng }]).select().single();
+  const { data, error } = await db.from('restaurants').insert([{ name, description, slug, user_id: currentUser.id, address, lat, lng, is_pro: false }]).select().single();
   btn.textContent = 'Skapa min meny →'; btn.disabled = false;
   if (error) { errEl.style.display='block'; errEl.textContent = error.message.includes('unique') ? 'Den URL:en är redan tagen, prova en annan' : error.message; return; }
   restaurantId = data.id;
@@ -2777,15 +2777,4 @@ async function submitContact() {
     const data = await res.json();
     if (!data.ok) throw new Error(data.error || 'Okänt fel');
     document.getElementById('contact-form').style.display = 'none';
-    document.getElementById('contact-success').style.display = 'block';
-  } catch(e) {
-    errEl.style.display = 'block';
-    errEl.textContent = 'Kunde inte skicka: ' + e.message;
-    btn.textContent = 'Skicka meddelande'; btn.disabled = false;
-  }
-}
-
-startup();
-</script>
-</body>
-</html>
+    document.getElementById('contact-success').styl
