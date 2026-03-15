@@ -135,7 +135,12 @@
   .cat-chip.active { background: var(--ink); color: var(--cream); border-color: var(--ink); }
   .cat-chip:hover:not(.active) { border-color: var(--gold); color: var(--gold); }
   .menu-items-list { display: flex; flex-direction: column; gap: 12px; }
-  .menu-item-row { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 20px; }
+  .menu-item-row { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; display: grid; grid-template-columns: 24px 48px 1fr auto auto; align-items: center; gap: 16px; }
+  .drag-handle { cursor: grab; color: #ccc; font-size: 1.1rem; display: flex; flex-direction: column; gap: 3px; align-items: center; padding: 4px; }
+  .drag-handle:active { cursor: grabbing; }
+  .drag-handle span { display: block; width: 16px; height: 2px; background: currentColor; border-radius: 1px; }
+  .menu-item-row.dragging { opacity: 0.4; border: 2px dashed var(--gold); }
+  .menu-item-row.drag-over { border-color: var(--gold); background: rgba(200,151,58,0.05); }
   .item-name { font-weight: 500; font-size: 0.95rem; }
   .item-desc-small { font-size: 0.8rem; color: #999; margin-top: 2px; }
   .item-price { font-size: 1rem; font-weight: 600; color: var(--gold); min-width: 70px; text-align: right; }
@@ -1464,7 +1469,7 @@ function switchPanel(panelId, el) {
 
 // ── MENU DATA ──
 async function loadMenuItems() {
-  const { data, error } = await db.from('menu_items').select('*').eq('restaurant_id', restaurantId).order('created_at');
+  const { data, error } = await db.from('menu_items').select('*').eq('restaurant_id', restaurantId).order('sort_order', { ascending: true }).order('created_at', { ascending: true });
   if (error) return;
   menuItems = data || [];
   const cats = [...new Set(menuItems.map(i => i.category))];
@@ -1486,7 +1491,8 @@ function renderAdminMenu() {
   const filtered = currentAdminCat === 'alla' ? menuItems : menuItems.filter(i => i.category === currentAdminCat);
   if (!filtered.length) { document.getElementById('menu-items-list').innerHTML = '<p style="color:#999;padding:20px 0">Inga rätter här ännu.</p>'; return; }
   document.getElementById('menu-items-list').innerHTML = filtered.map(item => `
-    <div class="menu-item-row">
+    <div class="menu-item-row" draggable="true" data-id="${item.id}">
+      <div class="drag-handle" title="Dra för att ändra ordning"><span></span><span></span><span></span></div>
       ${item.image_url ? `<img src="${item.image_url}" style="width:48px;height:48px;object-fit:cover;border-radius:8px;flex-shrink:0;">` : `<div style="width:48px;height:48px;background:var(--surface);border-radius:8px;flex-shrink:0;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:#ccc;font-size:1.2rem;">🍽</div>`}
       <div style="flex:1;min-width:0;">
         <div class="item-name">${item.name}</div>
@@ -1499,6 +1505,65 @@ function renderAdminMenu() {
         <button class="icon-btn danger" onclick="deleteItem('${item.id}')" title="Ta bort">✕</button>
       </div>
     </div>`).join('');
+
+  // Drag-and-drop
+  initDragAndDrop();
+}
+
+let dragSrcId = null;
+
+function initDragAndDrop() {
+  const list = document.getElementById('menu-items-list');
+  const rows = list.querySelectorAll('.menu-item-row');
+
+  rows.forEach(row => {
+    row.addEventListener('dragstart', e => {
+      dragSrcId = row.dataset.id;
+      row.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    row.addEventListener('dragend', () => {
+      row.classList.remove('dragging');
+      list.querySelectorAll('.menu-item-row').forEach(r => r.classList.remove('drag-over'));
+    });
+    row.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      list.querySelectorAll('.menu-item-row').forEach(r => r.classList.remove('drag-over'));
+      row.classList.add('drag-over');
+    });
+    row.addEventListener('drop', e => {
+      e.preventDefault();
+      if (dragSrcId === row.dataset.id) return;
+      reorderItems(dragSrcId, row.dataset.id);
+    });
+  });
+}
+
+async function reorderItems(srcId, targetId) {
+  // Hitta indexar i den filtrerade listan
+  const filtered = currentAdminCat === 'alla' ? menuItems : menuItems.filter(i => i.category === currentAdminCat);
+  const srcIdx = filtered.findIndex(i => i.id === srcId);
+  const targetIdx = filtered.findIndex(i => i.id === targetId);
+  if (srcIdx === -1 || targetIdx === -1) return;
+
+  // Flytta i filtered array
+  const moved = filtered.splice(srcIdx, 1)[0];
+  filtered.splice(targetIdx, 0, moved);
+
+  // Uppdatera sort_order i menuItems globalt
+  filtered.forEach((item, idx) => {
+    const globalIdx = menuItems.findIndex(i => i.id === item.id);
+    if (globalIdx !== -1) menuItems[globalIdx].sort_order = idx;
+  });
+
+  renderAdminMenu();
+
+  // Spara till databasen
+  await Promise.all(filtered.map((item, idx) =>
+    db.from('menu_items').update({ sort_order: idx }).eq('id', item.id)
+  ));
+  showToast('✓ Ordning sparad!');
 }
 
 function filterCat(cat, el) {
@@ -1704,7 +1769,7 @@ function renderGuestMenu() {
     cats.map(c => `<button class="menu-cat-btn${currentGuestCat===c?' active':''}" onclick="filterGuestCat('${c}',this)">${c.charAt(0).toUpperCase()+c.slice(1)}</button>`).join('');
 
   const html = toShow.map(cat => {
-    const items = menuItems.filter(i => i.category === cat);
+    const items = menuItems.filter(i => i.category === cat).sort((a,b) => (a.sort_order||0) - (b.sort_order||0));
     if (!items.length) return '';
     return `<div class="menu-section">
       <div class="menu-section-title">${cat.charAt(0).toUpperCase()+cat.slice(1)}</div>
