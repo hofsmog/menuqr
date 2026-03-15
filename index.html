@@ -1228,7 +1228,7 @@ function loadAccountPanel() {
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
         <div>
           <div style="font-weight:500;color:var(--sage);">⭐ Pro-plan aktiv</div>
-          <div style="font-size:0.82rem;color:#888;margin-top:4px;">199 kr/månad · Avsluta när som helst</div>
+          <div style="font-size:0.82rem;color:#888;margin-top:4px;">199 kr/månad · Förnyas automatiskt</div>
         </div>
         <button onclick="cancelSubscription()" style="background:none;border:1px solid var(--rust);color:var(--rust);border-radius:8px;padding:9px 18px;font-family:'DM Sans',sans-serif;font-size:0.82rem;cursor:pointer;">Avsluta prenumeration</button>
       </div>`;
@@ -1298,11 +1298,8 @@ async function cancelSubscription() {
     });
     const data = await res.json();
     if (data.ok) {
-      await db.from('restaurants').update({ is_pro: false }).eq('id', restaurantId);
-      window._restaurantData.is_pro = false;
-      updateProUI(false);
       loadAccountPanel();
-      showToast('Prenumeration avslutad');
+      showToast('✓ Prenumeration avslutas vid periodens slut – du har kvar Pro tills dess.');
     } else {
       showToast('Fel: ' + (data.error || 'Okänt fel'));
     }
@@ -1852,14 +1849,38 @@ function updateProUI(isPro) {
 }
 
 async function activatePro() {
-  const { error } = await db.from('restaurants')
-    .update({ is_pro: true, pro_since: new Date().toISOString() })
-    .eq('id', restaurantId);
-  if (!error) {
+  // Hämta stripe_customer_id via vår API
+  try {
+    const res = await fetch('/api/get-customer-id', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: currentUser.email })
+    });
+    const data = await res.json();
+    const customerId = data.customerId;
+
+    const { error } = await db.from('restaurants')
+      .update({
+        is_pro: true,
+        pro_since: new Date().toISOString(),
+        stripe_customer_id: customerId || null
+      })
+      .eq('id', restaurantId);
+
+    if (!error) {
+      if (window._restaurantData) window._restaurantData.stripe_customer_id = customerId;
+      updateProUI(true);
+      showToast('🎉 Pro aktiverat! Alla funktioner är nu upplåsta.');
+    } else {
+      showToast('Fel vid aktivering – kontakta support');
+    }
+  } catch(e) {
+    // Fallback utan customer ID
+    await db.from('restaurants')
+      .update({ is_pro: true, pro_since: new Date().toISOString() })
+      .eq('id', restaurantId);
     updateProUI(true);
-    showToast('🎉 Pro aktiverat! Alla funktioner är nu upplåsta.');
-  } else {
-    showToast('Fel vid aktivering – kontakta support');
+    showToast('🎉 Pro aktiverat!');
   }
 }
 
