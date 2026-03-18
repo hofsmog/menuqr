@@ -224,25 +224,19 @@
     .admin-sidebar { display: none; }
     .qr-container { grid-template-columns: 1fr; }
 
-    /* Startsida nav */
+    /* Nav */
     .home-nav { padding: 16px 20px; }
     .home-nav-links { gap: 8px; }
     .home-nav-links .nav-link { display: none; }
     .btn-gold, .btn-outline { padding: 9px 14px; font-size: 0.78rem; }
 
-    /* Kundhero */
-    .customer-hero { padding: 48px 20px 40px; }
-    .customer-hero h1 { font-size: 2rem; }
-    .search-bar { margin: 0 4px; }
+    /* Hero – stapla vertikalt */
+    #view-home [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+    .mock-phone { width: 180px; display: none; }
 
-    /* Restauranglista */
-    #nearby-list { grid-template-columns: 1fr !important; padding: 0; }
-    #view-home > div:nth-child(3) { padding: 32px 20px !important; }
-
-    /* Restauranghero */
-    .restaurant-hero { grid-template-columns: 1fr !important; gap: 40px; padding: 48px 20px; }
-    .features-bar { grid-template-columns: 1fr !important; }
-    .mock-phone { width: 180px; }
+    /* Sektioner – minska padding */
+    #features-section, #pricing-section, #contact-section { padding: 60px 24px !important; }
+    #view-home [style*="padding:80px 48px"] { padding: 60px 24px !important; }
 
     /* Bokningsinställningar */
     #panel-booking-settings .admin-topbar { flex-direction: column; align-items: flex-start; gap: 12px; }
@@ -250,7 +244,7 @@
   }
 
   @media (max-width: 600px) {
-    /* Nav – visa bara logga + en knapp */
+    /* Nav */
     .home-nav { padding: 14px 16px; }
     .home-nav-links .btn-outline { display: none; }
     .home-nav-links .btn-gold { font-size: 0.75rem; padding: 8px 12px; }
@@ -258,24 +252,29 @@
     /* Auth */
     .auth-box { padding: 32px 24px; }
 
-    /* Kundhero */
-    .customer-hero { padding: 36px 16px 32px; }
-    .search-bar input { font-size: 0.85rem; padding: 13px 14px; }
-    .search-bar button { padding: 13px 16px; font-size: 0.78rem; }
+    /* Hero */
+    #view-home [style*="padding:80px 48px"] { padding: 48px 20px !important; }
+    #view-home h1 { font-size: 1.9rem !important; }
 
-    /* Restauranglista */
-    #view-home > div:nth-child(3) { padding: 24px 16px !important; }
+    /* Features */
+    #features-section { padding: 48px 20px !important; }
+    #features-section [style*="grid-template-columns:repeat"] { grid-template-columns: 1fr 1fr !important; }
 
-    /* Restauranghero */
-    .restaurant-hero { padding: 36px 16px; }
+    /* Priser – stapla på mobil */
+    #pricing-section { padding: 48px 20px !important; }
+    #pricing-section [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+    #pricing-section [style*="margin-top:20px"] { margin-top: 0 !important; }
+
+    /* Kontakt */
+    #contact-section { padding: 48px 20px !important; }
 
     /* Admin */
     .admin-content { padding: 20px 16px; }
     .admin-topbar { flex-direction: column; align-items: flex-start; gap: 12px; }
     .stats-grid { grid-template-columns: 1fr !important; }
-    .menu-item-row { grid-template-columns: 1fr auto !important; }
+    .menu-item-row { grid-template-columns: 24px 1fr auto !important; }
 
-    /* Bokningar tabell – göm kolumner */
+    /* Bokningar tabell */
     table th:nth-child(4), table td:nth-child(4),
     table th:nth-child(5), table td:nth-child(5) { display: none; }
 
@@ -287,10 +286,13 @@
     .toast { bottom: 16px; right: 16px; left: 16px; transform: translateY(120%); }
     .toast.show { transform: translateY(0); }
 
-    /* Meny */
+    /* Gästmeny */
     .menu-hero { padding: 20px 20px 24px; }
     .menu-cats-scroll { padding: 16px 20px; }
     .menu-section { padding: 20px; }
+
+    /* Footer */
+    #view-home [style*="padding:20px 48px"] { padding: 20px 16px !important; font-size: 0.72rem; }
   }
 </style>
 <!-- Google tag (gtag.js) -->
