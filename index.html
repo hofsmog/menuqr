@@ -396,7 +396,7 @@
 </div>
 
 <!-- HOME -->
-<div id="view-home" class="view">
+<div id="view-home" class="view" style="overflow-x:hidden;">
   <nav class="home-nav">
     <div class="logo"><svg width="120" height="36" viewBox="0 0 120 36" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="3" width="30" height="30" rx="4" fill="#1a1208"/><rect x="3" y="6" width="10" height="10" rx="1" fill="#c8973a"/><rect x="4.5" y="7.5" width="7" height="7" rx="0.5" fill="#1a1208"/><rect x="6" y="9" width="4" height="4" rx="0.3" fill="#c8973a"/><rect x="17" y="6" width="10" height="10" rx="1" fill="#c8973a"/><rect x="18.5" y="7.5" width="7" height="7" rx="0.5" fill="#1a1208"/><rect x="20" y="9" width="4" height="4" rx="0.3" fill="#c8973a"/><rect x="3" y="20" width="10" height="10" rx="1" fill="#c8973a"/><rect x="4.5" y="21.5" width="7" height="7" rx="0.5" fill="#1a1208"/><rect x="6" y="23" width="4" height="4" rx="0.3" fill="#c8973a"/><rect x="17" y="20" width="3" height="3" rx="0.3" fill="#c8973a"/><rect x="21" y="20" width="3" height="3" rx="0.3" fill="#c8973a"/><rect x="25" y="20" width="3" height="3" rx="0.3" fill="#c8973a"/><rect x="17" y="24" width="3" height="3" rx="0.3" fill="#c8973a"/><rect x="25" y="24" width="3" height="3" rx="0.3" fill="#c8973a"/><rect x="17" y="28" width="3" height="3" rx="0.3" fill="#c8973a"/><rect x="21" y="28" width="3" height="3" rx="0.3" fill="#c8973a"/><rect x="25" y="28" width="3" height="3" rx="0.3" fill="#c8973a"/><text x="35" y="25" font-family="Georgia,serif" font-size="18" font-weight="400" fill="#1a1208">Menu</text><text x="83" y="25" font-family="Georgia,serif" font-size="18" font-weight="700" fill="#c8973a">QR</text></svg></div>
     <div class="home-nav-links">
@@ -404,102 +404,104 @@
       <button class="nav-link" onclick="document.getElementById('pricing-section').scrollIntoView({behavior:'smooth'})">Priser</button>
       <button class="nav-link" onclick="document.getElementById('contact-section').scrollIntoView({behavior:'smooth'})">Kontakt</button>
       <button class="btn-outline" onclick="showView('view-auth')">Logga in</button>
-      <button class="btn-gold" onclick="showView('view-auth')">Kom igång gratis</button>
+      <button class="btn-gold" onclick="showView('view-auth')">Kom ig&aring;ng gratis</button>
     </div>
   </nav>
 
   <!-- Hero -->
-  <div style="background:var(--ink);color:var(--cream);padding:100px 48px;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;">
-    <div style="min-width:0;">
-      <div style="font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:20px;">Digital meny för restauranger</div>
-      <h1 style="font-family:'Playfair Display',serif;font-size:clamp(2.2rem,4vw,3.5rem);font-weight:400;line-height:1.15;margin-bottom:20px;">Din meny.<br><em style="color:var(--gold);font-style:italic;">Alltid uppdaterad.</em><br>Alltid tillgänglig.</h1>
-      <p style="font-size:1rem;color:rgba(245,240,232,0.6);line-height:1.8;margin-bottom:40px;max-width:440px;">Skapa en vacker digital meny på minuter. Gästerna scannar QR-koden och ser alltid det senaste. Inga appar, inga utskrifter.</p>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;">
-        <button class="btn-gold" onclick="showView('view-auth')" style="border-radius:8px;font-size:0.95rem;padding:14px 28px;">Skapa gratis konto</button>
-        <button class="btn-outline" onclick="showView('view-menu-demo')" class="btn-outline light" style="font-size:0.95rem;padding:14px 28px;">Se demo</button>
-      </div>
-    </div>
-    <div style="text-align:center;">
-      <div class="mock-phone" style="margin:0 auto;">
-        <div class="phone-notch"></div>
-        <div class="phone-header">
-          <div class="phone-restaurant">Trattoria Bella</div>
-          <div class="phone-subtitle">Digital meny via MenuQR</div>
+  <div style="background:var(--ink);color:var(--cream);padding:80px 48px;box-sizing:border-box;width:100%;">
+    <div style="max-width:1000px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;">
+      <div>
+        <div style="font-size:0.72rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:20px;">Digital meny f&ouml;r restauranger</div>
+        <h1 style="font-family:'Playfair Display',serif;font-size:clamp(2rem,3.5vw,3.2rem);font-weight:400;line-height:1.2;margin-bottom:20px;">Din meny.<br><em style="color:var(--gold);">Alltid uppdaterad.</em><br>Alltid tillg&auml;nglig.</h1>
+        <p style="font-size:0.95rem;color:rgba(245,240,232,0.6);line-height:1.8;margin-bottom:36px;">Skapa en vacker digital meny p&aring; minuter. G&auml;sterna scannar QR-koden och ser alltid det senaste. Inga appar, inga utskrifter.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <button class="btn-gold" onclick="showView('view-auth')" style="border-radius:8px;">Skapa gratis konto</button>
+          <button onclick="showView('view-menu-demo')" style="background:transparent;border:1px solid rgba(245,240,232,0.4);color:var(--cream);padding:11px 24px;font-family:'DM Sans',sans-serif;font-size:0.85rem;cursor:pointer;border-radius:8px;transition:all 0.2s;">Se demo</button>
         </div>
-        <div class="phone-items">
-          <div class="phone-item"><div class="phone-item-name">Bruschetta al pomodoro</div><div class="phone-item-price">89 kr</div></div>
-          <div class="phone-item"><div class="phone-item-name">Tagliatelle al ragù</div><div class="phone-item-price">215 kr</div></div>
-          <div class="phone-item"><div class="phone-item-name">Tiramisù della casa</div><div class="phone-item-price">95 kr</div></div>
+      </div>
+      <div style="display:flex;justify-content:center;">
+        <div class="mock-phone">
+          <div class="phone-notch"></div>
+          <div class="phone-header">
+            <div class="phone-restaurant">Trattoria Bella</div>
+            <div class="phone-subtitle">Digital meny via MenuQR</div>
+          </div>
+          <div class="phone-items">
+            <div class="phone-item"><div class="phone-item-name">Bruschetta al pomodoro</div><div class="phone-item-price">89 kr</div></div>
+            <div class="phone-item"><div class="phone-item-name">Tagliatelle al rag&ugrave;</div><div class="phone-item-price">215 kr</div></div>
+            <div class="phone-item"><div class="phone-item-name">Tiramisù della casa</div><div class="phone-item-price">95 kr</div></div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Features -->
-  <div id="features-section" style="background:var(--surface);padding:80px 48px;">
-    <div style="max-width:900px;margin:0 auto;">
-      <div style="text-align:center;margin-bottom:56px;">
-        <div style="font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;">Funktioner</div>
-        <h2 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:400;">Allt du behöver, inget du inte behöver</h2>
+  <div id="features-section" style="background:var(--surface);padding:80px 48px;box-sizing:border-box;width:100%;">
+    <div style="max-width:1000px;margin:0 auto;">
+      <div style="text-align:center;margin-bottom:48px;">
+        <div style="font-size:0.72rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;">Funktioner</div>
+        <h2 style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:400;">Allt du beh&ouml;ver, inget du inte beh&ouml;ver</h2>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:24px;">
-        <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:28px;">
-          <div style="font-size:1.8rem;margin-bottom:16px;">&#128203;</div>
-          <div style="font-weight:500;margin-bottom:8px;">Digital meny</div>
-          <div style="font-size:0.82rem;color:#888;line-height:1.6;">Uppdatera i realtid. Gästerna ser alltid det senaste direkt i mobilen.</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:20px;">
+        <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:24px;">
+          <div style="font-size:1.6rem;margin-bottom:12px;">&#128203;</div>
+          <div style="font-weight:500;margin-bottom:6px;">Digital meny</div>
+          <div style="font-size:0.8rem;color:#888;line-height:1.6;">Uppdatera i realtid. G&auml;sterna ser alltid det senaste direkt i mobilen.</div>
         </div>
-        <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:28px;">
-          <div style="font-size:1.8rem;margin-bottom:16px;">&#128197;</div>
-          <div style="font-weight:500;margin-bottom:8px;">Bordsbokning</div>
-          <div style="font-size:0.82rem;color:#888;line-height:1.6;">Smart bokningssystem som förhindrar dubbelbookning automatiskt.</div>
+        <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:24px;">
+          <div style="font-size:1.6rem;margin-bottom:12px;">&#128197;</div>
+          <div style="font-weight:500;margin-bottom:6px;">Bordsbokning</div>
+          <div style="font-size:0.8rem;color:#888;line-height:1.6;">Smart bokningssystem som f&ouml;rhindrar dubbelbookning automatiskt.</div>
         </div>
-        <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:28px;">
-          <div style="font-size:1.8rem;margin-bottom:16px;">&#9993;</div>
-          <div style="font-weight:500;margin-bottom:8px;">Automatiska mail</div>
-          <div style="font-size:0.82rem;color:#888;line-height:1.6;">Bokningsbekräftelser skickas automatiskt till gästerna.</div>
+        <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:24px;">
+          <div style="font-size:1.6rem;margin-bottom:12px;">&#9993;</div>
+          <div style="font-weight:500;margin-bottom:6px;">Automatiska mail</div>
+          <div style="font-size:0.8rem;color:#888;line-height:1.6;">Bokningsbek&auml;ftelser skickas automatiskt till g&auml;sterna.</div>
         </div>
-        <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:28px;">
-          <div style="font-size:1.8rem;margin-bottom:16px;">&#128202;</div>
-          <div style="font-weight:500;margin-bottom:8px;">Statistik</div>
-          <div style="font-size:0.82rem;color:#888;line-height:1.6;">Se hur många som besöker din meny och vilka dagar som är populärast.</div>
+        <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:24px;">
+          <div style="font-size:1.6rem;margin-bottom:12px;">&#128202;</div>
+          <div style="font-weight:500;margin-bottom:6px;">Statistik</div>
+          <div style="font-size:0.8rem;color:#888;line-height:1.6;">Se hur m&aring;nga som bes&ouml;ker din meny varje dag.</div>
         </div>
-        <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:28px;">
-          <div style="font-size:1.8rem;margin-bottom:16px;">&#9638;</div>
-          <div style="font-weight:500;margin-bottom:8px;">QR-kod</div>
-          <div style="font-size:0.82rem;color:#888;line-height:1.6;">Ladda ned och skriv ut din QR-kod. Placera på bord eller i fönstret.</div>
+        <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:24px;">
+          <div style="font-size:1.6rem;margin-bottom:12px;">&#9638;</div>
+          <div style="font-weight:500;margin-bottom:6px;">QR-kod</div>
+          <div style="font-size:0.8rem;color:#888;line-height:1.6;">Ladda ned och skriv ut din QR-kod. Placera p&aring; bord eller i f&ouml;nstret.</div>
         </div>
-        <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:28px;">
-          <div style="font-size:1.8rem;margin-bottom:16px;">&#128444;</div>
-          <div style="font-weight:500;margin-bottom:8px;">Bilder på rätter</div>
-          <div style="font-size:0.82rem;color:#888;line-height:1.6;">Lägg till bilder på dina rätter för en mer inbjudande meny.</div>
+        <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:24px;">
+          <div style="font-size:1.6rem;margin-bottom:12px;">&#128444;</div>
+          <div style="font-weight:500;margin-bottom:6px;">Bilder p&aring; r&auml;tter</div>
+          <div style="font-size:0.8rem;color:#888;line-height:1.6;">L&auml;gg till bilder p&aring; dina r&auml;tter f&ouml;r en mer inbjudande meny.</div>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Priser -->
-  <div id="pricing-section" style="background:white;padding:80px 48px;">
-    <div style="max-width:600px;margin:0 auto;text-align:center;">
-      <div style="font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;">Priser</div>
-      <h2 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:400;margin-bottom:48px;">Enkla och transparenta priser</h2>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;text-align:left;">
+  <div id="pricing-section" style="background:white;padding:80px 48px;box-sizing:border-box;width:100%;">
+    <div style="max-width:700px;margin:0 auto;text-align:center;">
+      <div style="font-size:0.72rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;">Priser</div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:400;margin-bottom:48px;">Enkla och transparenta priser</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;text-align:left;">
         <div style="border:1px solid var(--border);border-radius:16px;padding:32px;">
-          <div style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:8px;">Gratis</div>
-          <div style="font-size:2.5rem;font-weight:500;margin-bottom:4px;">0 kr</div>
-          <div style="font-size:0.8rem;color:#888;margin-bottom:24px;">För alltid</div>
+          <div style="font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:12px;">Gratis</div>
+          <div style="font-size:2.2rem;font-weight:600;white-space:nowrap;margin-bottom:4px;">0 kr</div>
+          <div style="font-size:0.8rem;color:#888;margin-bottom:24px;">F&ouml;r alltid</div>
           <div style="display:flex;flex-direction:column;gap:10px;font-size:0.85rem;color:#555;">
             <div>&#10003; Digital meny</div>
             <div>&#10003; QR-kod</div>
-            <div>&#10003; Obegränsade rätter</div>
-            <div>&#10003; Bilder på rätter</div>
+            <div>&#10003; Obegr&auml;nsade r&auml;tter</div>
+            <div>&#10003; Bilder p&aring; r&auml;tter</div>
           </div>
-          <button onclick="showView('view-auth')" style="margin-top:28px;width:100%;background:var(--ink);color:var(--cream);border:none;padding:12px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;cursor:pointer;">Kom igång gratis</button>
+          <button onclick="showView('view-auth')" style="margin-top:28px;width:100%;background:var(--ink);color:var(--cream);border:none;padding:12px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;cursor:pointer;">Kom ig&aring;ng gratis</button>
         </div>
-        <div style="border:2px solid var(--gold);border-radius:16px;padding:32px;position:relative;">
-          <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--ink);font-size:0.7rem;font-weight:600;padding:4px 12px;border-radius:10px;white-space:nowrap;">POPULÄRAST</div>
-          <div style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:8px;color:var(--gold);">Pro</div>
-          <div style="font-size:2.5rem;font-weight:500;margin-bottom:4px;">199 kr</div>
-          <div style="font-size:0.8rem;color:#888;margin-bottom:24px;">per månad</div>
+        <div style="border:2px solid var(--gold);border-radius:16px;padding:32px;position:relative;margin-top:20px;">
+          <div style="position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--ink);font-size:0.68rem;font-weight:600;padding:4px 14px;border-radius:10px;white-space:nowrap;">POPUL&Auml;RAST</div>
+          <div style="font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:12px;color:var(--gold);">Pro</div>
+          <div style="font-size:2.2rem;font-weight:600;white-space:nowrap;margin-bottom:4px;">199 kr<span style="font-size:0.85rem;font-weight:400;color:#888;">/m&aring;n</span></div>
+          <div style="font-size:0.8rem;color:#888;margin-bottom:24px;">Avsluta n&auml;r som helst</div>
           <div style="display:flex;flex-direction:column;gap:10px;font-size:0.85rem;color:#555;">
             <div>&#10003; Allt i gratis</div>
             <div>&#10003; Bordsbokning</div>
@@ -507,22 +509,22 @@
             <div>&#10003; Statistik</div>
             <div>&#10003; Ta bort MenuQR-logga</div>
           </div>
-          <button onclick="showView('view-auth')" style="margin-top:28px;width:100%;background:var(--gold);color:var(--ink);border:none;padding:12px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;cursor:pointer;">Prova Pro</button>
+          <button onclick="showView('view-auth')" style="margin-top:28px;width:100%;background:var(--gold);color:var(--ink);border:none;padding:12px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:500;cursor:pointer;">Prova Pro</button>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Kontakt -->
-  <div id="contact-section" style="background:var(--ink);color:var(--cream);padding:80px 48px;">
-    <div style="max-width:600px;margin:0 auto;">
-      <div style="font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;">Kontakt</div>
-      <h2 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:400;margin-bottom:12px;">Hur kan vi hjälpa dig?</h2>
-      <p style="color:rgba(245,240,232,0.5);margin-bottom:40px;line-height:1.7;">Har du frågor om MenuQR? Hör av dig så återkommer vi inom 1-2 arbetsdagar.</p>
+  <div id="contact-section" style="background:var(--ink);color:var(--cream);padding:80px 48px;box-sizing:border-box;width:100%;">
+    <div style="max-width:560px;margin:0 auto;">
+      <div style="font-size:0.72rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;">Kontakt</div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:400;margin-bottom:12px;">Hur kan vi hj&auml;lpa dig?</h2>
+      <p style="color:rgba(245,240,232,0.5);margin-bottom:36px;line-height:1.7;">Har du fr&aring;gor om MenuQR? H&ouml;r av dig s&aring; &aring;terkommer vi inom 1-2 arbetsdagar.</p>
       <div id="contact-success" style="display:none;background:rgba(90,122,90,0.2);border:1px solid rgba(90,122,90,0.4);border-radius:12px;padding:24px;text-align:center;margin-bottom:24px;">
-        <div style="font-size:1.5rem;margin-bottom:8px;">&#10003;</div>
+        <div style="font-size:1.4rem;margin-bottom:8px;">&#10003;</div>
         <div style="font-weight:500;">Meddelande skickat!</div>
-        <div style="font-size:0.85rem;color:rgba(245,240,232,0.5);margin-top:4px;">Vi återkommer inom 1-2 arbetsdagar.</div>
+        <div style="font-size:0.85rem;color:rgba(245,240,232,0.5);margin-top:4px;">Vi &aring;terkommer inom 1-2 arbetsdagar.</div>
       </div>
       <div id="contact-form">
         <div style="display:flex;flex-direction:column;gap:12px;">
@@ -537,12 +539,12 @@
   </div>
 
   <!-- Footer -->
-  <div style="background:var(--ink);color:rgba(245,240,232,0.3);padding:24px 48px;text-align:center;font-size:0.78rem;border-top:1px solid rgba(200,151,58,0.1);">
-    &copy; 2026 MenuQR &middot; HoF Smog, Kävlinge &middot;
+  <div style="background:var(--ink);color:rgba(245,240,232,0.3);padding:20px 48px;text-align:center;font-size:0.78rem;border-top:1px solid rgba(200,151,58,0.1);box-sizing:border-box;width:100%;">
+    &copy; 2026 MenuQR &middot; HoF Smog, K&auml;vlinge &middot;
     <span style="cursor:pointer;color:var(--gold);" onclick="showView('view-auth')">Logga in</span> &middot;
-    <span style="cursor:pointer;color:rgba(245,240,232,0.3);" onclick="document.getElementById('contact-section').scrollIntoView({behavior:'smooth'})">Kontakt</span> &middot;
-    <span style="cursor:pointer;color:rgba(245,240,232,0.3);" onclick="showLegal('terms')">Villkor</span> &middot;
-    <span style="cursor:pointer;color:rgba(245,240,232,0.3);" onclick="showLegal('privacy')">Integritetspolicy</span>
+    <span style="cursor:pointer;" onclick="document.getElementById('contact-section').scrollIntoView({behavior:'smooth'})">Kontakt</span> &middot;
+    <span style="cursor:pointer;" onclick="showLegal('terms')">Villkor</span> &middot;
+    <span style="cursor:pointer;" onclick="showLegal('privacy')">Integritetspolicy</span>
   </div>
 </div>
 
