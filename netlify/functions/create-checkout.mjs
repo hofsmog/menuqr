@@ -8,6 +8,47 @@ export default async (req) => {
   const STRIPE_SECRET = 'sk_test_51TA4h3QeEVmd8NvFC0cAdKVzOnfVX6v39PT7ZOg87ObnPL7Jg1s9oLdBb5kCnYipKQt3NpfGD81ina3S7mwQcMeq00ADeF8v91';
   const PRICE_ID = 'price_1TARzfQeEVmd8NvFbmEwuOiX';
 
+  if (!STRIPE_SECRET) {
+    console.error('Create checkout misconfigured: missing STRIPE_SECRET_KEY');
+    return new Response(JSON.stringify({ error: 'Checkout misconfigured' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
+  if (!restaurantId || typeof restaurantId !== 'string') {
+    console.warn('Create checkout rejected: missing restaurantId');
+    return new Response(JSON.stringify({ error: 'Missing required field: restaurantId' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
+  if (!email || typeof email !== 'string') {
+    console.warn('Create checkout rejected: missing email');
+    return new Response(JSON.stringify({ error: 'Missing required field: email' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
+  const normalizedEmail = email.trim().toLowerCase();
+  const normalizedRestaurantId = restaurantId.trim();
+  if (!normalizedEmail) {
+    console.warn('Create checkout rejected: empty email');
+    return new Response(JSON.stringify({ error: 'Missing required field: email' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+  if (!normalizedRestaurantId) {
+    console.warn('Create checkout rejected: empty restaurantId');
+    return new Response(JSON.stringify({ error: 'Missing required field: restaurantId' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
   try {
     const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
@@ -20,9 +61,9 @@ export default async (req) => {
         'payment_method_types[]': 'card',
         'line_items[0][price]': PRICE_ID,
         'line_items[0][quantity]': '1',
-        'customer_email': email,
-        'metadata[restaurant_id]': restaurantId,
-        'success_url': `https://menuqr.se?pro_success=true&restaurant_id=${restaurantId}`,
+        'customer_email': normalizedEmail,
+        'metadata[restaurant_id]': normalizedRestaurantId,
+        'success_url': `https://menuqr.se?pro_success=true&restaurant_id=${normalizedRestaurantId}`,
         'cancel_url': 'https://menuqr.se?pro_cancelled=true',
       })
     });
