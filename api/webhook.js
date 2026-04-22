@@ -19,8 +19,14 @@ async function supabaseUpdate(table, update, match) {
     },
     body: JSON.stringify(update)
   });
-  console.log('Supabase update status:', res.status, 'table:', table, 'matchColumn:', col);
-  return res.ok;
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error('Supabase update failed:', 'status=', res.status, 'table=', table, 'matchColumn=', col, 'matchValue=', val, 'response=', errorText);
+    return false;
+  }
+
+  console.log('Supabase update ok:', 'table=', table, 'matchColumn=', col, 'matchValue=', val);
+  return true;
 }
 
 async function readRawBody(req) {
@@ -45,6 +51,11 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: 'Webhook misconfigured' });
   }
 
+  if (!process.env.SUPABASE_SERVICE_KEY) {
+    console.error('Stripe webhook misconfigured: missing SUPABASE_SERVICE_KEY');
+    return res.status(500).json({ error: 'Webhook misconfigured' });
+  }
+
   const signature = req.headers['stripe-signature'];
   if (!signature) {
     console.warn('Stripe webhook rejected: missing signature header');
@@ -64,7 +75,7 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid Stripe signature' });
   }
 
-  console.log('Stripe webhook event received:', event.type, 'id:', event.id);
+  console.log('Stripe webhook verified:', 'type=', event.type, 'id=', event.id);
 
   try {
     if (event.type === 'checkout.session.completed') {
@@ -79,7 +90,11 @@ module.exports = async function handler(req, res) {
           pro_since: new Date().toISOString(),
           stripe_customer_id: customerId
         }, { id: restaurantId });
-        console.log('Pro activated:', ok);
+        if (!ok) {
+          console.error('Pro activation database update failed for event:', event.id, 'restaurant:', restaurantId);
+          return res.status(500).json({ error: 'Webhook handler failed' });
+        }
+        console.log('Pro activated:', 'restaurant=', restaurantId, 'customer=', customerId || 'missing');
       } else {
         console.warn('checkout.session.completed missing restaurant_id metadata');
       }
@@ -89,12 +104,16 @@ module.exports = async function handler(req, res) {
 
       if (customerId) {
         const ok = await supabaseUpdate('restaurants', { is_pro: false }, { stripe_customer_id: customerId });
-        console.log('Pro deactivated:', ok);
+        if (!ok) {
+          console.error('Pro deactivation database update failed for event:', event.id, 'customer:', customerId);
+          return res.status(500).json({ error: 'Webhook handler failed' });
+        }
+        console.log('Pro deactivated:', 'customer=', customerId);
       } else {
         console.warn('customer.subscription.deleted missing customer id');
       }
     } else {
-      console.log('Stripe webhook event ignored:', event.type);
+      console.log('Stripe webhook ignored:', 'type=', event.type, 'id=', event.id);
     }
 
     return res.status(200).json({ received: true });
