@@ -5,7 +5,7 @@ export default async (req) => {
 
   const { email, restaurantId } = await req.json();
 
-  const STRIPE_SECRET = 'sk_test_51TA4h3QeEVmd8NvFC0cAdKVzOnfVX6v39PT7ZOg87ObnPL7Jg1s9oLdBb5kCnYipKQt3NpfGD81ina3S7mwQcMeq00ADeF8v91';
+  const STRIPE_SECRET = process.env.STRIPE_SECRET_KEY;
   const PRICE_ID = 'price_1TARzfQeEVmd8NvFbmEwuOiX';
 
   if (!STRIPE_SECRET) {
