@@ -87,7 +87,7 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 16px;
       min-width: 0;
     }
 
@@ -96,7 +96,10 @@
       height: 64px;
       border-radius: 12px;
       object-fit: contain;
-      padding: 4px;
+      background: none;
+      border: none;
+      box-shadow: none;
+      padding: 0;
     }
 
     .brand-fallback {
@@ -136,7 +139,8 @@
     .brand-subtitle {
       margin: 4px 0 0;
       color: var(--muted);
-      font-size: 0.92rem;
+      font-size: 0.85rem;
+      opacity: 0.7;
       line-height: 1.35;
     }
 
@@ -378,7 +382,12 @@
     .btn-primary {
       background: linear-gradient(135deg, var(--brand), #54c774);
       color: white;
-      box-shadow: 0 12px 22px rgba(67, 185, 95, 0.3);
+      box-shadow: 0 10px 25px rgba(67, 185, 95, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(67, 185, 95, 0.5);
     }
 
     .btn-secondary {
@@ -1670,7 +1679,7 @@
         <div id="brandFallback" class="brand-fallback hidden" aria-hidden="true">MQ</div>
         <div class="brand-text">
           <span class="brand-kicker">MenuQR.se</span>
-          <p class="brand-title">Digital meny för restauranger</p>
+          <p class="brand-title">Skapa digital meny med QR</p>
           <p class="brand-subtitle">QR-meny på 2 minuter</p>
         </div>
       </div>
