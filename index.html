@@ -636,8 +636,9 @@
       overflow: hidden;
       position: sticky;
       top: 18px;
-      display: grid;
-      justify-items: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       gap: 20px;
       padding: 22px;
       background: rgba(255, 255, 255, 0.82);
@@ -647,7 +648,12 @@
       box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
     }
 
-    .dashboard-sidebar > * {
+    .dashboard-sidebar-inner {
+      width: 100%;
+      max-width: 260px;
+    }
+
+    .dashboard-sidebar-inner > * {
       width: 100%;
       max-width: 100%;
       box-sizing: border-box;
@@ -656,6 +662,7 @@
     .dashboard-sidebar h2,
     .dashboard-sidebar p {
       margin: 0;
+      text-align: center;
     }
 
     .dashboard-sidebar-header {
@@ -704,7 +711,7 @@
       font-size: 1.05rem;
       font-weight: 800;
       text-align: center;
-      display: inline-flex;
+      display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
@@ -731,6 +738,7 @@
       width: 100%;
       max-width: 100%;
       box-sizing: border-box;
+      text-align: center;
     }
 
     .dashboard-mini-card {
@@ -742,7 +750,7 @@
       display: flex;
       align-items: center;
       gap: 14px;
-      text-align: left;
+      text-align: center;
     }
 
     .dashboard-mini-card strong,
@@ -766,6 +774,7 @@
       min-width: 0;
       display: grid;
       gap: 4px;
+      width: 100%;
     }
 
     .dashboard-main,
@@ -2229,38 +2238,40 @@
       <section id="dashboardView" class="view">
         <div class="dashboard-shell">
           <aside class="dashboard-sidebar">
-            <div class="dashboard-sidebar-header">
-              <h2>Dashboard</h2>
-              <p>Bygg din meny, dela länken och ladda ner en QR-kod utan krångliga steg.</p>
-            </div>
-
-            <nav class="dashboard-nav" aria-label="Dashboard-sektioner">
-              <button id="dashboardMenuTab" class="dashboard-nav-btn is-active" type="button" data-dashboard-section="menu"><span class="dashboard-nav-icon" aria-hidden="true">☰</span><span>Meny</span></button>
-              <button id="dashboardShareTab" class="dashboard-nav-btn" type="button" data-dashboard-section="share"><span class="dashboard-nav-icon" aria-hidden="true">🔗</span><span>QR &amp; länk</span></button>
-              <button id="dashboardSettingsTab" class="dashboard-nav-btn" type="button" data-dashboard-section="settings"><span class="dashboard-nav-icon" aria-hidden="true">⚙️</span><span>Inställningar</span></button>
-            </nav>
-
-            <div class="dashboard-mini-card dashboard-user-card">
-              <div class="dashboard-info-icon" aria-hidden="true">👤</div>
-              <div class="dashboard-info-copy">
-                <div class="muted" style="font-size:0.92rem;">Inloggad som</div>
-                <strong id="userEmailLabel">-</strong>
+            <div class="dashboard-sidebar-inner">
+              <div class="dashboard-sidebar-header">
+                <h2>Dashboard</h2>
+                <p>Bygg din meny, dela länken och ladda ner en QR-kod utan krångliga steg.</p>
               </div>
-            </div>
 
-            <div class="dashboard-mini-card">
-              <div class="dashboard-info-icon" aria-hidden="true">🕒</div>
-              <div class="dashboard-info-copy">
-                <div class="muted" style="font-size:0.92rem;">Senast uppdaterad</div>
-                <strong id="dashboardLastUpdated">Inte sparad ännu</strong>
+              <nav class="dashboard-nav" aria-label="Dashboard-sektioner">
+                <button id="dashboardMenuTab" class="dashboard-nav-btn is-active" type="button" data-dashboard-section="menu"><span class="dashboard-nav-icon" aria-hidden="true">☰</span><span>Meny</span></button>
+                <button id="dashboardShareTab" class="dashboard-nav-btn" type="button" data-dashboard-section="share"><span class="dashboard-nav-icon" aria-hidden="true">🔗</span><span>QR &amp; länk</span></button>
+                <button id="dashboardSettingsTab" class="dashboard-nav-btn" type="button" data-dashboard-section="settings"><span class="dashboard-nav-icon" aria-hidden="true">⚙️</span><span>Inställningar</span></button>
+              </nav>
+
+              <div class="dashboard-mini-card dashboard-user-card dashboard-meta-card">
+                <div class="dashboard-info-icon" aria-hidden="true">👤</div>
+                <div class="dashboard-info-copy">
+                  <div class="muted" style="font-size:0.92rem;">Inloggad som</div>
+                  <strong id="userEmailLabel">-</strong>
+                </div>
               </div>
-            </div>
 
-            <div class="dashboard-mini-card">
-              <div class="dashboard-info-icon" aria-hidden="true">📊</div>
-              <div class="dashboard-info-copy">
-                <div class="muted" style="font-size:0.92rem;">Överblick</div>
-                <strong id="dashboardCounts">0 kategorier • 0 rätter</strong>
+              <div class="dashboard-mini-card dashboard-meta-card">
+                <div class="dashboard-info-icon" aria-hidden="true">🕒</div>
+                <div class="dashboard-info-copy">
+                  <div class="muted" style="font-size:0.92rem;">Senast uppdaterad</div>
+                  <strong id="dashboardLastUpdated">Inte sparad ännu</strong>
+                </div>
+              </div>
+
+              <div class="dashboard-mini-card dashboard-meta-card">
+                <div class="dashboard-info-icon" aria-hidden="true">📊</div>
+                <div class="dashboard-info-copy">
+                  <div class="muted" style="font-size:0.92rem;">Överblick</div>
+                  <strong id="dashboardCounts">0 kategorier • 0 rätter</strong>
+                </div>
               </div>
             </div>
           </aside>
