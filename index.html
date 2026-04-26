@@ -619,8 +619,8 @@
 
     .dashboard-shell {
       display: grid;
-      grid-template-columns: 260px minmax(0, 1fr);
-      gap: 24px;
+      grid-template-columns: 320px minmax(0, 1fr);
+      gap: 32px;
       align-items: start;
     }
 
@@ -630,8 +630,11 @@
     }
 
     .dashboard-sidebar {
+      width: 100%;
+      max-width: 320px;
       position: sticky;
       top: 18px;
+      z-index: 1;
       display: grid;
       justify-items: center;
       gap: 20px;
@@ -756,6 +759,11 @@
     .menu-list {
       display: grid;
       gap: 16px;
+    }
+
+    .dashboard-main {
+      min-width: 0;
+      width: 100%;
     }
 
     .dashboard-pane {
@@ -2063,6 +2071,7 @@
       }
 
       .dashboard-sidebar {
+        max-width: none;
         position: static;
       }
 
