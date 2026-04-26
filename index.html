@@ -620,7 +620,7 @@
     .dashboard-shell {
       display: grid;
       grid-template-columns: 280px minmax(0, 1fr);
-      gap: 28px;
+      gap: 32px;
       align-items: start;
     }
 
@@ -632,9 +632,9 @@
     .dashboard-sidebar {
       width: 100%;
       max-width: 280px;
+      box-sizing: border-box;
       position: sticky;
       top: 18px;
-      z-index: 1;
       display: grid;
       justify-items: center;
       gap: 20px;
@@ -644,6 +644,10 @@
       border-radius: 24px;
       backdrop-filter: blur(18px);
       box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+    }
+
+    .dashboard-sidebar > * {
+      max-width: 100%;
     }
 
     .dashboard-sidebar h2,
