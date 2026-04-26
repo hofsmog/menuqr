@@ -445,6 +445,12 @@
     }
 
     .auth-side {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      text-align: center;
       background: linear-gradient(160deg, rgba(15, 23, 42, 0.98), rgba(17, 33, 59, 0.9));
       color: white;
       border-radius: var(--radius-xl);
@@ -463,8 +469,18 @@
       line-height: 1.65;
     }
 
+    .auth-side .brand-kicker,
+    .auth-side h2,
+    .auth-side > p,
+    .auth-side .auth-list {
+      width: 100%;
+      max-width: 420px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
     .auth-list {
-      margin: 28px 0 0;
+      margin: 0;
       padding: 0;
       list-style: none;
       display: grid;
@@ -472,6 +488,8 @@
     }
 
     .auth-list li {
+      width: 100%;
+      max-width: 420px;
       padding: 16px 18px;
       border-radius: 18px;
       background: rgba(255, 255, 255, 0.08);
