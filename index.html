@@ -2004,6 +2004,19 @@
       `;
     }
 
+    function activateLandingFallback() {
+      renderLanding();
+      elements.app.classList.add("is-active");
+      elements.authView.classList.remove("is-active");
+      elements.dashboardView.classList.remove("is-active");
+      elements.publicMenuView.classList.remove("is-active");
+      elements.navHomeButton.classList.add("hidden");
+      elements.navDashboardButton.classList.add("hidden");
+      elements.navAuthButton.classList.remove("hidden");
+      elements.navSignupButton.classList.remove("hidden");
+      elements.navLogoutButton.classList.add("hidden");
+    }
+
     function showView(viewName) {
       state.currentView = viewName;
       if (viewName === "landing") {
@@ -2029,6 +2042,19 @@
       elements.navAuthButton.classList.toggle("hidden", !showGuestActions);
       elements.navSignupButton.classList.toggle("hidden", !showGuestActions);
       elements.navLogoutButton.classList.toggle("hidden", !state.user || isPublic);
+    }
+
+    async function bootApp() {
+      activateLandingFallback();
+
+      try {
+        wireEvents();
+        setAuthMode("login");
+        await initializeApp();
+      } catch (error) {
+        console.error("MenuQR boot error:", error);
+        activateLandingFallback();
+      }
     }
 
     function setAuthMode(mode) {
@@ -2632,9 +2658,7 @@
       });
     }
 
-    wireEvents();
-    setAuthMode("login");
-    initializeApp();
+    bootApp();
   </script>
 </body>
 </html>
