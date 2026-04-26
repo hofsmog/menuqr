@@ -1062,11 +1062,25 @@
       margin-top: 20px;
     }
 
+    .lp-proof {
+      margin: 10px 0 0;
+      color: #526072;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
     .lp-hero-preview {
       background: linear-gradient(180deg, #0f172a 0%, #17243a 100%);
       color: white;
       position: relative;
       overflow: hidden;
+      transition: transform 180ms ease, box-shadow 180ms ease;
+      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.16);
+    }
+
+    .lp-hero-preview:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 22px 46px rgba(15, 23, 42, 0.2);
     }
 
     .lp-hero-preview::before {
@@ -1099,13 +1113,72 @@
       padding: 14px;
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 44px rgba(0, 0, 0, 0.24);
     }
 
     .lp-phone-screen {
       border-radius: 22px;
-      padding: 18px;
+      padding: 0 18px 18px;
       background: linear-gradient(180deg, #ffffff 0%, #f3f8f5 100%);
       color: var(--text);
+    }
+
+    .lp-statusbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 2px 10px;
+      margin-bottom: 8px;
+      color: #6a7789;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .lp-status-icons {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .lp-status-dots {
+      display: inline-flex;
+      gap: 4px;
+    }
+
+    .lp-status-dots span {
+      width: 5px;
+      height: 5px;
+      border-radius: 999px;
+      background: #9aa7b8;
+      display: block;
+    }
+
+    .lp-status-battery {
+      width: 18px;
+      height: 10px;
+      border: 1.5px solid #9aa7b8;
+      border-radius: 3px;
+      position: relative;
+    }
+
+    .lp-status-battery::before {
+      content: "";
+      position: absolute;
+      inset: 1.5px 5px 1.5px 1.5px;
+      border-radius: 1px;
+      background: #43b95f;
+    }
+
+    .lp-status-battery::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      right: -4px;
+      width: 2px;
+      height: 4px;
+      border-radius: 1px;
+      background: #9aa7b8;
     }
 
     .lp-phone-top {
@@ -1252,6 +1325,52 @@
     }
 
     .lp-feature p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 0.94rem;
+    }
+
+    .lp-steps-wrap {
+      display: grid;
+      gap: 14px;
+    }
+
+    .lp-steps-title {
+      margin: 0;
+      font-size: clamp(1.7rem, 3vw, 2.2rem);
+      letter-spacing: -0.04em;
+    }
+
+    .lp-steps {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .lp-step {
+      padding: 18px;
+    }
+
+    .lp-step-number {
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: rgba(67, 185, 95, 0.12);
+      color: var(--brand-deep);
+      font-weight: 800;
+      margin-bottom: 14px;
+      box-shadow: inset 0 0 0 1px rgba(67, 185, 95, 0.14);
+    }
+
+    .lp-step h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+    }
+
+    .lp-step p {
       margin: 0;
       color: var(--muted);
       line-height: 1.6;
@@ -1463,7 +1582,8 @@
       .trust-bar,
       .features-grid,
       .lp-trust,
-      .lp-features {
+      .lp-features,
+      .lp-steps {
         grid-template-columns: 1fr;
       }
 
@@ -1857,21 +1977,33 @@
         <div class="lp">
           <section class="lp-hero">
             <div class="lp-card lp-hero-copy">
-              <div class="lp-kicker">NY LANDING AKTIV</div>
-              <h1>Slipp pappersmenyer - kor QR istallet</h1>
+              <div class="lp-kicker">Digital meny för restauranger</div>
+              <h1>Slipp pappersmenyer – kör QR istället</h1>
               <p>Skapa en snygg digital meny på 2 minuter. Uppdatera när du vill.</p>
               <div class="lp-actions">
-                <button class="btn btn-primary" type="button" data-go-auth="signup">Skapa gratis meny</button>
+                <button class="btn btn-primary" type="button" data-go-auth="signup">Skapa meny på 2 minuter</button>
                 <button class="btn btn-outline" type="button" data-scroll-demo="true">Se demo</button>
               </div>
+              <p class="lp-proof">Byggd för restauranger, caféer och barer i Sverige.</p>
             </div>
 
             <aside class="lp-card lp-hero-preview">
               <p class="lp-preview-label">Mobilpreview</p>
               <div class="lp-phone">
                 <div class="lp-phone-screen">
+                  <div class="lp-statusbar">
+                    <span>9:41</span>
+                    <div class="lp-status-icons">
+                      <div class="lp-status-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                      </div>
+                      <span class="lp-status-battery"></span>
+                    </div>
+                  </div>
                   <div class="lp-phone-top">
-                    <span class="lp-phone-badge">Oppet nu</span>
+                    <span class="lp-phone-badge">Öppet nu</span>
                     <span class="lp-phone-note">2 min setup</span>
                   </div>
                   <h3>MenuQR Bistro</h3>
@@ -1943,6 +2075,27 @@
             </article>
           </section>
 
+          <section class="lp-steps-wrap">
+            <h2 class="lp-steps-title">Så funkar det</h2>
+            <div class="lp-steps">
+              <article class="lp-card lp-step">
+                <div class="lp-step-number">1</div>
+                <h3>Skapa konto</h3>
+                <p>Kom igång snabbt med e-post och lösenord.</p>
+              </article>
+              <article class="lp-card lp-step">
+                <div class="lp-step-number">2</div>
+                <h3>Lägg in din meny</h3>
+                <p>Skapa kategorier, rätter, priser och beskrivningar.</p>
+              </article>
+              <article class="lp-card lp-step">
+                <div class="lp-step-number">3</div>
+                <h3>Dela QR-koden</h3>
+                <p>Gästerna skannar och ser alltid den aktuella menyn.</p>
+              </article>
+            </div>
+          </section>
+
           <section id="demoSection" class="lp-card lp-demo">
             <div class="lp-demo-copy">
               <h2>Så ser din meny ut</h2>
@@ -1952,7 +2105,7 @@
             <div class="lp-demo-phone">
               <div class="lp-demo-screen">
                 <div class="lp-demo-head">
-                  <h3>Atelje Kitchen</h3>
+                  <h3>Ateljé Kitchen</h3>
                   <p>Kvällsmeny • Skanna, läs och bestäm i lugn och ro</p>
                 </div>
                 <div class="lp-demo-body">
@@ -1963,7 +2116,7 @@
                         <span>Bianca Tartufo</span>
                         <span class="lp-price">169 kr</span>
                       </div>
-                      <p>Creme fraiche, tryffel, mozzarella och rostad svamp.</p>
+                      <p>Crème fraiche, tryffel, mozzarella och rostad svamp.</p>
                     </div>
                     <div class="lp-menu-row">
                       <div class="lp-menu-row-head">
@@ -1981,7 +2134,7 @@
                         <span>Rigatoni al Forno</span>
                         <span class="lp-price">149 kr</span>
                       </div>
-                      <p>Tomat, basilika, mozzarella och långkokt ragu.</p>
+                      <p>Tomat, basilika, mozzarella och långkokt ragù.</p>
                     </div>
                     <div class="lp-menu-row">
                       <div class="lp-menu-row-head">
@@ -1997,9 +2150,9 @@
           </section>
 
           <section class="lp-card lp-cta">
-            <h2>Redo att komma igång?</h2>
+            <h2>Redo att slippa pappersmenyer?</h2>
             <p>Skapa din första digitala meny och börja dela den med QR redan idag.</p>
-            <button class="btn btn-primary" type="button" data-go-auth="signup">Skapa gratis meny</button>
+            <button class="btn btn-primary" type="button" data-go-auth="signup">Skapa meny på 2 minuter</button>
           </section>
         </div>
       `;
