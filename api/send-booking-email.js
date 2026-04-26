@@ -1,4 +1,4 @@
-const RESEND_API_KEY = 're_h1v8pANG_9rAjLJiH4MGQD4EaDjt78ME8';
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const SUPABASE_URL = 'https://bvqlgxkarepnpjzvpoqg.supabase.co';
 
 async function getOwnerEmail(restaurantId) {
@@ -37,6 +37,11 @@ async function sendEmail(to, subject, html) {
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  if (!RESEND_API_KEY) {
+    console.error('Booking email endpoint misconfigured: missing RESEND_API_KEY');
+    return res.status(500).json({ error: 'Email service misconfigured' });
+  }
 
   const { name, email, phone, date, time, guests, restaurantName, status, toRestaurant, restaurantId } = req.body;
 
