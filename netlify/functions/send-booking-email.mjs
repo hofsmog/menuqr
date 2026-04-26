@@ -5,7 +5,15 @@ export default async (req) => {
 
   const { name, email, phone, date, time, guests, restaurantName, status } = await req.json();
 
-  const RESEND_API_KEY = 're_h1v8pANG_9rAjLJiH4MGQD4EaDjt78ME8';
+  const RESEND_API_KEY = process.env.RESEND_API_KEY;
+
+  if (!RESEND_API_KEY) {
+    console.error('Booking email endpoint misconfigured: missing RESEND_API_KEY');
+    return new Response(JSON.stringify({ ok: false, error: 'Email service misconfigured' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
 
   const dateFormatted = new Date(date).toLocaleDateString('sv-SE', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
