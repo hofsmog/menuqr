@@ -585,45 +585,120 @@
       border: 1px solid #d9e7f2;
     }
 
-    .dashboard {
+    .dashboard-shell {
       display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
       gap: 24px;
+      align-items: start;
     }
 
-    .dashboard-header {
+    .dashboard-sidebar,
+    .panel {
+      padding: 24px;
+    }
+
+    .dashboard-sidebar {
+      position: sticky;
+      top: 18px;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 20px;
-      align-items: end;
+      gap: 18px;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
     }
 
-    .dashboard-title h1 {
+    .dashboard-sidebar h2,
+    .dashboard-sidebar p {
+      margin: 0;
+    }
+
+    .dashboard-sidebar p {
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 0.94rem;
+    }
+
+    .dashboard-nav {
+      display: grid;
+      gap: 8px;
+    }
+
+    .dashboard-nav-btn {
+      min-height: 48px;
+      padding: 0 16px;
+      border-radius: 14px;
+      background: rgba(15, 23, 42, 0.04);
+      color: var(--text);
+      font-weight: 700;
+      text-align: left;
+      transition: background 150ms ease, color 150ms ease, transform 150ms ease;
+    }
+
+    .dashboard-nav-btn:hover {
+      background: rgba(67, 185, 95, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .dashboard-nav-btn.is-active {
+      background: linear-gradient(135deg, rgba(67, 185, 95, 0.18), rgba(67, 185, 95, 0.1));
+      color: var(--brand-deep);
+      box-shadow: inset 0 0 0 1px rgba(67, 185, 95, 0.16);
+    }
+
+    .dashboard-user-card {
+      padding: 16px;
+      border-radius: 16px;
+      background: #f5f9fc;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+    }
+
+    .dashboard-main,
+    .dashboard-pane,
+    .dashboard-stack,
+    .category-list,
+    .menu-list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .dashboard-pane {
+      display: none;
+    }
+
+    .dashboard-pane.is-active {
+      display: grid;
+    }
+
+    .dashboard-title h1,
+    .dashboard-pane-title {
       margin: 0 0 8px;
       font-size: clamp(2rem, 4vw, 3rem);
       letter-spacing: -0.04em;
     }
 
-    .dashboard-title p {
+    .dashboard-title p,
+    .dashboard-pane-copy {
       margin: 0;
       color: var(--muted);
       max-width: 58ch;
       line-height: 1.65;
     }
 
-    .dashboard-grid {
+    .dashboard-two-col,
+    .dashboard-share-grid,
+    .dashboard-settings-grid {
       display: grid;
-      grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
-      gap: 24px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
       align-items: start;
     }
 
-    .stack {
-      display: grid;
-      gap: 24px;
-    }
-
     .panel {
-      padding: 24px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
     }
 
     .panel-header {
@@ -647,40 +722,94 @@
       line-height: 1.55;
     }
 
-    .list-card {
-      padding: 18px;
-      border-radius: 22px;
-      border: 1px solid rgba(15, 23, 42, 0.08);
-      background: white;
+    .dashboard-helper {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.55;
     }
 
-    .category-list,
-    .menu-list {
+    .empty-state {
+      padding: 24px;
+      border-radius: 22px;
+      border: 1px dashed rgba(15, 23, 42, 0.14);
+      color: var(--muted);
+      background: rgba(248, 250, 252, 0.9);
+    }
+
+    .empty-state strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text);
+      font-size: 1.05rem;
+    }
+
+    .link-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .link-box {
+      flex: 1;
+      min-width: 0;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: #f5f9fc;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      color: var(--muted);
+      overflow-wrap: anywhere;
+    }
+
+    .category-card {
+      padding: 20px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      box-shadow: 0 12px 22px rgba(15, 23, 42, 0.04);
       display: grid;
       gap: 14px;
     }
 
     .category-item {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 12px;
-      padding: 14px 16px;
-      border-radius: 18px;
-      background: #f6faf8;
-      border: 1px solid rgba(67, 185, 95, 0.15);
     }
 
     .category-name {
       font-weight: 700;
+      font-size: 1.05rem;
+    }
+
+    .category-meta {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-top: 4px;
+    }
+
+    .category-actions,
+    .menu-item-actions,
+    .inline-form-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .menu-items-group {
+      display: grid;
+      gap: 12px;
     }
 
     .menu-item-card {
-      padding: 18px;
-      border-radius: 22px;
-      background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+      padding: 16px;
+      border-radius: 16px;
+      background: #f8fbfd;
       border: 1px solid rgba(15, 23, 42, 0.08);
-      box-shadow: 0 12px 22px rgba(15, 23, 42, 0.04);
+      display: grid;
+      gap: 12px;
     }
 
     .menu-item-top {
@@ -692,14 +821,14 @@
 
     .menu-item-title {
       margin: 0;
-      font-size: 1.05rem;
+      font-size: 1.02rem;
     }
 
     .menu-item-meta {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin: 12px 0;
+      margin: 8px 0 0;
     }
 
     .badge,
@@ -737,37 +866,79 @@
       line-height: 1.6;
     }
 
-    .menu-item-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 18px;
-    }
-
-    .empty-state {
-      padding: 24px;
-      border-radius: 22px;
-      border: 1px dashed rgba(15, 23, 42, 0.14);
-      color: var(--muted);
-      background: rgba(248, 250, 252, 0.9);
-    }
-
-    .link-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .link-box {
-      flex: 1;
-      min-width: 0;
-      padding: 14px 16px;
+    .inline-item-form {
+      padding: 18px;
       border-radius: 16px;
-      background: #f5f9fc;
+      border: 1px solid rgba(67, 185, 95, 0.18);
+      background: linear-gradient(180deg, rgba(67, 185, 95, 0.06), rgba(255, 255, 255, 0.95));
+      display: grid;
+      gap: 14px;
+    }
+
+    .inline-item-form .form-inline-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: minmax(0, 1fr) 140px;
+    }
+
+    .inline-item-form .field textarea {
+      min-height: 100px;
+    }
+
+    .inline-item-form .field-compact select,
+    .inline-item-form .field-compact input {
+      min-height: 52px;
+    }
+
+    .dashboard-qr-card {
+      display: grid;
+      place-items: center;
+      min-height: 100%;
+    }
+
+    .dashboard-qr-frame {
+      width: min(100%, 320px);
+      padding: 22px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, #ffffff 0%, #f4faf6 100%);
       border: 1px solid rgba(15, 23, 42, 0.08);
+      box-shadow: 0 16px 30px rgba(15, 23, 42, 0.06);
+      display: grid;
+      gap: 14px;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .dashboard-qr-preview {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 18px;
+      background: white;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    .dashboard-qr-preview img,
+    .dashboard-qr-preview canvas {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .dashboard-qr-preview span {
       color: var(--muted);
-      overflow-wrap: anywhere;
+      font-size: 0.92rem;
+      padding: 18px;
+    }
+
+    .dashboard-share-note {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.55;
+      text-align: center;
     }
 
     .public-shell {
@@ -1726,8 +1897,10 @@
       .lp-hero,
       .auth-layout,
       .mockup-section,
-      .dashboard-grid,
-      .dashboard-header {
+      .dashboard-shell,
+      .dashboard-two-col,
+      .dashboard-share-grid,
+      .dashboard-settings-grid {
         grid-template-columns: 1fr;
       }
 
@@ -1744,8 +1917,13 @@
       .features-grid,
       .lp-trust,
       .lp-steps,
-      .lp-demo {
+      .lp-demo,
+      .inline-item-form .form-inline-grid {
         grid-template-columns: 1fr;
+      }
+
+      .dashboard-sidebar {
+        position: static;
       }
 
       .footer-card {
@@ -1791,7 +1969,9 @@
       .link-row,
       .hero-actions,
       .topbar-actions,
-      .menu-item-actions {
+      .menu-item-actions,
+      .category-actions,
+      .inline-form-actions {
         width: 100%;
       }
 
@@ -1881,66 +2061,55 @@
       </section>
 
       <section id="dashboardView" class="view">
-        <div class="dashboard">
-          <div class="dashboard-header">
-            <div class="dashboard-title">
-              <h1>Din menydashboard</h1>
-              <p>
-                Här hanterar du restaurangens namn, kategorier och maträtter. Fokus är rent,
-                tydligt och anpassat för en enkel MVP utan extra funktioner.
-              </p>
+        <div class="dashboard-shell">
+          <aside class="dashboard-sidebar">
+            <div>
+              <h2>Dashboard</h2>
+              <p>Bygg din meny, dela länken och ladda ner en QR-kod utan krångliga steg.</p>
             </div>
-            <div class="panel" style="padding:18px 20px;">
+
+            <nav class="dashboard-nav" aria-label="Dashboard-sektioner">
+              <button id="dashboardMenuTab" class="dashboard-nav-btn is-active" type="button" data-dashboard-section="menu">Meny</button>
+              <button id="dashboardShareTab" class="dashboard-nav-btn" type="button" data-dashboard-section="share">QR &amp; länk</button>
+              <button id="dashboardSettingsTab" class="dashboard-nav-btn" type="button" data-dashboard-section="settings">Inställningar</button>
+            </nav>
+
+            <div class="dashboard-user-card">
               <div class="muted" style="font-size:0.92rem;">Inloggad som</div>
               <strong id="userEmailLabel">-</strong>
             </div>
-          </div>
+          </aside>
 
-          <div id="dashboardStatus" class="status inline-note" data-tone="info"></div>
+          <div class="dashboard-main">
+            <div id="dashboardStatus" class="status inline-note" data-tone="info"></div>
 
-          <div class="dashboard-grid">
-            <div class="stack">
-              <section class="panel">
+            <section id="dashboardMenuPanel" class="dashboard-pane is-active">
+              <div class="dashboard-title">
+                <h1>Din menydashboard</h1>
+                <p>Skapa kategorier, lägg in rätter inline och håll din QR-meny uppdaterad på några minuter.</p>
+              </div>
+
+              <section id="menuSetupCard" class="panel hidden">
                 <div class="panel-header">
                   <div>
-                    <h2>Restaurang</h2>
-                    <p>Spara restaurangnamn och få din publika meny-länk.</p>
+                    <h2>Skapa din restaurang först</h2>
+                    <p>Börja i Inställningar med namn och slug. Sedan kan du lägga till kategorier och rätter.</p>
                   </div>
-                </div>
-                <form id="restaurantForm" class="form-grid">
-                  <div class="field">
-                    <label for="restaurantName">Restaurangnamn</label>
-                    <input id="restaurantName" name="name" type="text" placeholder="Till exempel Bistro Skeppsbron" required>
-                  </div>
-                  <div class="field">
-                    <label for="restaurantSlug">Slug</label>
-                    <input id="restaurantSlug" name="slug" type="text" placeholder="bistro-skeppsbron">
-                  </div>
-                  <button class="btn btn-primary" type="submit">Spara restaurang</button>
-                </form>
-
-                <div style="margin-top:18px;">
-                  <div class="field" style="gap:10px;">
-                    <label>Publik meny-länk</label>
-                    <div class="link-row">
-                      <div id="publicMenuLink" class="link-box">Spara en restaurang för att få din länk.</div>
-                      <button id="copyLinkButton" class="btn btn-secondary" type="button">Kopiera länk</button>
-                    </div>
-                  </div>
+                  <button class="btn btn-secondary" type="button" data-dashboard-section="settings">Gå till inställningar</button>
                 </div>
               </section>
 
-              <section class="panel">
+              <section id="categoryComposerCard" class="panel">
                 <div class="panel-header">
                   <div>
                     <h2>Kategorier</h2>
-                    <p>Lägg upp menysektioner som Förrätter, Varmrätter eller Dryck.</p>
+                    <p>Lägg upp sektioner som Pizza, Pasta, Dryck eller Desserter.</p>
                   </div>
                 </div>
                 <form id="categoryForm" class="form-grid">
                   <div class="field">
                     <label for="categoryName">Kategorinamn</label>
-                    <input id="categoryName" name="name" type="text" placeholder="Förrätter" required>
+                    <input id="categoryName" name="name" type="text" placeholder="Pizza" required>
                   </div>
                   <div class="field">
                     <label for="categorySortOrder">Sorteringsordning</label>
@@ -1948,62 +2117,91 @@
                   </div>
                   <button class="btn btn-secondary" type="submit">Lägg till kategori</button>
                 </form>
-                <div id="categoryList" class="category-list" style="margin-top:18px;"></div>
               </section>
-            </div>
 
-            <div class="stack">
-              <section class="panel">
-                <div class="panel-header">
-                  <div>
-                    <h2>Maträtter</h2>
-                    <p>Skapa, redigera och ta bort rätter. Endast aktiva rätter syns i publik meny.</p>
+              <div id="categoryList" class="category-list"></div>
+              <div id="menuItemList" class="hidden"></div>
+            </section>
+
+            <section id="dashboardSharePanel" class="dashboard-pane">
+              <div class="dashboard-title">
+                <h1>QR &amp; länk</h1>
+                <p>Här delar du din publika meny direkt eller laddar ner en QR-kod till bord, disk och fönster.</p>
+              </div>
+
+              <div class="dashboard-share-grid">
+                <section class="panel dashboard-stack">
+                  <div class="panel-header">
+                    <div>
+                      <h2>Publik meny-länk</h2>
+                      <p>Din meny visas fortsatt separat via <code>?menu=RESTAURANT_ID</code>.</p>
+                    </div>
                   </div>
-                </div>
-                <form id="menuItemForm" class="form-grid">
-                  <input id="menuItemId" type="hidden">
-                  <div class="field">
-                    <label for="menuItemName">Namn</label>
-                    <input id="menuItemName" name="name" type="text" placeholder="Grillad röding" required>
-                  </div>
-                  <div class="field">
-                    <label for="menuItemDescription">Beskrivning</label>
-                    <textarea id="menuItemDescription" name="description" placeholder="Kort beskrivning av rätten"></textarea>
-                  </div>
-                  <div class="field">
-                    <label for="menuItemPrice">Pris</label>
-                    <input id="menuItemPrice" name="price" type="number" min="0" step="0.01" placeholder="198" required>
-                  </div>
-                  <div class="field">
-                    <label for="menuItemCategory">Kategori</label>
-                    <select id="menuItemCategory" name="category_id" required>
-                      <option value="">Välj kategori</option>
-                    </select>
-                  </div>
-                  <div class="field">
-                    <label for="menuItemActive">Status</label>
-                    <select id="menuItemActive" name="is_active">
-                      <option value="true">Aktiv</option>
-                      <option value="false">Inaktiv</option>
-                    </select>
+                  <div class="field" style="gap:10px;">
+                    <label>Publik URL</label>
+                    <div id="publicMenuLink" class="link-box">Spara en restaurang för att få din länk.</div>
                   </div>
                   <div class="link-row">
-                    <button id="menuItemSubmitButton" class="btn btn-primary" type="submit">Spara maträtt</button>
-                    <button id="cancelEditButton" class="btn btn-secondary hidden" type="button">Avbryt redigering</button>
+                    <button id="copyLinkButton" class="btn btn-secondary" type="button">Kopiera länk</button>
+                    <button id="downloadQrButton" class="btn btn-primary" type="button">Ladda ner QR</button>
                   </div>
-                </form>
-              </section>
+                </section>
 
-              <section class="panel">
-                <div class="panel-header">
-                  <div>
-                    <h2>Alla maträtter</h2>
-                    <p>En enkel överblick över menyn med tydlig status per rätt.</p>
+                <section class="panel dashboard-qr-card">
+                  <div class="dashboard-qr-frame">
+                    <div id="qrCodeContainer" class="dashboard-qr-preview">
+                      <span>QR-koden visas här när din restaurang är sparad.</span>
+                    </div>
+                    <div class="dashboard-share-note">Perfekt för att skriva ut på bord, takeaway-påsar eller skyltfönster.</div>
                   </div>
-                </div>
-                <div id="menuItemList" class="menu-list"></div>
-              </section>
-            </div>
+                </section>
+              </div>
+            </section>
+
+            <section id="dashboardSettingsPanel" class="dashboard-pane">
+              <div class="dashboard-title">
+                <h1>Inställningar</h1>
+                <p>Ställ in restaurangnamn och slug. När det är sparat kan du direkt börja bygga menyn.</p>
+              </div>
+
+              <div class="dashboard-settings-grid">
+                <section class="panel">
+                  <div class="panel-header">
+                    <div>
+                      <h2>Restaurang</h2>
+                      <p>Spara restaurangnamn och välj hur länken ska se ut.</p>
+                    </div>
+                  </div>
+                  <form id="restaurantForm" class="form-grid">
+                    <div class="field">
+                      <label for="restaurantName">Restaurangnamn</label>
+                      <input id="restaurantName" name="name" type="text" placeholder="Till exempel Bistro Skeppsbron" required>
+                    </div>
+                    <div class="field">
+                      <label for="restaurantSlug">Slug</label>
+                      <input id="restaurantSlug" name="slug" type="text" placeholder="bistro-skeppsbron">
+                    </div>
+                    <button class="btn btn-primary" type="submit">Spara restaurang</button>
+                  </form>
+                </section>
+
+                <section class="panel dashboard-stack">
+                  <div class="panel-header">
+                    <div>
+                      <h2>Överblick</h2>
+                      <p>Se snabbt om restaurangen är redo att delas via QR-kod.</p>
+                    </div>
+                  </div>
+                  <div class="auth-note">
+                    <strong style="display:block; margin-bottom:6px;">Nästa steg</strong>
+                    1. Spara restaurangen. 2. Lägg till kategorier. 3. Lägg in rätter. 4. Dela länken eller QR-koden.
+                  </div>
+                  <div class="auth-note">
+                    Din publiklänk uppdateras automatiskt när restaurangen är sparad och visas i sektionen <strong>QR &amp; länk</strong>.
+                  </div>
+                </section>
+              </div>
+            </section>
           </div>
         </div>
       </section>
@@ -2028,6 +2226,7 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
   <script>
     console.log("MENUQR SCRIPT STARTAR");
     // Fyll i din egen Supabase-projektinformation här innan du kör skarpt.
@@ -2045,11 +2244,14 @@
     const state = {
       currentView: "landing",
       authMode: "login",
+      dashboardSection: "menu",
       user: null,
       restaurant: null,
       categories: [],
       menuItems: [],
+      openCategoryId: null,
       editingItemId: null,
+      qrCodeDataUrl: "",
       authSubscriptionInitialized: false
     };
 
@@ -2065,6 +2267,14 @@
       authView: document.getElementById("authView"),
       dashboardView: document.getElementById("dashboardView"),
       publicMenuView: document.getElementById("publicMenuView"),
+      dashboardMenuTab: document.getElementById("dashboardMenuTab"),
+      dashboardShareTab: document.getElementById("dashboardShareTab"),
+      dashboardSettingsTab: document.getElementById("dashboardSettingsTab"),
+      dashboardMenuPanel: document.getElementById("dashboardMenuPanel"),
+      dashboardSharePanel: document.getElementById("dashboardSharePanel"),
+      dashboardSettingsPanel: document.getElementById("dashboardSettingsPanel"),
+      menuSetupCard: document.getElementById("menuSetupCard"),
+      categoryComposerCard: document.getElementById("categoryComposerCard"),
       loginTab: document.getElementById("loginTab"),
       signupTab: document.getElementById("signupTab"),
       authHeading: document.getElementById("authHeading"),
@@ -2080,19 +2290,13 @@
       restaurantSlug: document.getElementById("restaurantSlug"),
       publicMenuLink: document.getElementById("publicMenuLink"),
       copyLinkButton: document.getElementById("copyLinkButton"),
+      downloadQrButton: document.getElementById("downloadQrButton"),
+      qrCodeContainer: document.getElementById("qrCodeContainer"),
       categoryForm: document.getElementById("categoryForm"),
       categoryName: document.getElementById("categoryName"),
       categorySortOrder: document.getElementById("categorySortOrder"),
       categoryList: document.getElementById("categoryList"),
-      menuItemForm: document.getElementById("menuItemForm"),
-      menuItemId: document.getElementById("menuItemId"),
-      menuItemName: document.getElementById("menuItemName"),
-      menuItemDescription: document.getElementById("menuItemDescription"),
-      menuItemPrice: document.getElementById("menuItemPrice"),
       menuItemCategory: document.getElementById("menuItemCategory"),
-      menuItemActive: document.getElementById("menuItemActive"),
-      menuItemSubmitButton: document.getElementById("menuItemSubmitButton"),
-      cancelEditButton: document.getElementById("cancelEditButton"),
       menuItemList: document.getElementById("menuItemList"),
       publicRestaurantName: document.getElementById("publicRestaurantName"),
       publicMenuDescription: document.getElementById("publicMenuDescription"),
@@ -2130,6 +2334,60 @@
       element.textContent = message;
       element.dataset.tone = tone;
       element.classList.add("is-visible");
+    }
+
+    function getRequestedView() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("view");
+    }
+
+    function getRequestedAuthMode() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("mode");
+    }
+
+    function updateRoute(viewName, options = {}) {
+      const { replace = false, mode = null } = options;
+      const url = new URL(window.location.href);
+      url.searchParams.delete("menu");
+
+      if (viewName === "landing") {
+        url.searchParams.delete("view");
+        url.searchParams.delete("mode");
+      } else {
+        url.searchParams.set("view", viewName);
+        if (viewName === "auth" && mode) {
+          url.searchParams.set("mode", mode);
+        } else {
+          url.searchParams.delete("mode");
+        }
+      }
+
+      const nextUrl = `${url.pathname}${url.searchParams.toString() ? `?${url.searchParams.toString()}` : ""}`;
+      history[replace ? "replaceState" : "pushState"]({}, "", nextUrl);
+    }
+
+    function showDashboardSection(sectionName = "menu") {
+      state.dashboardSection = sectionName;
+      const sections = {
+        menu: {
+          button: elements.dashboardMenuTab,
+          panel: elements.dashboardMenuPanel
+        },
+        share: {
+          button: elements.dashboardShareTab,
+          panel: elements.dashboardSharePanel
+        },
+        settings: {
+          button: elements.dashboardSettingsTab,
+          panel: elements.dashboardSettingsPanel
+        }
+      };
+
+      Object.entries(sections).forEach(([key, section]) => {
+        section.button?.classList.toggle("is-active", key === sectionName);
+        section.panel?.classList.toggle("is-active", key === sectionName);
+      });
     }
 
     function renderLanding() {
@@ -2336,7 +2594,8 @@
       elements.navLogoutButton.classList.add("hidden");
     }
 
-    function showView(viewName) {
+    function showView(viewName, options = {}) {
+      const { updateHistory = true, authMode = state.authMode } = options;
       state.currentView = viewName;
       if (viewName === "landing") {
         renderLanding();
@@ -2360,6 +2619,14 @@
       elements.navAuthButton.classList.toggle("hidden", !showGuestActions);
       elements.navSignupButton.classList.toggle("hidden", !showGuestActions);
       elements.navLogoutButton.classList.toggle("hidden", !state.user || isPublic);
+
+      if (isDashboard) {
+        showDashboardSection(state.dashboardSection);
+      }
+
+      if (updateHistory && !isPublic) {
+        updateRoute(viewName, { mode: isAuth ? authMode : null });
+      }
     }
 
     async function bootApp() {
@@ -2395,6 +2662,7 @@
     }
 
     function renderCategoryOptions() {
+      if (!elements.menuItemCategory) return;
       const currentValue = elements.menuItemCategory.value;
       const options = ['<option value="">Välj kategori</option>']
         .concat(
@@ -2411,62 +2679,125 @@
       }
     }
 
+    function getMenuItemsForCategory(categoryId) {
+      return state.menuItems.filter((item) => String(item.category_id) === String(categoryId));
+    }
+
+    function getInlineItemFormMarkup(categoryId) {
+      const editingItem = state.menuItems.find((item) => String(item.id) === String(state.editingItemId));
+      const isEditing = editingItem && String(editingItem.category_id) === String(categoryId);
+
+      return `
+        <form class="inline-item-form" data-inline-item-form="${categoryId}" data-item-id="${isEditing ? editingItem.id : ""}">
+          <div class="panel-header" style="margin-bottom:0;">
+            <div>
+              <h3>${isEditing ? "Redigera rätt" : "Ny rätt"}</h3>
+              <p>${isEditing ? "Uppdatera innehållet direkt i kategorin." : "Lägg till en rätt utan att lämna översikten."}</p>
+            </div>
+          </div>
+          <div class="form-inline-grid">
+            <div class="field">
+              <label>Namn</label>
+              <input name="name" type="text" value="${escapeHtml(isEditing ? editingItem.name : "")}" placeholder="Margherita" required>
+            </div>
+            <div class="field field-compact">
+              <label>Pris</label>
+              <input name="price" type="number" min="0" step="0.01" value="${isEditing ? escapeHtml(editingItem.price) : ""}" placeholder="99" required>
+            </div>
+          </div>
+          <div class="field">
+            <label>Beskrivning</label>
+            <textarea name="description" placeholder="Tomatsås, mozzarella och basilika.">${escapeHtml(isEditing ? editingItem.description || "" : "")}</textarea>
+          </div>
+          <div class="field field-compact">
+            <label>Status</label>
+            <select name="is_active">
+              <option value="true" ${!isEditing || editingItem.is_active ? "selected" : ""}>Aktiv</option>
+              <option value="false" ${isEditing && !editingItem.is_active ? "selected" : ""}>Inaktiv</option>
+            </select>
+          </div>
+          <div class="inline-form-actions">
+            <button class="btn btn-primary" type="submit">${isEditing ? "Spara ändringar" : "Spara rätt"}</button>
+            <button class="btn btn-secondary" type="button" data-cancel-inline="${categoryId}">Avbryt</button>
+          </div>
+        </form>
+      `;
+    }
+
     function renderCategories() {
       renderCategoryOptions();
+
+      elements.menuSetupCard.classList.toggle("hidden", Boolean(state.restaurant));
+      elements.categoryComposerCard.classList.toggle("hidden", !state.restaurant);
+
+      if (!state.restaurant) {
+        elements.categoryList.innerHTML = "";
+        return;
+      }
 
       if (!state.categories.length) {
         elements.categoryList.innerHTML = `
           <div class="empty-state">
-            Inga kategorier ännu. Lägg till din första kategori för att börja strukturera menyn.
+            <strong>Skapa din första meny</strong>
+            Lägg till din första kategori för att börja bygga upp menyn och få en QR-kod på några minuter.
+            <div style="margin-top:16px;">
+              <button class="btn btn-primary" type="button" data-focus-category="true">Lägg till kategori</button>
+            </div>
           </div>
         `;
         return;
       }
 
-      elements.categoryList.innerHTML = state.categories.map((category) => `
-        <div class="category-item">
-          <div>
-            <div class="category-name">${escapeHtml(category.name)}</div>
-            <div class="muted">Sortering: ${category.sort_order ?? 0}</div>
-          </div>
-          <button class="btn btn-link" type="button" data-delete-category="${category.id}">
-            Ta bort
-          </button>
-        </div>
-      `).join("");
+      elements.categoryList.innerHTML = state.categories.map((category) => {
+        const items = getMenuItemsForCategory(category.id);
+        const isEditorOpen = String(state.openCategoryId) === String(category.id);
+
+        return `
+          <section class="category-card">
+            <div class="category-item">
+              <div>
+                <div class="category-name">${escapeHtml(category.name)}</div>
+                <div class="category-meta">${items.length} ${items.length === 1 ? "rätt" : "rätter"} • Sortering ${category.sort_order ?? 0}</div>
+              </div>
+              <div class="category-actions">
+                <button class="btn btn-secondary" type="button" data-open-item-form="${category.id}">+ Lägg till rätt</button>
+                <button class="btn btn-link" type="button" data-delete-category="${category.id}">Ta bort</button>
+              </div>
+            </div>
+
+            <div class="menu-items-group">
+              ${items.length ? items.map((item) => `
+                <article class="menu-item-card">
+                  <div class="menu-item-top">
+                    <div>
+                      <h3 class="menu-item-title">${escapeHtml(item.name)}</h3>
+                      <div class="menu-item-meta">
+                        <span class="pill ${item.is_active ? "pill-active" : "pill-inactive"}">
+                          ${item.is_active ? "Aktiv" : "Inaktiv"}
+                        </span>
+                      </div>
+                    </div>
+                    <strong>${formatPrice(item.price)}</strong>
+                  </div>
+                  <p>${escapeHtml(item.description || "Ingen beskrivning ännu.")}</p>
+                  <div class="menu-item-actions">
+                    <button class="btn btn-secondary" type="button" data-edit-item="${item.id}">Redigera</button>
+                    <button class="btn btn-danger" type="button" data-delete-item="${item.id}">Ta bort</button>
+                  </div>
+                </article>
+              `).join("") : '<div class="empty-state">Inga rätter i den här kategorin ännu. Lägg till första rätten direkt här.</div>'}
+            </div>
+
+            ${isEditorOpen ? getInlineItemFormMarkup(category.id) : ""}
+          </section>
+        `;
+      }).join("");
     }
 
     function renderMenuItems() {
-      if (!state.menuItems.length) {
-        elements.menuItemList.innerHTML = `
-          <div class="empty-state">
-            Inga maträtter ännu. Lägg till din första rätt i formuläret ovan.
-          </div>
-        `;
-        return;
+      if (elements.menuItemList) {
+        elements.menuItemList.innerHTML = "";
       }
-
-      elements.menuItemList.innerHTML = state.menuItems.map((item) => `
-        <article class="menu-item-card">
-          <div class="menu-item-top">
-            <div>
-              <h3 class="menu-item-title">${escapeHtml(item.name)}</h3>
-              <div class="menu-item-meta">
-                <span class="badge">${escapeHtml(item.category_name || "Utan kategori")}</span>
-                <span class="pill ${item.is_active ? "pill-active" : "pill-inactive"}">
-                  ${item.is_active ? "Aktiv" : "Inaktiv"}
-                </span>
-              </div>
-            </div>
-            <strong>${formatPrice(item.price)}</strong>
-          </div>
-          <p>${escapeHtml(item.description || "Ingen beskrivning ännu.")}</p>
-          <div class="menu-item-actions">
-            <button class="btn btn-secondary" type="button" data-edit-item="${item.id}">Redigera</button>
-            <button class="btn btn-danger" type="button" data-delete-item="${item.id}">Ta bort</button>
-          </div>
-        </article>
-      `).join("");
     }
 
     function renderPublicMenu(restaurant, categories, menuItems) {
@@ -2511,11 +2842,7 @@
 
     function resetMenuItemForm() {
       state.editingItemId = null;
-      elements.menuItemForm.reset();
-      elements.menuItemId.value = "";
-      elements.menuItemActive.value = "true";
-      elements.menuItemSubmitButton.textContent = "Spara maträtt";
-      elements.cancelEditButton.classList.add("hidden");
+      state.openCategoryId = null;
     }
 
     function fillMenuItemForm(itemId) {
@@ -2523,16 +2850,83 @@
       if (!item) return;
 
       state.editingItemId = item.id;
-      elements.menuItemId.value = item.id;
-      elements.menuItemName.value = item.name;
-      elements.menuItemDescription.value = item.description || "";
-      elements.menuItemPrice.value = item.price;
-      elements.menuItemCategory.value = item.category_id || "";
-      elements.menuItemActive.value = item.is_active ? "true" : "false";
-      elements.menuItemSubmitButton.textContent = "Uppdatera maträtt";
-      elements.cancelEditButton.classList.remove("hidden");
-      elements.menuItemName.focus();
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      state.openCategoryId = item.category_id;
+      showDashboardSection("menu");
+      renderCategories();
+      document.querySelector(`[data-inline-item-form="${item.category_id}"] input[name="name"]`)?.focus();
+    }
+
+    async function renderQrCode() {
+      if (!elements.qrCodeContainer) return;
+
+      if (!state.restaurant) {
+        state.qrCodeDataUrl = "";
+        elements.qrCodeContainer.innerHTML = "<span>QR-koden visas här när din restaurang är sparad.</span>";
+        return;
+      }
+
+      const link = `${window.location.origin}${window.location.pathname}?menu=${state.restaurant.id}`;
+
+      if (!window.QRCode?.toDataURL) {
+        elements.qrCodeContainer.innerHTML = "<span>QR-biblioteket kunde inte laddas.</span>";
+        return;
+      }
+
+      try {
+        state.qrCodeDataUrl = await window.QRCode.toDataURL(link, {
+          width: 320,
+          margin: 1,
+          color: {
+            dark: "#0f172a",
+            light: "#ffffff"
+          }
+        });
+        elements.qrCodeContainer.innerHTML = `<img src="${state.qrCodeDataUrl}" alt="QR-kod för publik meny">`;
+      } catch (_error) {
+        state.qrCodeDataUrl = "";
+        elements.qrCodeContainer.innerHTML = "<span>Kunde inte skapa QR-koden just nu.</span>";
+      }
+    }
+
+    async function handleInlineMenuItemSubmit(form) {
+      if (!ensureSupabase() || !state.restaurant) {
+        setStatus(elements.dashboardStatus, "Skapa och spara en restaurang först.", "error");
+        return;
+      }
+
+      const formData = new FormData(form);
+      const categoryId = form.dataset.inlineItemForm;
+      const itemId = form.dataset.itemId;
+      const payload = {
+        restaurant_id: state.restaurant.id,
+        category_id: categoryId,
+        name: String(formData.get("name") || "").trim(),
+        description: String(formData.get("description") || "").trim(),
+        price: Number(formData.get("price") || 0),
+        is_active: formData.get("is_active") === "true"
+      };
+
+      if (!payload.name) {
+        setStatus(elements.dashboardStatus, "Fyll i namn för maträtten.", "error");
+        return;
+      }
+
+      setStatus(elements.dashboardStatus, itemId ? "Uppdaterar maträtt..." : "Sparar maträtt...", "info");
+
+      const query = itemId
+        ? supabaseClient.from("menu_items").update(payload).eq("id", itemId)
+        : supabaseClient.from("menu_items").insert(payload);
+
+      const { error } = await query;
+
+      if (error) {
+        setStatus(elements.dashboardStatus, error.message, "error");
+        return;
+      }
+
+      state.openCategoryId = categoryId;
+      state.editingItemId = null;
+      await fetchRestaurantData();
     }
 
     function escapeHtml(value) {
@@ -2576,8 +2970,11 @@
       if (!state.restaurant) {
         state.categories = [];
         state.menuItems = [];
+        state.dashboardSection = "settings";
         renderCategories();
         renderMenuItems();
+        await renderQrCode();
+        showDashboardSection(state.dashboardSection);
         setStatus(elements.dashboardStatus, "Ingen restaurang hittades ännu. Skapa en för att börja.", "info");
         return;
       }
@@ -2612,9 +3009,15 @@
         category_name: item.categories?.name || ""
       }));
 
+      if (!state.categories.length && state.dashboardSection === "settings") {
+        state.dashboardSection = "menu";
+      }
+
+      resetMenuItemForm();
       renderCategories();
       renderMenuItems();
-      resetMenuItemForm();
+      await renderQrCode();
+      showDashboardSection(state.dashboardSection);
       setStatus(elements.dashboardStatus, "Dashboard uppdaterad.", "success");
     }
 
@@ -2839,12 +3242,16 @@
       state.restaurant = null;
       state.categories = [];
       state.menuItems = [];
+      state.openCategoryId = null;
+      state.editingItemId = null;
       showView("landing");
     }
 
     async function initializeApp() {
       const params = new URLSearchParams(window.location.search);
       const publicMenuId = params.get("menu");
+      const requestedView = getRequestedView();
+      const requestedAuthMode = getRequestedAuthMode();
 
       if (publicMenuId) {
         await loadPublicMenu(publicMenuId);
@@ -2852,7 +3259,12 @@
       }
 
       if (!supabaseClient) {
-        showView("landing");
+        if (requestedView === "auth") {
+          setAuthMode(requestedAuthMode === "signup" ? "signup" : "login");
+          showView("auth", { authMode: state.authMode });
+        } else {
+          showView("landing", { updateHistory: false });
+        }
         return;
       }
 
@@ -2882,7 +3294,15 @@
         showView("dashboard");
         await fetchRestaurantData();
       } else {
-        showView("landing");
+        if (requestedView === "dashboard") {
+          setAuthMode("login");
+          showView("auth", { authMode: "login" });
+        } else if (requestedView === "auth") {
+          setAuthMode(requestedAuthMode === "signup" ? "signup" : "login");
+          showView("auth", { updateHistory: false, authMode: state.authMode });
+        } else {
+          showView("landing", { updateHistory: false });
+        }
       }
     }
 
@@ -2893,32 +3313,66 @@
       });
 
       elements.navDashboardButton.addEventListener("click", async () => {
-        history.replaceState({}, "", window.location.pathname);
         showView("dashboard");
         await fetchRestaurantData();
       });
 
       elements.navAuthButton.addEventListener("click", () => {
         setAuthMode("login");
-        showView("auth");
+        showView("auth", { authMode: "login" });
       });
       elements.navSignupButton.addEventListener("click", () => {
         setAuthMode("signup");
-        showView("auth");
+        showView("auth", { authMode: "signup" });
       });
       elements.navLogoutButton.addEventListener("click", handleLogout);
+
+      [elements.dashboardMenuTab, elements.dashboardShareTab, elements.dashboardSettingsTab].forEach((button) => {
+        button?.addEventListener("click", () => {
+          showDashboardSection(button.dataset.dashboardSection);
+        });
+      });
 
       document.addEventListener("click", (event) => {
         const authButton = event.target.closest("[data-go-auth]");
         if (authButton) {
           setAuthMode(authButton.dataset.goAuth);
-          showView("auth");
+          showView("auth", { authMode: authButton.dataset.goAuth });
           return;
         }
 
         const demoButton = event.target.closest("[data-scroll-demo]");
         if (demoButton) {
           document.getElementById("demoSection")?.scrollIntoView({ behavior: "smooth", block: "start" });
+          return;
+        }
+
+        const dashboardSectionButton = event.target.closest("[data-dashboard-section]");
+        if (dashboardSectionButton && state.currentView === "dashboard") {
+          showDashboardSection(dashboardSectionButton.dataset.dashboardSection);
+          return;
+        }
+
+        const focusCategoryButton = event.target.closest("[data-focus-category]");
+        if (focusCategoryButton) {
+          elements.categoryName?.focus();
+          return;
+        }
+
+        const openItemButton = event.target.closest("[data-open-item-form]");
+        if (openItemButton) {
+          state.openCategoryId = openItemButton.dataset.openItemForm;
+          state.editingItemId = null;
+          renderCategories();
+          document.querySelector(`[data-inline-item-form="${openItemButton.dataset.openItemForm}"] input[name="name"]`)?.focus();
+          return;
+        }
+
+        const cancelInlineButton = event.target.closest("[data-cancel-inline]");
+        if (cancelInlineButton) {
+          resetMenuItemForm();
+          renderCategories();
+          return;
         }
       });
 
@@ -2927,8 +3381,6 @@
       elements.authForm.addEventListener("submit", handleAuthSubmit);
       elements.restaurantForm.addEventListener("submit", handleRestaurantSubmit);
       elements.categoryForm.addEventListener("submit", handleCategorySubmit);
-      elements.menuItemForm.addEventListener("submit", handleMenuItemSubmit);
-      elements.cancelEditButton.addEventListener("click", resetMenuItemForm);
 
       elements.restaurantName.addEventListener("input", (event) => {
         if (!elements.restaurantSlug.value || elements.restaurantSlug.value === slugify(state.restaurant?.name || "")) {
@@ -2951,13 +3403,32 @@
         }
       });
 
+      elements.downloadQrButton.addEventListener("click", () => {
+        if (!state.qrCodeDataUrl || !state.restaurant) {
+          setStatus(elements.dashboardStatus, "Spara restaurangen först för att skapa en QR-kod.", "error");
+          return;
+        }
+
+        const link = document.createElement("a");
+        link.href = state.qrCodeDataUrl;
+        link.download = `${slugify(state.restaurant.slug || state.restaurant.name || "menuqr")}-qr.png`;
+        link.click();
+      });
+
       elements.categoryList.addEventListener("click", async (event) => {
         const button = event.target.closest("[data-delete-category]");
         if (!button) return;
         await deleteCategory(button.dataset.deleteCategory);
       });
 
-      elements.menuItemList.addEventListener("click", async (event) => {
+      elements.categoryList.addEventListener("submit", async (event) => {
+        const form = event.target.closest("[data-inline-item-form]");
+        if (!form) return;
+        event.preventDefault();
+        await handleInlineMenuItemSubmit(form);
+      });
+
+      elements.categoryList.addEventListener("click", async (event) => {
         const editButton = event.target.closest("[data-edit-item]");
         const deleteButton = event.target.closest("[data-delete-item]");
 
@@ -2968,6 +3439,10 @@
         if (deleteButton) {
           await deleteMenuItem(deleteButton.dataset.deleteItem);
         }
+      });
+
+      window.addEventListener("popstate", () => {
+        initializeApp();
       });
     }
 
