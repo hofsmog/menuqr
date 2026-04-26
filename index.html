@@ -1416,28 +1416,61 @@
     }
 
     .lp-demo {
-      padding: 22px;
+      padding: 28px;
       display: grid;
-      gap: 18px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(246,249,252,0.98) 100%);
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 430px);
+      align-items: center;
+      gap: 24px;
+      background: rgba(255, 255, 255, 0.98);
+    }
+
+    .lp-demo-copy {
+      display: grid;
+      gap: 16px;
+      align-content: center;
     }
 
     .lp-demo-copy h2 {
       margin: 0 0 10px;
-      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      font-size: clamp(1.8rem, 3vw, 2.35rem);
       letter-spacing: -0.04em;
     }
 
     .lp-demo-copy p {
       margin: 0;
-      max-width: 48ch;
+      max-width: 42ch;
       color: var(--muted);
       line-height: 1.65;
     }
 
+    .lp-demo-points {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .lp-demo-points li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .lp-demo-points li::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--brand);
+      box-shadow: 0 0 0 5px rgba(67, 185, 95, 0.12);
+      flex: 0 0 auto;
+    }
+
     .lp-demo-phone {
-      max-width: 520px;
-      margin: 0 auto;
+      width: 100%;
       padding: 18px;
       border-radius: 18px;
       background: linear-gradient(180deg, #0f172a 0%, #1a2942 100%);
@@ -1450,6 +1483,64 @@
       background: #ffffff;
     }
 
+    .lp-demo-statusbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 18px 10px;
+      color: #6a7789;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      background: #ffffff;
+    }
+
+    .lp-demo-statusicons {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .lp-demo-statusdots {
+      display: inline-flex;
+      gap: 4px;
+    }
+
+    .lp-demo-statusdots span {
+      width: 5px;
+      height: 5px;
+      border-radius: 999px;
+      background: #9aa7b8;
+      display: block;
+    }
+
+    .lp-demo-battery {
+      width: 18px;
+      height: 10px;
+      border: 1.5px solid #9aa7b8;
+      border-radius: 3px;
+      position: relative;
+    }
+
+    .lp-demo-battery::before {
+      content: "";
+      position: absolute;
+      inset: 1.5px 5px 1.5px 1.5px;
+      border-radius: 1px;
+      background: #43b95f;
+    }
+
+    .lp-demo-battery::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      right: -4px;
+      width: 2px;
+      height: 4px;
+      border-radius: 1px;
+      background: #9aa7b8;
+    }
+
     .lp-demo-head {
       padding: 18px 18px 14px;
       background: linear-gradient(180deg, #f8fcf9 0%, #edf8f0 100%);
@@ -1459,6 +1550,18 @@
     .lp-demo-head h3 {
       margin: 0 0 6px;
       font-size: 1.2rem;
+    }
+
+    .lp-demo-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(67, 185, 95, 0.12);
+      color: var(--brand-deep);
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-bottom: 10px;
     }
 
     .lp-demo-head p {
@@ -1620,7 +1723,8 @@
       .trust-bar,
       .features-grid,
       .lp-trust,
-      .lp-steps {
+      .lp-steps,
+      .lp-demo {
         grid-template-columns: 1fr;
       }
 
@@ -2122,13 +2226,30 @@
 
           <section id="demoSection" class="lp-card lp-demo">
             <div class="lp-demo-copy">
-              <h2>Så ser din meny ut</h2>
-              <p>En större mobilpreview som visar hur rent och tydligt menyn presenteras för gästen.</p>
+              <h2>Så ser gästen din meny</h2>
+              <p>Menyn är snabb, mobilanpassad och enkel att läsa direkt vid bordet.</p>
+              <ul class="lp-demo-points">
+                <li>Tydliga kategorier</li>
+                <li>Priser och beskrivningar</li>
+                <li>Alltid uppdaterad meny</li>
+              </ul>
             </div>
 
             <div class="lp-demo-phone">
               <div class="lp-demo-screen">
+                <div class="lp-demo-statusbar">
+                  <span>9:41</span>
+                  <div class="lp-demo-statusicons">
+                    <div class="lp-demo-statusdots">
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                    </div>
+                    <span class="lp-demo-battery"></span>
+                  </div>
+                </div>
                 <div class="lp-demo-head">
+                  <span class="lp-demo-badge">Live meny</span>
                   <h3>Ateljé Kitchen</h3>
                   <p>Kvällsmeny • Skanna, läs och bestäm i lugn och ro</p>
                 </div>
