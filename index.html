@@ -1354,49 +1354,24 @@
       flex: 0 0 auto;
     }
 
-    .lp-features {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .lp-feature {
-      padding: 18px;
-    }
-
-    .lp-feature-icon {
-      width: 42px;
-      height: 42px;
-      display: grid;
-      place-items: center;
-      border-radius: 12px;
-      background: rgba(67, 185, 95, 0.12);
-      color: var(--brand-deep);
-      font-weight: 800;
-      margin-bottom: 14px;
-    }
-
-    .lp-feature h3 {
-      margin: 0 0 8px;
-      font-size: 1rem;
-    }
-
-    .lp-feature p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.6;
-      font-size: 0.94rem;
-    }
-
     .lp-steps-wrap {
       display: grid;
       gap: 14px;
+      padding: 28px;
+      background: rgba(255, 255, 255, 0.98);
     }
 
     .lp-steps-title {
-      margin: 0;
+      margin: 0 0 8px;
       font-size: clamp(1.7rem, 3vw, 2.2rem);
       letter-spacing: -0.04em;
+    }
+
+    .lp-steps-subtitle {
+      margin: 0 0 4px;
+      color: var(--muted);
+      line-height: 1.65;
+      max-width: 46ch;
     }
 
     .lp-steps {
@@ -1639,7 +1614,6 @@
       .trust-bar,
       .features-grid,
       .lp-trust,
-      .lp-features,
       .lp-steps {
         grid-template-columns: 1fr;
       }
@@ -2118,26 +2092,9 @@
             </div>
           </section>
 
-          <section class="lp-features">
-            <article class="lp-card lp-feature">
-              <div class="lp-feature-icon">01</div>
-              <h3>Snabbt att komma igång</h3>
-              <p>Skapa restaurang, lägg in rätter och publicera menyn utan tekniskt krångel.</p>
-            </article>
-            <article class="lp-card lp-feature">
-              <div class="lp-feature-icon">02</div>
-              <h3>QR-kod direkt</h3>
-              <p>Din publika meny-länk är redo att användas bakom QR-koder på bord och skyltar.</p>
-            </article>
-            <article class="lp-card lp-feature">
-              <div class="lp-feature-icon">03</div>
-              <h3>Uppdatera när som helst</h3>
-              <p>Ändra priser och maträtter direkt så att gästen alltid ser rätt meny.</p>
-            </article>
-          </section>
-
-          <section class="lp-steps-wrap">
+          <section class="lp-card lp-steps-wrap">
             <h2 class="lp-steps-title">Så funkar det</h2>
+            <p class="lp-steps-subtitle">Från tom meny till QR-kod på några minuter.</p>
             <div class="lp-steps">
               <article class="lp-card lp-step">
                 <div class="lp-step-number">1</div>
@@ -2152,7 +2109,7 @@
               <article class="lp-card lp-step">
                 <div class="lp-step-number">3</div>
                 <h3>Dela QR-koden</h3>
-                <p>Gästerna skannar och ser alltid den aktuella menyn.</p>
+                <p>Skriv ut QR-koden eller dela länken direkt med gästerna.</p>
               </article>
             </div>
           </section>
