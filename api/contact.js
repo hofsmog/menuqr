@@ -1,7 +1,12 @@
-const RESEND_API_KEY = 're_h1v8pANG_9rAjLJiH4MGQD4EaDjt78ME8';
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
+
+  if (!RESEND_API_KEY) {
+    console.error('Contact endpoint misconfigured: missing RESEND_API_KEY');
+    return res.status(500).json({ error: 'Email service misconfigured' });
+  }
 
   const { name, email, message, type } = req.body;
   if (!name || !email || !message) return res.status(400).json({ error: 'Fyll i alla fält' });
