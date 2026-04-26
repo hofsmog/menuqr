@@ -2334,16 +2334,13 @@
   <script>
     console.log("MENUQR SCRIPT STARTAR");
     // Fyll i din egen Supabase-projektinformation här innan du kör skarpt.
-    const SUPABASE_URL = "YOUR_SUPABASE_URL";
-    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+    const SUPABASE_URL = "https://fijtzqwjyykbrgckvhbz.supabase.co";
+    const SUPABASE_ANON_KEY = "MIN_RIKTIGA_ANON_KEY_HÄR";
 
-    const hasSupabaseConfig =
-      SUPABASE_URL && SUPABASE_URL !== "YOUR_SUPABASE_URL" &&
-      SUPABASE_ANON_KEY && SUPABASE_ANON_KEY !== "YOUR_SUPABASE_ANON_KEY";
-
-    const supabaseClient = hasSupabaseConfig
-      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-      : null;
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
 
     const state = {
       currentView: "landing",
@@ -3259,9 +3256,9 @@
 
     function ensureSupabase() {
       if (supabaseClient) return true;
-      const message = "Fyll i SUPABASE_URL och SUPABASE_ANON_KEY i index.html för att aktivera inloggning och datalagring.";
-      setStatus(elements.authStatus, message, "info");
-      setStatus(elements.dashboardStatus, message, "info");
+      const message = "Kunde inte ansluta till Supabase. Kontrollera script, URL och anon key.";
+      setStatus(elements.authStatus, message, "error");
+      setStatus(elements.dashboardStatus, message, "error");
       return false;
     }
 
