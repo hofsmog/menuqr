@@ -1748,6 +1748,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    console.log("MENUQR SCRIPT STARTAR");
     // Fyll i din egen Supabase-projektinformation här innan du kör skarpt.
     const SUPABASE_URL = "YOUR_SUPABASE_URL";
     const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
@@ -1756,7 +1757,7 @@
       SUPABASE_URL && SUPABASE_URL !== "YOUR_SUPABASE_URL" &&
       SUPABASE_ANON_KEY && SUPABASE_ANON_KEY !== "YOUR_SUPABASE_ANON_KEY";
 
-    const supabase = hasSupabaseConfig
+    const supabaseClient = hasSupabaseConfig
       ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
       : null;
 
@@ -2227,7 +2228,7 @@
     }
 
     function ensureSupabase() {
-      if (supabase) return true;
+      if (supabaseClient) return true;
       const message = "Fyll i SUPABASE_URL och SUPABASE_ANON_KEY i index.html för att aktivera inloggning och datalagring.";
       setStatus(elements.authStatus, message, "info");
       setStatus(elements.dashboardStatus, message, "info");
@@ -2239,7 +2240,7 @@
 
       setStatus(elements.dashboardStatus, "Laddar din restaurangdata...", "info");
 
-      const { data: restaurant, error: restaurantError } = await supabase
+      const { data: restaurant, error: restaurantError } = await supabaseClient
         .from("restaurants")
         .select("*")
         .eq("owner_id", state.user.id)
@@ -2265,13 +2266,13 @@
       }
 
       const [{ data: categories, error: categoriesError }, { data: menuItems, error: menuItemsError }] = await Promise.all([
-        supabase
+        supabaseClient
           .from("categories")
           .select("*")
           .eq("restaurant_id", state.restaurant.id)
           .order("sort_order", { ascending: true })
           .order("created_at", { ascending: true }),
-        supabase
+        supabaseClient
           .from("menu_items")
           .select("*, categories(name)")
           .eq("restaurant_id", state.restaurant.id)
@@ -2310,8 +2311,8 @@
       setStatus(elements.authStatus, "Bearbetar...", "info");
 
       const action = state.authMode === "login"
-        ? supabase.auth.signInWithPassword({ email, password })
-        : supabase.auth.signUp({ email, password });
+        ? supabaseClient.auth.signInWithPassword({ email, password })
+        : supabaseClient.auth.signUp({ email, password });
 
       const { data, error } = await action;
 
@@ -2351,8 +2352,8 @@
       };
 
       const query = state.restaurant
-        ? supabase.from("restaurants").update(payload).eq("id", state.restaurant.id).select().single()
-        : supabase.from("restaurants").insert(payload).select().single();
+        ? supabaseClient.from("restaurants").update(payload).eq("id", state.restaurant.id).select().single()
+        : supabaseClient.from("restaurants").insert(payload).select().single();
 
       const { error } = await query;
 
@@ -2381,7 +2382,7 @@
 
       setStatus(elements.dashboardStatus, "Lägger till kategori...", "info");
 
-      const { error } = await supabase.from("categories").insert({
+      const { error } = await supabaseClient.from("categories").insert({
         restaurant_id: state.restaurant.id,
         name,
         sort_order: sortOrder
@@ -2421,8 +2422,8 @@
       setStatus(elements.dashboardStatus, state.editingItemId ? "Uppdaterar maträtt..." : "Sparar maträtt...", "info");
 
       const query = state.editingItemId
-        ? supabase.from("menu_items").update(payload).eq("id", state.editingItemId)
-        : supabase.from("menu_items").insert(payload);
+        ? supabaseClient.from("menu_items").update(payload).eq("id", state.editingItemId)
+        : supabaseClient.from("menu_items").insert(payload);
 
       const { error } = await query;
 
@@ -2444,7 +2445,7 @@
       }
 
       setStatus(elements.dashboardStatus, "Tar bort kategori...", "info");
-      const { error } = await supabase.from("categories").delete().eq("id", categoryId);
+      const { error } = await supabaseClient.from("categories").delete().eq("id", categoryId);
 
       if (error) {
         setStatus(elements.dashboardStatus, error.message, "error");
@@ -2458,7 +2459,7 @@
       if (!ensureSupabase()) return;
 
       setStatus(elements.dashboardStatus, "Tar bort maträtt...", "info");
-      const { error } = await supabase.from("menu_items").delete().eq("id", itemId);
+      const { error } = await supabaseClient.from("menu_items").delete().eq("id", itemId);
 
       if (error) {
         setStatus(elements.dashboardStatus, error.message, "error");
@@ -2481,7 +2482,7 @@
       setStatus(elements.publicMenuStatus, "Hämtar menyn...", "info");
       elements.publicMenuContent.innerHTML = "";
 
-      const { data: restaurant, error: restaurantError } = await supabase
+      const { data: restaurant, error: restaurantError } = await supabaseClient
         .from("restaurants")
         .select("*")
         .eq("id", restaurantId)
@@ -2493,13 +2494,13 @@
       }
 
       const [{ data: categories, error: categoriesError }, { data: menuItems, error: menuItemsError }] = await Promise.all([
-        supabase
+        supabaseClient
           .from("categories")
           .select("*")
           .eq("restaurant_id", restaurant.id)
           .order("sort_order", { ascending: true })
           .order("created_at", { ascending: true }),
-        supabase
+        supabaseClient
           .from("menu_items")
           .select("*")
           .eq("restaurant_id", restaurant.id)
@@ -2515,8 +2516,8 @@
     }
 
     async function handleLogout() {
-      if (!supabase) return;
-      await supabase.auth.signOut();
+      if (!supabaseClient) return;
+      await supabaseClient.auth.signOut();
       state.user = null;
       state.restaurant = null;
       state.categories = [];
@@ -2533,19 +2534,19 @@
         return;
       }
 
-      if (!supabase) {
+      if (!supabaseClient) {
         showView("landing");
         return;
       }
 
       const [{ data: sessionData }] = await Promise.all([
-        supabase.auth.getSession()
+        supabaseClient.auth.getSession()
       ]);
 
       state.user = sessionData.session?.user || null;
 
       if (!state.authSubscriptionInitialized) {
-        supabase.auth.onAuthStateChange(async (_event, session) => {
+        supabaseClient.auth.onAuthStateChange(async (_event, session) => {
           state.user = session?.user || null;
           if (state.user) {
             elements.userEmailLabel.textContent = state.user.email || "-";
@@ -2658,7 +2659,8 @@
       });
     }
 
-    bootApp();
+    console.log("BOOTAPP KÖRS");
+    document.addEventListener("DOMContentLoaded", bootApp);
   </script>
 </body>
 </html>
