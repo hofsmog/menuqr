@@ -1595,11 +1595,25 @@
     .lp-cta p {
       margin: 0 0 18px;
       color: var(--muted);
+      font-size: 0.98rem;
       line-height: 1.65;
     }
 
     .lp-cta .btn {
       min-width: 220px;
+    }
+
+    .lp-cta-button {
+      box-shadow: 0 16px 40px rgba(67, 185, 95, 0.5);
+      transform: scale(1.05);
+    }
+
+    .lp-cta-note-bottom {
+      margin: 14px 0 0;
+      color: #526072;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      text-align: center;
     }
 
     .public-header {
@@ -2299,9 +2313,10 @@
           </section>
 
           <section class="lp-card lp-cta">
-            <h2>Redo att slippa pappersmenyer?</h2>
+            <h2>Skapa din första QR-meny idag</h2>
             <p>Skapa din första digitala meny och börja dela den med QR redan idag.</p>
-            <button class="btn btn-primary" type="button" data-go-auth="signup">Skapa meny på 2 minuter</button>
+            <button class="btn btn-primary lp-cta-button" type="button" data-go-auth="signup">Skapa meny på 2 minuter</button>
+            <p class="lp-cta-note-bottom">Ingen kreditkort • Gratis att komma igång</p>
           </section>
         </div>
       `;
