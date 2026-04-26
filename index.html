@@ -2225,17 +2225,17 @@
       </section>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@/-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
   <script>
     console.log("MENUQR SCRIPT STARTAR");
-    // Fyll i din egen Supabase-projektinformation här innan du kör skarpt.
+    // Fyll i din egen -projektinformation här innan du kör skarpt.
     const SUPABASE_URL = "YOUR_SUPABASE_URL";
     const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
 
     const hasSupabaseConfig =
-      SUPABASE_URL && SUPABASE_URL !== "YOUR_SUPABASE_URL" &&
-      SUPABASE_ANON_KEY && SUPABASE_ANON_KEY !== "YOUR_SUPABASE_ANON_KEY";
+      SUPABASE_URL && SUPABASE_URL !== "https://fijtzqwjyykbrgckvhbz.supabase.co" &&
+      SUPABASE_ANON_KEY && SUPABASE_ANON_KEY !== "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpanR6cXdqeXlrYnJnY2t2aGJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMDMzMDUsImV4cCI6MjA5Mjc3OTMwNX0.qlexoai3aIp_ystglKZFXpwkeNp2fqXCxi8Xy-yFF8s";
 
     const supabaseClient = hasSupabaseConfig
       ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
@@ -3402,7 +3402,7 @@
           setStatus(elements.dashboardStatus, "Kunde inte kopiera länken automatiskt. Kopiera den manuellt.", "error");
         }
       });
-
+      
       elements.downloadQrButton.addEventListener("click", () => {
         if (!state.qrCodeDataUrl || !state.restaurant) {
           setStatus(elements.dashboardStatus, "Spara restaurangen först för att skapa en QR-kod.", "error");
