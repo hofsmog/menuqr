@@ -92,20 +92,17 @@
     }
 
     .brand-logo {
-      width: 52px;
-      height: 52px;
-      border-radius: 16px;
+      width: 64px;
+      height: 64px;
+      border-radius: 12px;
       object-fit: contain;
-      background: #fff;
-      border: 1px solid rgba(15, 23, 42, 0.08);
-      padding: 8px;
-      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+      padding: 4px;
     }
 
     .brand-fallback {
-      width: 52px;
-      height: 52px;
-      border-radius: 16px;
+      width: 64px;
+      height: 64px;
+      border-radius: 12px;
       display: grid;
       place-items: center;
       font-weight: 800;
@@ -121,19 +118,26 @@
 
     .brand-kicker {
       display: block;
-      font-size: 0.77rem;
+      font-size: 0.82rem;
       text-transform: uppercase;
-      letter-spacing: 0.16em;
+      letter-spacing: 0.18em;
       color: var(--brand-deep);
-      margin-bottom: 4px;
-      font-weight: 700;
+      margin-bottom: 2px;
+      font-weight: 800;
     }
 
     .brand-title {
       margin: 0;
-      font-size: 1.15rem;
+      font-size: 1.3rem;
       font-weight: 800;
       white-space: nowrap;
+    }
+
+    .brand-subtitle {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.35;
     }
 
     .topbar-actions {
@@ -991,7 +995,15 @@
       background: transparent;
       border: none;
       box-shadow: none;
-      padding-inline: 8px;
+      padding-inline: 6px;
+      min-height: auto;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    #navAuthButton:hover {
+      color: var(--text);
+      transform: none;
     }
 
     .lp {
@@ -1659,13 +1671,13 @@
         <div class="brand-text">
           <span class="brand-kicker">MenuQR.se</span>
           <p class="brand-title">Digital meny för restauranger</p>
+          <p class="brand-subtitle">QR-meny på 2 minuter</p>
         </div>
       </div>
       <div class="topbar-actions">
-        <button id="navHomeButton" class="btn btn-secondary hidden" type="button">Hem</button>
         <button id="navDashboardButton" class="btn btn-secondary hidden" type="button">Dashboard</button>
         <button id="navAuthButton" class="btn btn-outline hidden" type="button">Logga in</button>
-        <button id="navSignupButton" class="btn btn-primary hidden" type="button">Skapa konto</button>
+        <button id="navSignupButton" class="btn btn-primary hidden" type="button">Skapa gratis meny</button>
         <button id="navLogoutButton" class="btn btn-dark hidden" type="button">Logga ut</button>
       </div>
     </header>
@@ -1896,7 +1908,6 @@
       app: document.getElementById("app"),
       brandLogo: document.getElementById("brandLogo"),
       brandFallback: document.getElementById("brandFallback"),
-      navHomeButton: document.getElementById("navHomeButton"),
       navDashboardButton: document.getElementById("navDashboardButton"),
       navAuthButton: document.getElementById("navAuthButton"),
       navSignupButton: document.getElementById("navSignupButton"),
@@ -2164,7 +2175,6 @@
       elements.authView.classList.remove("is-active");
       elements.dashboardView.classList.remove("is-active");
       elements.publicMenuView.classList.remove("is-active");
-      elements.navHomeButton.classList.add("hidden");
       elements.navDashboardButton.classList.add("hidden");
       elements.navAuthButton.classList.remove("hidden");
       elements.navSignupButton.classList.remove("hidden");
@@ -2191,7 +2201,6 @@
       const isAuth = viewName === "auth";
       const showGuestActions = !state.user && !isPublic;
 
-      elements.navHomeButton.classList.toggle("hidden", isPublic);
       elements.navDashboardButton.classList.toggle("hidden", !state.user || isDashboard || isPublic);
       elements.navAuthButton.classList.toggle("hidden", !showGuestActions);
       elements.navSignupButton.classList.toggle("hidden", !showGuestActions);
@@ -2726,11 +2735,6 @@
       elements.brandLogo.addEventListener("error", () => {
         elements.brandLogo.classList.add("hidden");
         elements.brandFallback.classList.remove("hidden");
-      });
-
-      elements.navHomeButton.addEventListener("click", () => {
-        history.replaceState({}, "", window.location.pathname);
-        showView("landing");
       });
 
       elements.navDashboardButton.addEventListener("click", async () => {
