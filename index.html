@@ -542,6 +542,20 @@
       resize: vertical;
     }
 
+    .field input.is-invalid,
+    .field select.is-invalid,
+    .field textarea.is-invalid {
+      border-color: #e58f8f;
+      box-shadow: 0 0 0 4px rgba(229, 143, 143, 0.14);
+    }
+
+    .field-error {
+      color: #b23939;
+      font-size: 0.88rem;
+      line-height: 1.45;
+      min-height: 1.1em;
+    }
+
     .auth-note,
     .inline-note,
     .badge,
@@ -651,6 +665,20 @@
       border-radius: 16px;
       background: #f5f9fc;
       border: 1px solid rgba(15, 23, 42, 0.08);
+    }
+
+    .dashboard-mini-card {
+      padding: 16px;
+      border-radius: 16px;
+      background: #f8fbfd;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      display: grid;
+      gap: 6px;
+    }
+
+    .dashboard-mini-card strong,
+    .dashboard-user-card strong {
+      font-size: 0.96rem;
     }
 
     .dashboard-main,
@@ -772,6 +800,22 @@
       gap: 14px;
     }
 
+    .category-card[draggable="true"] {
+      cursor: grab;
+    }
+
+    .category-card.is-dragging,
+    .menu-item-card.is-dragging {
+      opacity: 0.5;
+      transform: scale(0.99);
+    }
+
+    .category-card.is-drop-target,
+    .menu-item-card.is-drop-target {
+      border-color: rgba(67, 185, 95, 0.45);
+      box-shadow: 0 0 0 4px rgba(67, 185, 95, 0.14);
+    }
+
     .category-item {
       display: flex;
       align-items: flex-start;
@@ -788,6 +832,13 @@
       color: var(--muted);
       font-size: 0.92rem;
       margin-top: 4px;
+    }
+
+    .category-summary {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     .category-actions,
@@ -810,6 +861,16 @@
       border: 1px solid rgba(15, 23, 42, 0.08);
       display: grid;
       gap: 12px;
+    }
+
+    .menu-item-card[draggable="true"] {
+      cursor: grab;
+    }
+
+    .menu-item-card.is-inactive {
+      background: linear-gradient(180deg, #fffaf4 0%, #fffdf8 100%);
+      border-color: rgba(226, 178, 109, 0.35);
+      opacity: 0.88;
     }
 
     .menu-item-top {
@@ -939,6 +1000,17 @@
       font-size: 0.92rem;
       line-height: 1.55;
       text-align: center;
+    }
+
+    .action-feedback {
+      margin-top: 2px;
+    }
+
+    .btn:disabled,
+    .dashboard-nav-btn:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none !important;
     }
 
     .public-shell {
@@ -2078,6 +2150,16 @@
               <div class="muted" style="font-size:0.92rem;">Inloggad som</div>
               <strong id="userEmailLabel">-</strong>
             </div>
+
+            <div class="dashboard-mini-card">
+              <div class="muted" style="font-size:0.92rem;">Senast uppdaterad</div>
+              <strong id="dashboardLastUpdated">Inte sparad ännu</strong>
+            </div>
+
+            <div class="dashboard-mini-card">
+              <div class="muted" style="font-size:0.92rem;">Överblick</div>
+              <strong id="dashboardCounts">0 kategorier • 0 rätter</strong>
+            </div>
           </aside>
 
           <div class="dashboard-main">
@@ -2110,13 +2192,15 @@
                   <div class="field">
                     <label for="categoryName">Kategorinamn</label>
                     <input id="categoryName" name="name" type="text" placeholder="Pizza" required>
+                    <div id="categoryNameError" class="field-error"></div>
                   </div>
                   <div class="field">
                     <label for="categorySortOrder">Sorteringsordning</label>
                     <input id="categorySortOrder" name="sort_order" type="number" min="0" value="0" required>
                   </div>
-                  <button class="btn btn-secondary" type="submit">Lägg till kategori</button>
+                  <button id="categorySubmitButton" class="btn btn-secondary" type="submit">Lägg till kategori</button>
                 </form>
+                <div id="categoryFormStatus" class="status inline-note action-feedback" data-tone="info"></div>
               </section>
 
               <div id="categoryList" class="category-list"></div>
@@ -2145,6 +2229,7 @@
                     <button id="copyLinkButton" class="btn btn-secondary" type="button">Kopiera länk</button>
                     <button id="downloadQrButton" class="btn btn-primary" type="button">Ladda ner QR</button>
                   </div>
+                  <div id="shareStatus" class="status inline-note action-feedback" data-tone="info"></div>
                 </section>
 
                 <section class="panel dashboard-qr-card">
@@ -2176,13 +2261,15 @@
                     <div class="field">
                       <label for="restaurantName">Restaurangnamn</label>
                       <input id="restaurantName" name="name" type="text" placeholder="Till exempel Bistro Skeppsbron" required>
+                      <div id="restaurantNameError" class="field-error"></div>
                     </div>
                     <div class="field">
                       <label for="restaurantSlug">Slug</label>
                       <input id="restaurantSlug" name="slug" type="text" placeholder="bistro-skeppsbron">
                     </div>
-                    <button class="btn btn-primary" type="submit">Spara restaurang</button>
+                    <button id="restaurantSubmitButton" class="btn btn-primary" type="submit">Spara restaurang</button>
                   </form>
+                  <div id="restaurantFormStatus" class="status inline-note action-feedback" data-tone="info"></div>
                 </section>
 
                 <section class="panel dashboard-stack">
@@ -2229,15 +2316,13 @@
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
   <script>
     console.log("MENUQR SCRIPT STARTAR");
-    // Fyll i din egen -projektinformation här innan du kör skarpt.
-    const SUPABASE_URL = "https://fijtzqwjyykbrgckvhbz.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpanR6cXdqeXlrYnJnY2t2aGJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMDMzMDUsImV4cCI6MjA5Mjc3OTMwNX0.qlexoai3aIp_ystglKZFXpwkeNp2fqXCxi8Xy-yFF8s";
+    // Fyll i din egen Supabase-projektinformation här innan du kör skarpt.
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
 
-const hasSupabaseConfig =
-  SUPABASE_URL &&
-  SUPABASE_URL !== "YOUR_SUPABASE_URL" &&
-  SUPABASE_ANON_KEY &&
-  SUPABASE_ANON_KEY !== "YOUR_SUPABASE_ANON_KEY";
+    const hasSupabaseConfig =
+      SUPABASE_URL && SUPABASE_URL !== "YOUR_SUPABASE_URL" &&
+      SUPABASE_ANON_KEY && SUPABASE_ANON_KEY !== "YOUR_SUPABASE_ANON_KEY";
 
     const supabaseClient = hasSupabaseConfig
       ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
@@ -2254,6 +2339,21 @@ const hasSupabaseConfig =
       openCategoryId: null,
       editingItemId: null,
       qrCodeDataUrl: "",
+      lastUpdatedAt: "",
+      pendingActions: {},
+      formFeedback: {
+        restaurant: null,
+        category: null,
+        share: null
+      },
+      inlineFeedback: {},
+      cardFeedback: {},
+      validationErrors: {
+        restaurant: {},
+        category: {},
+        inline: {}
+      },
+      dragState: null,
       authSubscriptionInitialized: false
     };
 
@@ -2286,17 +2386,26 @@ const hasSupabaseConfig =
       authSubmitButton: document.getElementById("authSubmitButton"),
       authStatus: document.getElementById("authStatus"),
       dashboardStatus: document.getElementById("dashboardStatus"),
+      dashboardLastUpdated: document.getElementById("dashboardLastUpdated"),
+      dashboardCounts: document.getElementById("dashboardCounts"),
       userEmailLabel: document.getElementById("userEmailLabel"),
       restaurantForm: document.getElementById("restaurantForm"),
       restaurantName: document.getElementById("restaurantName"),
+      restaurantNameError: document.getElementById("restaurantNameError"),
       restaurantSlug: document.getElementById("restaurantSlug"),
+      restaurantSubmitButton: document.getElementById("restaurantSubmitButton"),
+      restaurantFormStatus: document.getElementById("restaurantFormStatus"),
       publicMenuLink: document.getElementById("publicMenuLink"),
       copyLinkButton: document.getElementById("copyLinkButton"),
       downloadQrButton: document.getElementById("downloadQrButton"),
+      shareStatus: document.getElementById("shareStatus"),
       qrCodeContainer: document.getElementById("qrCodeContainer"),
       categoryForm: document.getElementById("categoryForm"),
       categoryName: document.getElementById("categoryName"),
+      categoryNameError: document.getElementById("categoryNameError"),
       categorySortOrder: document.getElementById("categorySortOrder"),
+      categorySubmitButton: document.getElementById("categorySubmitButton"),
+      categoryFormStatus: document.getElementById("categoryFormStatus"),
       categoryList: document.getElementById("categoryList"),
       menuItemCategory: document.getElementById("menuItemCategory"),
       menuItemList: document.getElementById("menuItemList"),
@@ -2336,6 +2445,166 @@ const hasSupabaseConfig =
       element.textContent = message;
       element.dataset.tone = tone;
       element.classList.add("is-visible");
+    }
+
+    function setPendingAction(key, isPending) {
+      if (isPending) {
+        state.pendingActions[key] = true;
+      } else {
+        delete state.pendingActions[key];
+      }
+    }
+
+    function isPendingAction(key) {
+      return Boolean(state.pendingActions[key]);
+    }
+
+    function setFieldError(input, errorElement, message = "") {
+      input?.classList.toggle("is-invalid", Boolean(message));
+      if (errorElement) {
+        errorElement.textContent = message || "";
+      }
+    }
+
+    function setFormFeedback(scope, message = "", tone = "info") {
+      state.formFeedback[scope] = message ? { message, tone } : null;
+      const map = {
+        restaurant: elements.restaurantFormStatus,
+        category: elements.categoryFormStatus,
+        share: elements.shareStatus
+      };
+      if (map[scope]) {
+        setStatus(map[scope], message, tone);
+      }
+    }
+
+    function setInlineFeedback(categoryId, message = "", tone = "info") {
+      if (!message) {
+        delete state.inlineFeedback[categoryId];
+      } else {
+        state.inlineFeedback[categoryId] = { message, tone };
+      }
+    }
+
+    function setCardFeedback(categoryId, message = "", tone = "info") {
+      if (!message) {
+        delete state.cardFeedback[categoryId];
+      } else {
+        state.cardFeedback[categoryId] = { message, tone };
+      }
+    }
+
+    function getStatusMarkup(feedback) {
+      if (!feedback?.message) return "";
+      return `<div class="status inline-note is-visible action-feedback" data-tone="${feedback.tone || "info"}">${escapeHtml(feedback.message)}</div>`;
+    }
+
+    function getFieldErrorMarkup(message = "") {
+      return `<div class="field-error">${escapeHtml(message)}</div>`;
+    }
+
+    function setButtonLoading(button, isLoading, loadingLabel) {
+      if (!button) return;
+      if (!button.dataset.defaultLabel) {
+        button.dataset.defaultLabel = button.textContent;
+      }
+      button.disabled = isLoading;
+      button.textContent = isLoading ? loadingLabel : button.dataset.defaultLabel;
+    }
+
+    function formatLastUpdated(dateString) {
+      if (!dateString) return "Inte sparad ännu";
+      return new Intl.DateTimeFormat("sv-SE", {
+        dateStyle: "medium",
+        timeStyle: "short"
+      }).format(new Date(dateString));
+    }
+
+    function updateDashboardMeta() {
+      const categoryCount = state.categories.length;
+      const itemCount = state.menuItems.length;
+      elements.dashboardCounts.textContent = `${categoryCount} ${categoryCount === 1 ? "kategori" : "kategorier"} • ${itemCount} ${itemCount === 1 ? "rätt" : "rätter"}`;
+      elements.dashboardLastUpdated.textContent = formatLastUpdated(state.lastUpdatedAt);
+    }
+
+    function setDashboardLastUpdated() {
+      const timestamps = [
+        state.restaurant?.created_at,
+        ...state.categories.map((category) => category.created_at),
+        ...state.menuItems.map((item) => item.created_at)
+      ].filter(Boolean);
+
+      state.lastUpdatedAt = timestamps.length
+        ? timestamps.sort((left, right) => new Date(right) - new Date(left))[0]
+        : "";
+
+      updateDashboardMeta();
+    }
+
+    function validateCategoryForm() {
+      const errors = {};
+      const name = elements.categoryName.value.trim();
+      if (!name) {
+        errors.name = "Ange ett kategorinamn.";
+      }
+
+      state.validationErrors.category = errors;
+      setFieldError(elements.categoryName, elements.categoryNameError, errors.name || "");
+      return { isValid: !Object.keys(errors).length, name };
+    }
+
+    function validateRestaurantForm() {
+      const errors = {};
+      const name = elements.restaurantName.value.trim();
+      if (!name) {
+        errors.name = "Ange ett restaurangnamn.";
+      }
+
+      state.validationErrors.restaurant = errors;
+      setFieldError(elements.restaurantName, elements.restaurantNameError, errors.name || "");
+      return { isValid: !Object.keys(errors).length, name };
+    }
+
+    function validateInlineItemForm(form, categoryId) {
+      const formData = new FormData(form);
+      const errors = {};
+      const name = String(formData.get("name") || "").trim();
+      const price = Number(formData.get("price") || 0);
+      const allowZero = formData.get("allow_zero_price") === "true";
+
+      if (!name) {
+        errors.name = "Ange ett namn för rätten.";
+      }
+
+      if (Number.isNaN(price)) {
+        errors.price = "Ange ett giltigt pris.";
+      } else if (price <= 0 && !allowZero) {
+        errors.price = "Priset måste vara högre än 0 kr eller markeras som tillåtet.";
+      }
+
+      state.validationErrors.inline[categoryId] = errors;
+      return {
+        isValid: !Object.keys(errors).length,
+        values: {
+          name,
+          price,
+          allowZero,
+          description: String(formData.get("description") || "").trim(),
+          is_active: formData.get("is_active") === "true"
+        }
+      };
+    }
+
+    function moveItemInArray(items, fromIndex, toIndex) {
+      const nextItems = items.slice();
+      const [moved] = nextItems.splice(fromIndex, 1);
+      nextItems.splice(toIndex, 0, moved);
+      return nextItems;
+    }
+
+    function resetInlineState(categoryId) {
+      delete state.validationErrors.inline[categoryId];
+      delete state.inlineFeedback[categoryId];
     }
 
     function getRequestedView() {
@@ -2651,6 +2920,7 @@ const hasSupabaseConfig =
       elements.signupTab.classList.toggle("is-active", !isLogin);
       elements.authHeading.textContent = isLogin ? "Logga in" : "Skapa konto";
       elements.authSubmitButton.textContent = isLogin ? "Logga in" : "Skapa konto";
+      elements.authSubmitButton.dataset.defaultLabel = elements.authSubmitButton.textContent;
       elements.authPassword.autocomplete = isLogin ? "current-password" : "new-password";
       setStatus(elements.authStatus, "", "info");
     }
@@ -2688,6 +2958,10 @@ const hasSupabaseConfig =
     function getInlineItemFormMarkup(categoryId) {
       const editingItem = state.menuItems.find((item) => String(item.id) === String(state.editingItemId));
       const isEditing = editingItem && String(editingItem.category_id) === String(categoryId);
+      const errors = state.validationErrors.inline[categoryId] || {};
+      const feedback = state.inlineFeedback[categoryId];
+      const isPending = isPendingAction(`inline:${categoryId}`);
+      const allowZeroPrice = isEditing && Number(editingItem.price) === 0;
 
       return `
         <form class="inline-item-form" data-inline-item-form="${categoryId}" data-item-id="${isEditing ? editingItem.id : ""}">
@@ -2700,11 +2974,13 @@ const hasSupabaseConfig =
           <div class="form-inline-grid">
             <div class="field">
               <label>Namn</label>
-              <input name="name" type="text" value="${escapeHtml(isEditing ? editingItem.name : "")}" placeholder="Margherita" required>
+              <input class="${errors.name ? "is-invalid" : ""}" name="name" type="text" value="${escapeHtml(isEditing ? editingItem.name : "")}" placeholder="Margherita" required>
+              ${getFieldErrorMarkup(errors.name)}
             </div>
             <div class="field field-compact">
               <label>Pris</label>
-              <input name="price" type="number" min="0" step="0.01" value="${isEditing ? escapeHtml(editingItem.price) : ""}" placeholder="99" required>
+              <input class="${errors.price ? "is-invalid" : ""}" name="price" type="number" min="0" step="0.01" value="${isEditing ? escapeHtml(editingItem.price) : ""}" placeholder="99" required>
+              ${getFieldErrorMarkup(errors.price)}
             </div>
           </div>
           <div class="field">
@@ -2718,10 +2994,15 @@ const hasSupabaseConfig =
               <option value="false" ${isEditing && !editingItem.is_active ? "selected" : ""}>Inaktiv</option>
             </select>
           </div>
+          <label class="muted" style="display:flex; align-items:center; gap:8px; font-size:0.92rem;">
+            <input type="checkbox" name="allow_zero_price" value="true" ${allowZeroPrice ? "checked" : ""}>
+            Tillåt 0 kr för den här rätten
+          </label>
           <div class="inline-form-actions">
-            <button class="btn btn-primary" type="submit">${isEditing ? "Spara ändringar" : "Spara rätt"}</button>
-            <button class="btn btn-secondary" type="button" data-cancel-inline="${categoryId}">Avbryt</button>
+            <button class="btn btn-primary" type="submit" ${isPending ? "disabled" : ""}>${isPending ? "Sparar..." : isEditing ? "Spara ändringar" : "Spara rätt"}</button>
+            <button class="btn btn-secondary" type="button" data-cancel-inline="${categoryId}" ${isPending ? "disabled" : ""}>Avbryt</button>
           </div>
+          ${getStatusMarkup(feedback)}
         </form>
       `;
     }
@@ -2753,27 +3034,33 @@ const hasSupabaseConfig =
       elements.categoryList.innerHTML = state.categories.map((category) => {
         const items = getMenuItemsForCategory(category.id);
         const isEditorOpen = String(state.openCategoryId) === String(category.id);
+        const categoryPending = isPendingAction(`category:${category.id}`) || isPendingAction("reorder:categories") || isPendingAction(`reorder-items:${category.id}`);
+        const categoryFeedback = state.cardFeedback[category.id];
 
         return `
-          <section class="category-card">
+          <section class="category-card" draggable="${categoryPending ? "false" : "true"}" data-category-card="${category.id}">
             <div class="category-item">
               <div>
                 <div class="category-name">${escapeHtml(category.name)}</div>
-                <div class="category-meta">${items.length} ${items.length === 1 ? "rätt" : "rätter"} • Sortering ${category.sort_order ?? 0}</div>
+                <div class="category-summary">
+                  <div class="category-meta">${items.length} ${items.length === 1 ? "rätt" : "rätter"} • Sortering ${category.sort_order ?? 0}</div>
+                  <span class="badge">Dra för att ändra ordning</span>
+                </div>
               </div>
               <div class="category-actions">
-                <button class="btn btn-secondary" type="button" data-open-item-form="${category.id}">+ Lägg till rätt</button>
-                <button class="btn btn-link" type="button" data-delete-category="${category.id}">Ta bort</button>
+                <button class="btn btn-secondary" type="button" data-open-item-form="${category.id}" ${categoryPending ? "disabled" : ""}>+ Lägg till rätt</button>
+                <button class="btn btn-link" type="button" data-delete-category="${category.id}" ${categoryPending ? "disabled" : ""}>${categoryPending ? "Sparar..." : "Ta bort"}</button>
               </div>
             </div>
 
             <div class="menu-items-group">
               ${items.length ? items.map((item) => `
-                <article class="menu-item-card">
+                <article class="menu-item-card ${item.is_active ? "" : "is-inactive"}" draggable="${isPendingAction(`item:${item.id}`) || isPendingAction(`reorder-items:${category.id}`) ? "false" : "true"}" data-menu-item-card="${item.id}" data-category-id="${category.id}">
                   <div class="menu-item-top">
                     <div>
                       <h3 class="menu-item-title">${escapeHtml(item.name)}</h3>
                       <div class="menu-item-meta">
+                        <span class="badge">${escapeHtml(item.category_name || category.name)}</span>
                         <span class="pill ${item.is_active ? "pill-active" : "pill-inactive"}">
                           ${item.is_active ? "Aktiv" : "Inaktiv"}
                         </span>
@@ -2783,14 +3070,15 @@ const hasSupabaseConfig =
                   </div>
                   <p>${escapeHtml(item.description || "Ingen beskrivning ännu.")}</p>
                   <div class="menu-item-actions">
-                    <button class="btn btn-secondary" type="button" data-edit-item="${item.id}">Redigera</button>
-                    <button class="btn btn-danger" type="button" data-delete-item="${item.id}">Ta bort</button>
+                    <button class="btn btn-secondary" type="button" data-edit-item="${item.id}" ${isPendingAction(`item:${item.id}`) || isPendingAction(`reorder-items:${category.id}`) ? "disabled" : ""}>Redigera</button>
+                    <button class="btn btn-danger" type="button" data-delete-item="${item.id}" ${isPendingAction(`item:${item.id}`) || isPendingAction(`reorder-items:${category.id}`) ? "disabled" : ""}>${isPendingAction(`item:${item.id}`) ? "Tar bort..." : "Ta bort"}</button>
                   </div>
                 </article>
               `).join("") : '<div class="empty-state">Inga rätter i den här kategorin ännu. Lägg till första rätten direkt här.</div>'}
             </div>
 
             ${isEditorOpen ? getInlineItemFormMarkup(category.id) : ""}
+            ${getStatusMarkup(categoryFeedback)}
           </section>
         `;
       }).join("");
@@ -2842,15 +3130,18 @@ const hasSupabaseConfig =
       `).join("");
     }
 
-    function resetMenuItemForm() {
+    function resetMenuItemForm(closeEditor = true) {
       state.editingItemId = null;
-      state.openCategoryId = null;
+      if (closeEditor) {
+        state.openCategoryId = null;
+      }
     }
 
     function fillMenuItemForm(itemId) {
       const item = state.menuItems.find((entry) => String(entry.id) === String(itemId));
       if (!item) return;
 
+      resetInlineState(item.category_id);
       state.editingItemId = item.id;
       state.openCategoryId = item.category_id;
       showDashboardSection("menu");
@@ -2892,42 +3183,51 @@ const hasSupabaseConfig =
 
     async function handleInlineMenuItemSubmit(form) {
       if (!ensureSupabase() || !state.restaurant) {
-        setStatus(elements.dashboardStatus, "Skapa och spara en restaurang först.", "error");
+        setInlineFeedback(form.dataset.inlineItemForm, "Skapa och spara en restaurang först.", "error");
         return;
       }
 
-      const formData = new FormData(form);
       const categoryId = form.dataset.inlineItemForm;
       const itemId = form.dataset.itemId;
+      const validation = validateInlineItemForm(form, categoryId);
+
+      if (!validation.isValid) {
+        setInlineFeedback(categoryId, "Kontrollera fälten i formuläret.", "error");
+        renderCategories();
+        return;
+      }
+
       const payload = {
         restaurant_id: state.restaurant.id,
         category_id: categoryId,
-        name: String(formData.get("name") || "").trim(),
-        description: String(formData.get("description") || "").trim(),
-        price: Number(formData.get("price") || 0),
-        is_active: formData.get("is_active") === "true"
+        name: validation.values.name,
+        description: validation.values.description,
+        price: validation.values.price,
+        is_active: validation.values.is_active
       };
 
-      if (!payload.name) {
-        setStatus(elements.dashboardStatus, "Fyll i namn för maträtten.", "error");
-        return;
-      }
-
-      setStatus(elements.dashboardStatus, itemId ? "Uppdaterar maträtt..." : "Sparar maträtt...", "info");
+      setPendingAction(`inline:${categoryId}`, true);
+      setInlineFeedback(categoryId, itemId ? "Uppdaterar rätt..." : "Sparar rätt...", "info");
+      renderCategories();
 
       const query = itemId
         ? supabaseClient.from("menu_items").update(payload).eq("id", itemId)
         : supabaseClient.from("menu_items").insert(payload);
 
       const { error } = await query;
+      setPendingAction(`inline:${categoryId}`, false);
 
       if (error) {
-        setStatus(elements.dashboardStatus, error.message, "error");
+        setInlineFeedback(categoryId, error.message, "error");
+        renderCategories();
         return;
       }
 
-      state.openCategoryId = categoryId;
+      setCardFeedback(categoryId, itemId ? "Rätten uppdaterades." : "Rätten sparades.", "success");
+      setInlineFeedback(categoryId, "", "info");
+      resetInlineState(categoryId);
       state.editingItemId = null;
+      state.openCategoryId = categoryId;
       await fetchRestaurantData();
     }
 
@@ -2973,6 +3273,8 @@ const hasSupabaseConfig =
         state.categories = [];
         state.menuItems = [];
         state.dashboardSection = "settings";
+        state.lastUpdatedAt = "";
+        updateDashboardMeta();
         renderCategories();
         renderMenuItems();
         await renderQrCode();
@@ -2992,7 +3294,7 @@ const hasSupabaseConfig =
           .from("menu_items")
           .select("*, categories(name)")
           .eq("restaurant_id", state.restaurant.id)
-          .order("created_at", { ascending: false })
+          .order("created_at", { ascending: true })
       ]);
 
       if (categoriesError) {
@@ -3015,7 +3317,8 @@ const hasSupabaseConfig =
         state.dashboardSection = "menu";
       }
 
-      resetMenuItemForm();
+      resetMenuItemForm(false);
+      setDashboardLastUpdated();
       renderCategories();
       renderMenuItems();
       await renderQrCode();
@@ -3031,12 +3334,14 @@ const hasSupabaseConfig =
       const password = elements.authPassword.value;
 
       setStatus(elements.authStatus, "Bearbetar...", "info");
+      setButtonLoading(elements.authSubmitButton, true, "Bearbetar...");
 
       const action = state.authMode === "login"
         ? supabaseClient.auth.signInWithPassword({ email, password })
         : supabaseClient.auth.signUp({ email, password });
 
       const { data, error } = await action;
+      setButtonLoading(elements.authSubmitButton, false);
 
       if (error) {
         setStatus(elements.authStatus, error.message, "error");
@@ -3056,16 +3361,18 @@ const hasSupabaseConfig =
       event.preventDefault();
       if (!ensureSupabase() || !state.user) return;
 
-      const name = elements.restaurantName.value.trim();
+      const validation = validateRestaurantForm();
+      const name = validation.name;
       const slugInput = elements.restaurantSlug.value.trim();
       const slug = slugify(slugInput || name);
 
-      if (!name) {
-        setStatus(elements.dashboardStatus, "Ange ett restaurangnamn.", "error");
+      if (!validation.isValid) {
+        setFormFeedback("restaurant", "Kontrollera fälten innan du sparar.", "error");
         return;
       }
 
-      setStatus(elements.dashboardStatus, "Sparar restaurang...", "info");
+      setButtonLoading(elements.restaurantSubmitButton, true, "Sparar...");
+      setFormFeedback("restaurant", "Sparar restaurang...", "info");
 
       const payload = {
         owner_id: state.user.id,
@@ -3078,82 +3385,53 @@ const hasSupabaseConfig =
         : supabaseClient.from("restaurants").insert(payload).select().single();
 
       const { error } = await query;
+      setButtonLoading(elements.restaurantSubmitButton, false);
 
       if (error) {
-        setStatus(elements.dashboardStatus, error.message, "error");
+        setFormFeedback("restaurant", error.message, "error");
         return;
       }
 
+      setFormFeedback("restaurant", "Restaurangen sparades.", "success");
       await fetchRestaurantData();
     }
 
     async function handleCategorySubmit(event) {
       event.preventDefault();
       if (!ensureSupabase() || !state.restaurant) {
-        setStatus(elements.dashboardStatus, "Skapa och spara en restaurang först.", "error");
+        setFormFeedback("category", "Skapa och spara en restaurang först.", "error");
         return;
       }
 
-      const name = elements.categoryName.value.trim();
+      const validation = validateCategoryForm();
+      const name = validation.name;
       const sortOrder = Number(elements.categorySortOrder.value || 0);
 
-      if (!name) {
-        setStatus(elements.dashboardStatus, "Ange ett kategorinamn.", "error");
+      if (!validation.isValid) {
+        setFormFeedback("category", "Kontrollera kategorinamnet innan du sparar.", "error");
         return;
       }
 
-      setStatus(elements.dashboardStatus, "Lägger till kategori...", "info");
+      setButtonLoading(elements.categorySubmitButton, true, "Sparar...");
+      setFormFeedback("category", "Lägger till kategori...", "info");
 
       const { error } = await supabaseClient.from("categories").insert({
         restaurant_id: state.restaurant.id,
         name,
         sort_order: sortOrder
       });
+      setButtonLoading(elements.categorySubmitButton, false);
 
       if (error) {
-        setStatus(elements.dashboardStatus, error.message, "error");
+        setFormFeedback("category", error.message, "error");
         return;
       }
 
       elements.categoryForm.reset();
       elements.categorySortOrder.value = "0";
-      await fetchRestaurantData();
-    }
-
-    async function handleMenuItemSubmit(event) {
-      event.preventDefault();
-      if (!ensureSupabase() || !state.restaurant) {
-        setStatus(elements.dashboardStatus, "Skapa och spara en restaurang först.", "error");
-        return;
-      }
-
-      const payload = {
-        restaurant_id: state.restaurant.id,
-        category_id: elements.menuItemCategory.value,
-        name: elements.menuItemName.value.trim(),
-        description: elements.menuItemDescription.value.trim(),
-        price: Number(elements.menuItemPrice.value || 0),
-        is_active: elements.menuItemActive.value === "true"
-      };
-
-      if (!payload.name || !payload.category_id) {
-        setStatus(elements.dashboardStatus, "Fyll i namn och kategori för maträtten.", "error");
-        return;
-      }
-
-      setStatus(elements.dashboardStatus, state.editingItemId ? "Uppdaterar maträtt..." : "Sparar maträtt...", "info");
-
-      const query = state.editingItemId
-        ? supabaseClient.from("menu_items").update(payload).eq("id", state.editingItemId)
-        : supabaseClient.from("menu_items").insert(payload);
-
-      const { error } = await query;
-
-      if (error) {
-        setStatus(elements.dashboardStatus, error.message, "error");
-        return;
-      }
-
+      state.validationErrors.category = {};
+      setFieldError(elements.categoryName, elements.categoryNameError, "");
+      setFormFeedback("category", "Kategorin lades till.", "success");
       await fetchRestaurantData();
     }
 
@@ -3162,15 +3440,20 @@ const hasSupabaseConfig =
 
       const hasItems = state.menuItems.some((item) => String(item.category_id) === String(categoryId));
       if (hasItems) {
-        setStatus(elements.dashboardStatus, "Ta bort eller flytta maträtterna i kategorin först.", "error");
+        setCardFeedback(categoryId, "Ta bort eller flytta maträtterna i kategorin först.", "error");
+        renderCategories();
         return;
       }
 
-      setStatus(elements.dashboardStatus, "Tar bort kategori...", "info");
+      setPendingAction(`category:${categoryId}`, true);
+      setCardFeedback(categoryId, "Tar bort kategori...", "info");
+      renderCategories();
       const { error } = await supabaseClient.from("categories").delete().eq("id", categoryId);
+      setPendingAction(`category:${categoryId}`, false);
 
       if (error) {
-        setStatus(elements.dashboardStatus, error.message, "error");
+        setCardFeedback(categoryId, error.message, "error");
+        renderCategories();
         return;
       }
 
@@ -3180,14 +3463,104 @@ const hasSupabaseConfig =
     async function deleteMenuItem(itemId) {
       if (!ensureSupabase()) return;
 
-      setStatus(elements.dashboardStatus, "Tar bort maträtt...", "info");
+      const item = state.menuItems.find((entry) => String(entry.id) === String(itemId));
+      const categoryId = item?.category_id;
+      setPendingAction(`item:${itemId}`, true);
+      if (categoryId) {
+        setCardFeedback(categoryId, "Tar bort rätt...", "info");
+      }
+      renderCategories();
       const { error } = await supabaseClient.from("menu_items").delete().eq("id", itemId);
+      setPendingAction(`item:${itemId}`, false);
 
       if (error) {
-        setStatus(elements.dashboardStatus, error.message, "error");
+        if (categoryId) {
+          setCardFeedback(categoryId, error.message, "error");
+        }
+        renderCategories();
         return;
       }
 
+      await fetchRestaurantData();
+    }
+
+    async function persistCategoryOrder(orderedCategoryIds) {
+      setPendingAction("reorder:categories", true);
+      renderCategories();
+      const updates = orderedCategoryIds.map((id, index) =>
+        supabaseClient.from("categories").update({ sort_order: index }).eq("id", id)
+      );
+      const results = await Promise.all(updates);
+      setPendingAction("reorder:categories", false);
+
+      const error = results.find((result) => result.error)?.error;
+      if (error) {
+        setFormFeedback("category", error.message, "error");
+        return false;
+      }
+
+      setFormFeedback("category", "Kategoriordningen sparades.", "success");
+      return true;
+    }
+
+    async function persistMenuItemOrder(categoryId, orderedItems) {
+      setPendingAction(`reorder-items:${categoryId}`, true);
+      renderCategories();
+
+      // menu_items lacks a dedicated sort column, so we store visual order by
+      // rewriting created_at timestamps in sequence within the category.
+      const baseTime = Date.now();
+      const updates = orderedItems.map((item, index) =>
+        supabaseClient
+          .from("menu_items")
+          .update({ created_at: new Date(baseTime + (index * 1000)).toISOString() })
+          .eq("id", item.id)
+      );
+
+      const results = await Promise.all(updates);
+      setPendingAction(`reorder-items:${categoryId}`, false);
+
+      const error = results.find((result) => result.error)?.error;
+      if (error) {
+        setCardFeedback(categoryId, error.message, "error");
+        return false;
+      }
+
+      setCardFeedback(categoryId, "Ordningen på rätterna sparades.", "success");
+      return true;
+    }
+
+    async function reorderCategories(draggedId, targetId) {
+      if (draggedId === targetId) return;
+
+      const fromIndex = state.categories.findIndex((category) => String(category.id) === String(draggedId));
+      const toIndex = state.categories.findIndex((category) => String(category.id) === String(targetId));
+      if (fromIndex < 0 || toIndex < 0) return;
+
+      state.categories = moveItemInArray(state.categories, fromIndex, toIndex)
+        .map((category, index) => ({ ...category, sort_order: index }));
+      renderCategories();
+
+      await persistCategoryOrder(state.categories.map((category) => category.id));
+      await fetchRestaurantData();
+    }
+
+    async function reorderMenuItems(categoryId, draggedItemId, targetItemId) {
+      if (draggedItemId === targetItemId) return;
+
+      const categoryItems = getMenuItemsForCategory(categoryId);
+      const fromIndex = categoryItems.findIndex((item) => String(item.id) === String(draggedItemId));
+      const toIndex = categoryItems.findIndex((item) => String(item.id) === String(targetItemId));
+      if (fromIndex < 0 || toIndex < 0) return;
+
+      const orderedItems = moveItemInArray(categoryItems, fromIndex, toIndex);
+      let orderedIndex = 0;
+      state.menuItems = state.menuItems.map((item) =>
+        String(item.category_id) === String(categoryId) ? orderedItems[orderedIndex++] : item
+      );
+      renderCategories();
+
+      await persistMenuItemOrder(categoryId, orderedItems);
       await fetchRestaurantData();
     }
 
@@ -3246,6 +3619,8 @@ const hasSupabaseConfig =
       state.menuItems = [];
       state.openCategoryId = null;
       state.editingItemId = null;
+      state.lastUpdatedAt = "";
+      updateDashboardMeta();
       showView("landing");
     }
 
@@ -3363,6 +3738,7 @@ const hasSupabaseConfig =
 
         const openItemButton = event.target.closest("[data-open-item-form]");
         if (openItemButton) {
+          resetInlineState(openItemButton.dataset.openItemForm);
           state.openCategoryId = openItemButton.dataset.openItemForm;
           state.editingItemId = null;
           renderCategories();
@@ -3372,6 +3748,7 @@ const hasSupabaseConfig =
 
         const cancelInlineButton = event.target.closest("[data-cancel-inline]");
         if (cancelInlineButton) {
+          resetInlineState(cancelInlineButton.dataset.cancelInline);
           resetMenuItemForm();
           renderCategories();
           return;
@@ -3385,36 +3762,48 @@ const hasSupabaseConfig =
       elements.categoryForm.addEventListener("submit", handleCategorySubmit);
 
       elements.restaurantName.addEventListener("input", (event) => {
+        setFieldError(elements.restaurantName, elements.restaurantNameError, "");
+        setFormFeedback("restaurant", "", "info");
         if (!elements.restaurantSlug.value || elements.restaurantSlug.value === slugify(state.restaurant?.name || "")) {
           elements.restaurantSlug.value = slugify(event.target.value);
         }
       });
 
+      elements.categoryName.addEventListener("input", () => {
+        setFieldError(elements.categoryName, elements.categoryNameError, "");
+        setFormFeedback("category", "", "info");
+      });
+
       elements.copyLinkButton.addEventListener("click", async () => {
         if (!state.restaurant) {
-          setStatus(elements.dashboardStatus, "Spara restaurangen först för att få en länk.", "error");
+          setFormFeedback("share", "Spara restaurangen först för att få en länk.", "error");
           return;
         }
 
         const link = `${window.location.origin}${window.location.pathname}?menu=${state.restaurant.id}`;
+        setButtonLoading(elements.copyLinkButton, true, "Kopierar...");
         try {
           await navigator.clipboard.writeText(link);
-          setStatus(elements.dashboardStatus, "Länken kopierades till urklipp.", "success");
+          setFormFeedback("share", "Länken kopierades till urklipp.", "success");
         } catch (_error) {
-          setStatus(elements.dashboardStatus, "Kunde inte kopiera länken automatiskt. Kopiera den manuellt.", "error");
+          setFormFeedback("share", "Kunde inte kopiera länken automatiskt. Kopiera den manuellt.", "error");
         }
+        setButtonLoading(elements.copyLinkButton, false);
       });
-      
+
       elements.downloadQrButton.addEventListener("click", () => {
         if (!state.qrCodeDataUrl || !state.restaurant) {
-          setStatus(elements.dashboardStatus, "Spara restaurangen först för att skapa en QR-kod.", "error");
+          setFormFeedback("share", "Spara restaurangen först för att skapa en QR-kod.", "error");
           return;
         }
 
+        setButtonLoading(elements.downloadQrButton, true, "Laddar ner...");
         const link = document.createElement("a");
         link.href = state.qrCodeDataUrl;
         link.download = `${slugify(state.restaurant.slug || state.restaurant.name || "menuqr")}-qr.png`;
         link.click();
+        setFormFeedback("share", "QR-koden laddades ner.", "success");
+        setButtonLoading(elements.downloadQrButton, false);
       });
 
       elements.categoryList.addEventListener("click", async (event) => {
@@ -3441,6 +3830,81 @@ const hasSupabaseConfig =
         if (deleteButton) {
           await deleteMenuItem(deleteButton.dataset.deleteItem);
         }
+      });
+
+      elements.categoryList.addEventListener("dragstart", (event) => {
+        const categoryCard = event.target.closest("[data-category-card]");
+        const itemCard = event.target.closest("[data-menu-item-card]");
+
+        if (itemCard) {
+          state.dragState = {
+            type: "item",
+            id: itemCard.dataset.menuItemCard,
+            categoryId: itemCard.dataset.categoryId
+          };
+          itemCard.classList.add("is-dragging");
+          return;
+        }
+
+        if (categoryCard) {
+          state.dragState = {
+            type: "category",
+            id: categoryCard.dataset.categoryCard
+          };
+          categoryCard.classList.add("is-dragging");
+        }
+      });
+
+      elements.categoryList.addEventListener("dragover", (event) => {
+        const categoryCard = event.target.closest("[data-category-card]");
+        const itemCard = event.target.closest("[data-menu-item-card]");
+        if (!state.dragState || (!categoryCard && !itemCard)) return;
+        event.preventDefault();
+      });
+
+      elements.categoryList.addEventListener("dragenter", (event) => {
+        const categoryCard = event.target.closest("[data-category-card]");
+        const itemCard = event.target.closest("[data-menu-item-card]");
+
+        if (state.dragState?.type === "category" && categoryCard && categoryCard.dataset.categoryCard !== state.dragState.id) {
+          categoryCard.classList.add("is-drop-target");
+        }
+
+        if (state.dragState?.type === "item" && itemCard && itemCard.dataset.menuItemCard !== state.dragState.id) {
+          itemCard.classList.add("is-drop-target");
+        }
+      });
+
+      elements.categoryList.addEventListener("dragleave", (event) => {
+        event.target.closest("[data-category-card]")?.classList.remove("is-drop-target");
+        event.target.closest("[data-menu-item-card]")?.classList.remove("is-drop-target");
+      });
+
+      elements.categoryList.addEventListener("dragend", () => {
+        elements.categoryList.querySelectorAll(".is-dragging, .is-drop-target").forEach((node) => {
+          node.classList.remove("is-dragging", "is-drop-target");
+        });
+        state.dragState = null;
+      });
+
+      elements.categoryList.addEventListener("drop", async (event) => {
+        const categoryCard = event.target.closest("[data-category-card]");
+        const itemCard = event.target.closest("[data-menu-item-card]");
+        if (!state.dragState) return;
+        event.preventDefault();
+
+        elements.categoryList.querySelectorAll(".is-drop-target").forEach((node) => node.classList.remove("is-drop-target"));
+
+        if (state.dragState.type === "category" && categoryCard) {
+          await reorderCategories(state.dragState.id, categoryCard.dataset.categoryCard);
+        }
+
+        if (state.dragState.type === "item" && itemCard && itemCard.dataset.categoryId === state.dragState.categoryId) {
+          await reorderMenuItems(state.dragState.categoryId, state.dragState.id, itemCard.dataset.menuItemCard);
+        }
+
+        elements.categoryList.querySelectorAll(".is-dragging").forEach((node) => node.classList.remove("is-dragging"));
+        state.dragState = null;
       });
 
       window.addEventListener("popstate", () => {
