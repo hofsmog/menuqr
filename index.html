@@ -619,8 +619,8 @@
 
     .dashboard-shell {
       display: grid;
-      grid-template-columns: 280px minmax(0, 1fr);
-      gap: 32px;
+      grid-template-columns: 330px minmax(0, 1fr);
+      gap: 36px;
       align-items: start;
     }
 
@@ -630,9 +630,10 @@
     }
 
     .dashboard-sidebar {
-      width: 100%;
-      max-width: 280px;
+      width: 330px;
+      max-width: 330px;
       box-sizing: border-box;
+      overflow: hidden;
       position: sticky;
       top: 18px;
       display: grid;
@@ -647,7 +648,9 @@
     }
 
     .dashboard-sidebar > * {
+      width: 100%;
       max-width: 100%;
+      box-sizing: border-box;
     }
 
     .dashboard-sidebar h2,
@@ -682,12 +685,19 @@
     .dashboard-nav {
       display: grid;
       width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      width: 100%;
       gap: 8px;
     }
 
     .dashboard-nav-btn {
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
       min-height: 56px;
-      padding: 0 18px;
+      padding-left: 16px;
+      padding-right: 16px;
       border-radius: 18px;
       background: rgba(15, 23, 42, 0.04);
       color: var(--text);
@@ -719,6 +729,8 @@
 
     .dashboard-user-card {
       width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
     }
 
     .dashboard-mini-card {
@@ -2075,7 +2087,9 @@
       }
 
       .dashboard-sidebar {
+        width: 100%;
         max-width: none;
+        overflow: visible;
         position: static;
       }
 
