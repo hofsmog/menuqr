@@ -1033,10 +1033,9 @@
     }
 
     .lp-hero {
-      display: grid;
-      grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+      display: flex;
       gap: 12px;
-      align-items: center;
+      align-items: stretch;
     }
 
     .lp-hero-copy,
@@ -1045,7 +1044,11 @@
     }
 
     .hero-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       padding-right: 16px;
+      height: 100%;
     }
 
     .lp-hero-copy {
@@ -1113,6 +1116,12 @@
       overflow: hidden;
       transition: transform 180ms ease, box-shadow 180ms ease;
       box-shadow: 0 16px 36px rgba(15, 23, 42, 0.16);
+      height: 100%;
+    }
+
+    .hero-bottom {
+      margin-top: auto;
+      padding-top: 20px;
     }
 
     .lp-hero-preview:hover {
@@ -2013,15 +2022,19 @@
         <div class="lp">
           <section class="lp-hero">
             <div class="lp-card lp-hero-copy hero-left">
-              <div class="lp-kicker">Slipp pappersmenyer</div>
-              <h1>Slipp pappersmenyer – kör QR istället</h1>
-              <p>Skapa en snygg digital meny på 2 minuter. Uppdatera när du vill.</p>
-              <div class="lp-actions">
-                <button class="btn btn-primary" type="button" data-go-auth="signup">Skapa meny på 2 minuter</button>
-                <button class="btn btn-outline" type="button" data-scroll-demo="true">Se demo</button>
+              <div>
+                <div class="lp-kicker">Slipp pappersmenyer</div>
+                <h1>Slipp pappersmenyer – kör QR istället</h1>
+                <p>Skapa en snygg digital meny på 2 minuter. Uppdatera när du vill.</p>
+                <div class="lp-actions">
+                  <button class="btn btn-primary" type="button" data-go-auth="signup">Skapa meny på 2 minuter</button>
+                  <button class="btn btn-outline" type="button" data-scroll-demo="true">Se demo</button>
+                </div>
               </div>
-              <p class="lp-cta-note">Ingen kreditkort • Klar på 2 minuter</p>
-              <p class="lp-proof">Byggd för restauranger, caféer och barer i Sverige.</p>
+              <div class="hero-bottom">
+                <p class="lp-cta-note">Ingen kreditkort • Klar på 2 minuter</p>
+                <p class="lp-proof">Byggd för restauranger, caféer och barer i Sverige.</p>
+              </div>
             </div>
 
             <aside class="lp-card lp-hero-preview">
