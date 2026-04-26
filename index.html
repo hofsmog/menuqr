@@ -1,0 +1,1884 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MenuQR.se | Digital meny med QR-kod</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #eef4f1;
+      --text: #0f172a;
+      --muted: #526072;
+      --line: #d8e1e8;
+      --brand: #43b95f;
+      --brand-deep: #2f8f48;
+      --shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --max-width: 1180px;
+      --font-stack: "Avenir Next", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      font-family: var(--font-stack);
+      background:
+        radial-gradient(circle at top left, rgba(67, 185, 95, 0.13), transparent 30%),
+        linear-gradient(180deg, #ffffff 0%, var(--bg) 45%, #eef5f8 100%);
+      color: var(--text);
+    }
+
+    body {
+      padding: 24px;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    .app-shell {
+      max-width: var(--max-width);
+      margin: 0 auto;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 28px;
+      padding: 20px 24px;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.78);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand-logo {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      object-fit: contain;
+      background: #fff;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      padding: 8px;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+    }
+
+    .brand-fallback {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: white;
+      background: linear-gradient(135deg, var(--text), #1f2937);
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.16);
+    }
+
+    .brand-text {
+      min-width: 0;
+    }
+
+    .brand-kicker {
+      display: block;
+      font-size: 0.77rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--brand-deep);
+      margin-bottom: 4px;
+      font-weight: 700;
+    }
+
+    .brand-title {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .topbar-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.is-active {
+      display: block;
+      animation: fade-in 180ms ease;
+    }
+
+    @keyframes fade-in {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    .hero-card,
+    .panel,
+    .menu-card,
+    .list-card,
+    .auth-card,
+    .public-shell {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card {
+      padding: 44px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      inset: auto -60px -70px auto;
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(67, 185, 95, 0.24), rgba(67, 185, 95, 0));
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(67, 185, 95, 0.11);
+      color: var(--brand-deep);
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      margin: 0 0 18px;
+      font-size: clamp(2.3rem, 5vw, 4.5rem);
+      line-height: 0.95;
+      letter-spacing: -0.05em;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 58ch;
+      color: var(--muted);
+      font-size: 1.1rem;
+      line-height: 1.65;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    .hero-points {
+      margin-top: 30px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .point {
+      padding: 18px;
+      border-radius: 20px;
+      background: var(--surface-alt);
+      border: 1px solid rgba(67, 185, 95, 0.16);
+    }
+
+    .point strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+    }
+
+    .point span {
+      color: var(--muted);
+      font-size: 0.94rem;
+      line-height: 1.55;
+    }
+
+    .preview-card {
+      padding: 28px;
+      display: grid;
+      gap: 18px;
+      background:
+        linear-gradient(180deg, rgba(15, 23, 42, 0.97), rgba(15, 23, 42, 0.88)),
+        #0f172a;
+      color: white;
+    }
+
+    .preview-card small {
+      color: rgba(255, 255, 255, 0.72);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-weight: 700;
+    }
+
+    .phone-frame {
+      border-radius: 32px;
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .phone-screen {
+      border-radius: 26px;
+      padding: 22px;
+      background: linear-gradient(180deg, #ffffff 0%, #f0f7f2 100%);
+      color: var(--text);
+      min-height: 420px;
+    }
+
+    .phone-screen h3,
+    .phone-screen h4,
+    .phone-screen p {
+      margin: 0;
+    }
+
+    .phone-screen h3 {
+      font-size: 1.35rem;
+      margin-bottom: 16px;
+    }
+
+    .sample-category {
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(15, 23, 42, 0.08);
+    }
+
+    .sample-item {
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    }
+
+    .sample-item-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .sample-item p {
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 0.95rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 48px;
+      padding: 0 20px;
+      border-radius: 999px;
+      font-weight: 700;
+      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand), #54c774);
+      color: white;
+      box-shadow: 0 12px 22px rgba(67, 185, 95, 0.3);
+    }
+
+    .btn-secondary {
+      background: rgba(15, 23, 42, 0.05);
+      color: var(--text);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+    }
+
+    .btn-dark {
+      background: var(--text);
+      color: white;
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.18);
+    }
+
+    .btn-danger {
+      background: #fff1f1;
+      color: #a53232;
+      border: 1px solid #f4c3c3;
+    }
+
+    .btn-link {
+      background: transparent;
+      color: var(--brand-deep);
+      padding-inline: 0;
+      min-height: auto;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .auth-layout {
+      max-width: 1040px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+      gap: 28px;
+    }
+
+    .auth-side,
+    .auth-card {
+      padding: 34px;
+    }
+
+    .auth-side {
+      background: linear-gradient(160deg, rgba(15, 23, 42, 0.98), rgba(17, 33, 59, 0.9));
+      color: white;
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+    }
+
+    .auth-side h2,
+    .auth-card h2 {
+      margin: 0 0 12px;
+      font-size: 2rem;
+    }
+
+    .auth-side p,
+    .auth-card p {
+      margin: 0;
+      line-height: 1.65;
+    }
+
+    .auth-list {
+      margin: 28px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 12px;
+    }
+
+    .auth-list li {
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .tabs {
+      display: inline-flex;
+      gap: 8px;
+      background: #f2f6f8;
+      border-radius: 999px;
+      padding: 6px;
+      margin-bottom: 24px;
+    }
+
+    .tab {
+      min-height: 42px;
+      padding: 0 16px;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .tab.is-active {
+      background: white;
+      color: var(--text);
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08);
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field label {
+      font-size: 0.93rem;
+      font-weight: 700;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: white;
+      padding: 14px 16px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 140ms ease, box-shadow 140ms ease;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: rgba(67, 185, 95, 0.7);
+      box-shadow: 0 0 0 4px rgba(67, 185, 95, 0.16);
+    }
+
+    .field textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .auth-note,
+    .inline-note,
+    .badge,
+    .pill {
+      border-radius: 16px;
+      padding: 12px 14px;
+      font-size: 0.92rem;
+    }
+
+    .auth-note,
+    .inline-note {
+      background: #f5f9fc;
+      color: var(--muted);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+    }
+
+    .status {
+      margin-top: 14px;
+      display: none;
+    }
+
+    .status.is-visible {
+      display: block;
+    }
+
+    .status[data-tone="success"] {
+      background: #edf9f0;
+      color: #24653a;
+      border: 1px solid #c5ebcf;
+    }
+
+    .status[data-tone="error"] {
+      background: #fff1f1;
+      color: #9b2d2d;
+      border: 1px solid #efcccc;
+    }
+
+    .status[data-tone="info"] {
+      background: #f5f9fc;
+      color: #30506b;
+      border: 1px solid #d9e7f2;
+    }
+
+    .dashboard {
+      display: grid;
+      gap: 24px;
+    }
+
+    .dashboard-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: end;
+    }
+
+    .dashboard-title h1 {
+      margin: 0 0 8px;
+      font-size: clamp(2rem, 4vw, 3rem);
+      letter-spacing: -0.04em;
+    }
+
+    .dashboard-title p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 58ch;
+      line-height: 1.65;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .stack {
+      display: grid;
+      gap: 24px;
+    }
+
+    .panel {
+      padding: 24px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .panel-header h2,
+    .panel-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+    }
+
+    .panel-header p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.94rem;
+      line-height: 1.55;
+    }
+
+    .list-card {
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      background: white;
+    }
+
+    .category-list,
+    .menu-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .category-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: #f6faf8;
+      border: 1px solid rgba(67, 185, 95, 0.15);
+    }
+
+    .category-name {
+      font-weight: 700;
+    }
+
+    .menu-item-card {
+      padding: 18px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      box-shadow: 0 12px 22px rgba(15, 23, 42, 0.04);
+    }
+
+    .menu-item-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: flex-start;
+    }
+
+    .menu-item-title {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .menu-item-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .badge,
+    .pill {
+      font-weight: 700;
+      line-height: 1;
+      width: fit-content;
+    }
+
+    .badge {
+      background: rgba(15, 23, 42, 0.06);
+      color: var(--muted);
+    }
+
+    .pill {
+      padding-inline: 10px;
+      min-height: 30px;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .pill-active {
+      background: #ecf8ef;
+      color: #23643a;
+    }
+
+    .pill-inactive {
+      background: #fff2df;
+      color: #8c5812;
+    }
+
+    .menu-item-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .menu-item-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .empty-state {
+      padding: 24px;
+      border-radius: 22px;
+      border: 1px dashed rgba(15, 23, 42, 0.14);
+      color: var(--muted);
+      background: rgba(248, 250, 252, 0.9);
+    }
+
+    .link-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .link-box {
+      flex: 1;
+      min-width: 0;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: #f5f9fc;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      color: var(--muted);
+      overflow-wrap: anywhere;
+    }
+
+    .public-shell {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    .public-header {
+      display: grid;
+      gap: 18px;
+      margin-bottom: 12px;
+    }
+
+    .public-hero {
+      padding: 28px;
+      border-radius: 28px;
+      background: linear-gradient(160deg, #0f172a 0%, #1c2940 70%, #24434d 100%);
+      color: white;
+    }
+
+    .public-hero h1 {
+      margin: 18px 0 12px;
+      font-size: clamp(2rem, 6vw, 3.2rem);
+      letter-spacing: -0.04em;
+    }
+
+    .public-hero p {
+      margin: 0;
+      max-width: 44ch;
+      color: rgba(255, 255, 255, 0.76);
+      line-height: 1.65;
+    }
+
+    .public-category {
+      padding: 24px 0;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    }
+
+    .public-category:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .public-category h2 {
+      margin: 0 0 16px;
+      font-size: 1.25rem;
+    }
+
+    .public-item {
+      padding: 18px 0;
+      border-top: 1px solid rgba(15, 23, 42, 0.06);
+    }
+
+    .public-item:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    .public-item-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .public-item h3 {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .public-price {
+      white-space: nowrap;
+      font-weight: 800;
+      color: var(--brand-deep);
+    }
+
+    .public-item p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .footer-note {
+      text-align: center;
+      padding: 20px 0 10px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 980px) {
+      body {
+        padding: 16px;
+      }
+
+      .hero,
+      .auth-layout,
+      .dashboard-grid,
+      .dashboard-header {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-card,
+      .preview-card,
+      .auth-side,
+      .auth-card,
+      .panel,
+      .public-shell {
+        padding: 24px;
+      }
+
+      .hero-points {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar {
+        padding: 18px;
+      }
+
+      .hero h1,
+      .dashboard-title h1,
+      .public-hero h1 {
+        line-height: 1.02;
+      }
+
+      .menu-item-top,
+      .public-item-head,
+      .category-item,
+      .panel-header {
+        flex-direction: column;
+      }
+
+      .link-row,
+      .hero-actions,
+      .topbar-actions,
+      .menu-item-actions {
+        width: 100%;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .tabs {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .tab {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <img id="brandLogo" class="brand-logo" src="/logo_menuqr.png" alt="MenuQR logga">
+        <div id="brandFallback" class="brand-fallback hidden" aria-hidden="true">MQ</div>
+        <div class="brand-text">
+          <span class="brand-kicker">MenuQR.se</span>
+          <p class="brand-title">Digital meny för restauranger</p>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button id="navHomeButton" class="btn btn-secondary hidden" type="button">Hem</button>
+        <button id="navDashboardButton" class="btn btn-secondary hidden" type="button">Dashboard</button>
+        <button id="navAuthButton" class="btn btn-primary hidden" type="button">Logga in</button>
+        <button id="navLogoutButton" class="btn btn-dark hidden" type="button">Logga ut</button>
+      </div>
+    </header>
+
+    <main>
+      <section id="landingView" class="view">
+        <div class="hero">
+          <div class="hero-card">
+            <div class="eyebrow">Enkelt att komma igång</div>
+            <h1>Digital meny med QR-kod</h1>
+            <p>
+              Skapa en ren och mobilvänlig meny för din restaurang, dela den via QR-kod
+              och uppdatera innehållet när du vill. Inget krångel, bara meny och länk.
+            </p>
+            <div class="hero-actions">
+              <button class="btn btn-dark" type="button" data-go-auth="login">Logga in</button>
+              <button class="btn btn-primary" type="button" data-go-auth="signup">Skapa konto</button>
+            </div>
+            <div class="hero-points">
+              <div class="point">
+                <strong>Snabb start</strong>
+                <span>Registrera dig, skapa restaurangnamn och börja lägga in rätter direkt.</span>
+              </div>
+              <div class="point">
+                <strong>Ren meny</strong>
+                <span>Visa endast kategorier och aktiva maträtter i ett snyggt mobilläge.</span>
+              </div>
+              <div class="point">
+                <strong>En publik länk</strong>
+                <span>Dela en enkel meny-URL som fungerar perfekt bakom en QR-kod.</span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="preview-card">
+            <small>Så kan det se ut</small>
+            <div class="phone-frame">
+              <div class="phone-screen">
+                <h3>Nordic Table</h3>
+                <p class="muted">En modern meny som är lätt att läsa vid bordet.</p>
+                <div class="sample-category">
+                  <h4>Förrätter</h4>
+                  <div class="sample-item">
+                    <div class="sample-item-header">
+                      <span>Rödbetstartar</span>
+                      <span>129 kr</span>
+                    </div>
+                    <p>Getost, rostade frön och citronolja.</p>
+                  </div>
+                </div>
+                <div class="sample-category">
+                  <h4>Varmrätter</h4>
+                  <div class="sample-item">
+                    <div class="sample-item-header">
+                      <span>Grillad röding</span>
+                      <span>245 kr</span>
+                    </div>
+                    <p>Dillpotatis, brynt smör och picklad fänkål.</p>
+                  </div>
+                  <div class="sample-item">
+                    <div class="sample-item-header">
+                      <span>Svamprisotto</span>
+                      <span>198 kr</span>
+                    </div>
+                    <p>Karljohan, parmesan och krispig grönkål.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="authView" class="view">
+        <div class="auth-layout">
+          <div class="auth-side">
+            <span class="brand-kicker" style="color:#7ae090;">MenuQR.se</span>
+            <h2>Logga in eller skapa konto</h2>
+            <p>
+              Allt i den här första versionen är byggt för en enda sak: att publicera
+              en digital meny via QR-länk på ett stabilt och lättskött sätt.
+            </p>
+            <ul class="auth-list">
+              <li>Supabase Auth med e-post och lösenord.</li>
+              <li>En dashboard för restaurangnamn, kategorier och maträtter.</li>
+              <li>En publik menyvy som visas med <code>?menu=RESTAURANT_ID</code>.</li>
+            </ul>
+          </div>
+
+          <div class="auth-card">
+            <div class="tabs" role="tablist" aria-label="Autentisering">
+              <button id="loginTab" class="tab is-active" type="button" role="tab">Logga in</button>
+              <button id="signupTab" class="tab" type="button" role="tab">Skapa konto</button>
+            </div>
+
+            <h2 id="authHeading">Logga in</h2>
+            <p class="muted">Använd e-post och lösenord för att komma åt din meny-dashboard.</p>
+
+            <form id="authForm" class="form-grid" style="margin-top:24px;">
+              <div class="field">
+                <label for="authEmail">E-post</label>
+                <input id="authEmail" name="email" type="email" autocomplete="email" required>
+              </div>
+              <div class="field">
+                <label for="authPassword">Lösenord</label>
+                <input id="authPassword" name="password" type="password" autocomplete="current-password" minlength="6" required>
+              </div>
+              <button id="authSubmitButton" class="btn btn-primary" type="submit">Logga in</button>
+            </form>
+
+            <div class="auth-note" style="margin-top:18px;">
+              Byt först ut <code>SUPABASE_URL</code> och <code>SUPABASE_ANON_KEY</code> i koden
+              innan du testar mot din databas.
+            </div>
+
+            <div id="authStatus" class="status inline-note" data-tone="info"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="dashboardView" class="view">
+        <div class="dashboard">
+          <div class="dashboard-header">
+            <div class="dashboard-title">
+              <h1>Din menydashboard</h1>
+              <p>
+                Här hanterar du restaurangens namn, kategorier och maträtter. Fokus är rent,
+                tydligt och anpassat för en enkel MVP utan extra funktioner.
+              </p>
+            </div>
+            <div class="panel" style="padding:18px 20px;">
+              <div class="muted" style="font-size:0.92rem;">Inloggad som</div>
+              <strong id="userEmailLabel">-</strong>
+            </div>
+          </div>
+
+          <div id="dashboardStatus" class="status inline-note" data-tone="info"></div>
+
+          <div class="dashboard-grid">
+            <div class="stack">
+              <section class="panel">
+                <div class="panel-header">
+                  <div>
+                    <h2>Restaurang</h2>
+                    <p>Spara restaurangnamn och få din publika meny-länk.</p>
+                  </div>
+                </div>
+                <form id="restaurantForm" class="form-grid">
+                  <div class="field">
+                    <label for="restaurantName">Restaurangnamn</label>
+                    <input id="restaurantName" name="name" type="text" placeholder="Till exempel Bistro Skeppsbron" required>
+                  </div>
+                  <div class="field">
+                    <label for="restaurantSlug">Slug</label>
+                    <input id="restaurantSlug" name="slug" type="text" placeholder="bistro-skeppsbron">
+                  </div>
+                  <button class="btn btn-primary" type="submit">Spara restaurang</button>
+                </form>
+
+                <div style="margin-top:18px;">
+                  <div class="field" style="gap:10px;">
+                    <label>Publik meny-länk</label>
+                    <div class="link-row">
+                      <div id="publicMenuLink" class="link-box">Spara en restaurang för att få din länk.</div>
+                      <button id="copyLinkButton" class="btn btn-secondary" type="button">Kopiera länk</button>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="panel">
+                <div class="panel-header">
+                  <div>
+                    <h2>Kategorier</h2>
+                    <p>Lägg upp menysektioner som Förrätter, Varmrätter eller Dryck.</p>
+                  </div>
+                </div>
+                <form id="categoryForm" class="form-grid">
+                  <div class="field">
+                    <label for="categoryName">Kategorinamn</label>
+                    <input id="categoryName" name="name" type="text" placeholder="Förrätter" required>
+                  </div>
+                  <div class="field">
+                    <label for="categorySortOrder">Sorteringsordning</label>
+                    <input id="categorySortOrder" name="sort_order" type="number" min="0" value="0" required>
+                  </div>
+                  <button class="btn btn-secondary" type="submit">Lägg till kategori</button>
+                </form>
+                <div id="categoryList" class="category-list" style="margin-top:18px;"></div>
+              </section>
+            </div>
+
+            <div class="stack">
+              <section class="panel">
+                <div class="panel-header">
+                  <div>
+                    <h2>Maträtter</h2>
+                    <p>Skapa, redigera och ta bort rätter. Endast aktiva rätter syns i publik meny.</p>
+                  </div>
+                </div>
+                <form id="menuItemForm" class="form-grid">
+                  <input id="menuItemId" type="hidden">
+                  <div class="field">
+                    <label for="menuItemName">Namn</label>
+                    <input id="menuItemName" name="name" type="text" placeholder="Grillad röding" required>
+                  </div>
+                  <div class="field">
+                    <label for="menuItemDescription">Beskrivning</label>
+                    <textarea id="menuItemDescription" name="description" placeholder="Kort beskrivning av rätten"></textarea>
+                  </div>
+                  <div class="field">
+                    <label for="menuItemPrice">Pris</label>
+                    <input id="menuItemPrice" name="price" type="number" min="0" step="0.01" placeholder="198" required>
+                  </div>
+                  <div class="field">
+                    <label for="menuItemCategory">Kategori</label>
+                    <select id="menuItemCategory" name="category_id" required>
+                      <option value="">Välj kategori</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="menuItemActive">Status</label>
+                    <select id="menuItemActive" name="is_active">
+                      <option value="true">Aktiv</option>
+                      <option value="false">Inaktiv</option>
+                    </select>
+                  </div>
+                  <div class="link-row">
+                    <button id="menuItemSubmitButton" class="btn btn-primary" type="submit">Spara maträtt</button>
+                    <button id="cancelEditButton" class="btn btn-secondary hidden" type="button">Avbryt redigering</button>
+                  </div>
+                </form>
+              </section>
+
+              <section class="panel">
+                <div class="panel-header">
+                  <div>
+                    <h2>Alla maträtter</h2>
+                    <p>En enkel överblick över menyn med tydlig status per rätt.</p>
+                  </div>
+                </div>
+                <div id="menuItemList" class="menu-list"></div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="publicMenuView" class="view">
+        <div class="public-shell">
+          <div class="public-header">
+            <div class="public-hero">
+              <span class="eyebrow" style="background:rgba(67,185,95,0.16);color:#c7ffd4;">Digital meny</span>
+              <h1 id="publicRestaurantName">Laddar meny...</h1>
+              <p id="publicMenuDescription">
+                Utforska restaurangens aktuella utbud direkt i mobilen.
+              </p>
+            </div>
+            <div id="publicMenuStatus" class="status inline-note is-visible" data-tone="info">
+              Hämtar menyn...
+            </div>
+          </div>
+          <div id="publicMenuContent"></div>
+        </div>
+      </section>
+    </main>
+
+    <div class="footer-note">MenuQR.se MVP för digital meny med QR-länk.</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Fyll i din egen Supabase-projektinformation här innan du kör skarpt.
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+
+    const hasSupabaseConfig =
+      SUPABASE_URL && SUPABASE_URL !== "YOUR_SUPABASE_URL" &&
+      SUPABASE_ANON_KEY && SUPABASE_ANON_KEY !== "YOUR_SUPABASE_ANON_KEY";
+
+    const supabase = hasSupabaseConfig
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+      : null;
+
+    const state = {
+      currentView: "landing",
+      authMode: "login",
+      user: null,
+      restaurant: null,
+      categories: [],
+      menuItems: [],
+      editingItemId: null,
+      authSubscriptionInitialized: false
+    };
+
+    const elements = {
+      brandLogo: document.getElementById("brandLogo"),
+      brandFallback: document.getElementById("brandFallback"),
+      navHomeButton: document.getElementById("navHomeButton"),
+      navDashboardButton: document.getElementById("navDashboardButton"),
+      navAuthButton: document.getElementById("navAuthButton"),
+      navLogoutButton: document.getElementById("navLogoutButton"),
+      landingView: document.getElementById("landingView"),
+      authView: document.getElementById("authView"),
+      dashboardView: document.getElementById("dashboardView"),
+      publicMenuView: document.getElementById("publicMenuView"),
+      loginTab: document.getElementById("loginTab"),
+      signupTab: document.getElementById("signupTab"),
+      authHeading: document.getElementById("authHeading"),
+      authForm: document.getElementById("authForm"),
+      authEmail: document.getElementById("authEmail"),
+      authPassword: document.getElementById("authPassword"),
+      authSubmitButton: document.getElementById("authSubmitButton"),
+      authStatus: document.getElementById("authStatus"),
+      dashboardStatus: document.getElementById("dashboardStatus"),
+      userEmailLabel: document.getElementById("userEmailLabel"),
+      restaurantForm: document.getElementById("restaurantForm"),
+      restaurantName: document.getElementById("restaurantName"),
+      restaurantSlug: document.getElementById("restaurantSlug"),
+      publicMenuLink: document.getElementById("publicMenuLink"),
+      copyLinkButton: document.getElementById("copyLinkButton"),
+      categoryForm: document.getElementById("categoryForm"),
+      categoryName: document.getElementById("categoryName"),
+      categorySortOrder: document.getElementById("categorySortOrder"),
+      categoryList: document.getElementById("categoryList"),
+      menuItemForm: document.getElementById("menuItemForm"),
+      menuItemId: document.getElementById("menuItemId"),
+      menuItemName: document.getElementById("menuItemName"),
+      menuItemDescription: document.getElementById("menuItemDescription"),
+      menuItemPrice: document.getElementById("menuItemPrice"),
+      menuItemCategory: document.getElementById("menuItemCategory"),
+      menuItemActive: document.getElementById("menuItemActive"),
+      menuItemSubmitButton: document.getElementById("menuItemSubmitButton"),
+      cancelEditButton: document.getElementById("cancelEditButton"),
+      menuItemList: document.getElementById("menuItemList"),
+      publicRestaurantName: document.getElementById("publicRestaurantName"),
+      publicMenuDescription: document.getElementById("publicMenuDescription"),
+      publicMenuStatus: document.getElementById("publicMenuStatus"),
+      publicMenuContent: document.getElementById("publicMenuContent")
+    };
+
+    function slugify(value) {
+      return value
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 80);
+    }
+
+    function formatPrice(value) {
+      const number = Number(value || 0);
+      return new Intl.NumberFormat("sv-SE", {
+        style: "currency",
+        currency: "SEK",
+        maximumFractionDigits: number % 1 === 0 ? 0 : 2
+      }).format(number);
+    }
+
+    function setStatus(element, message, tone = "info") {
+      if (!message) {
+        element.textContent = "";
+        element.classList.remove("is-visible");
+        return;
+      }
+
+      element.textContent = message;
+      element.dataset.tone = tone;
+      element.classList.add("is-visible");
+    }
+
+    function showView(viewName) {
+      state.currentView = viewName;
+      const map = {
+        landing: elements.landingView,
+        auth: elements.authView,
+        dashboard: elements.dashboardView,
+        publicMenu: elements.publicMenuView
+      };
+
+      Object.values(map).forEach((view) => view.classList.remove("is-active"));
+      map[viewName].classList.add("is-active");
+
+      const isPublic = viewName === "publicMenu";
+      const isDashboard = viewName === "dashboard";
+      const isAuth = viewName === "auth";
+
+      elements.navHomeButton.classList.toggle("hidden", isPublic);
+      elements.navDashboardButton.classList.toggle("hidden", !state.user || isDashboard || isPublic);
+      elements.navAuthButton.classList.toggle("hidden", !!state.user || isAuth || isPublic);
+      elements.navLogoutButton.classList.toggle("hidden", !state.user || isPublic);
+    }
+
+    function setAuthMode(mode) {
+      state.authMode = mode;
+      const isLogin = mode === "login";
+      elements.loginTab.classList.toggle("is-active", isLogin);
+      elements.signupTab.classList.toggle("is-active", !isLogin);
+      elements.authHeading.textContent = isLogin ? "Logga in" : "Skapa konto";
+      elements.authSubmitButton.textContent = isLogin ? "Logga in" : "Skapa konto";
+      elements.authPassword.autocomplete = isLogin ? "current-password" : "new-password";
+      setStatus(elements.authStatus, "", "info");
+    }
+
+    function updateRestaurantForm() {
+      elements.restaurantName.value = state.restaurant?.name || "";
+      elements.restaurantSlug.value = state.restaurant?.slug || "";
+      elements.publicMenuLink.textContent = state.restaurant
+        ? `${window.location.origin}${window.location.pathname}?menu=${state.restaurant.id}`
+        : "Spara en restaurang för att få din länk.";
+    }
+
+    function renderCategoryOptions() {
+      const currentValue = elements.menuItemCategory.value;
+      const options = ['<option value="">Välj kategori</option>']
+        .concat(
+          state.categories.map((category) =>
+            `<option value="${category.id}">${escapeHtml(category.name)}</option>`
+          )
+        )
+        .join("");
+
+      elements.menuItemCategory.innerHTML = options;
+
+      if (state.categories.some((category) => String(category.id) === String(currentValue))) {
+        elements.menuItemCategory.value = currentValue;
+      }
+    }
+
+    function renderCategories() {
+      renderCategoryOptions();
+
+      if (!state.categories.length) {
+        elements.categoryList.innerHTML = `
+          <div class="empty-state">
+            Inga kategorier ännu. Lägg till din första kategori för att börja strukturera menyn.
+          </div>
+        `;
+        return;
+      }
+
+      elements.categoryList.innerHTML = state.categories.map((category) => `
+        <div class="category-item">
+          <div>
+            <div class="category-name">${escapeHtml(category.name)}</div>
+            <div class="muted">Sortering: ${category.sort_order ?? 0}</div>
+          </div>
+          <button class="btn btn-link" type="button" data-delete-category="${category.id}">
+            Ta bort
+          </button>
+        </div>
+      `).join("");
+    }
+
+    function renderMenuItems() {
+      if (!state.menuItems.length) {
+        elements.menuItemList.innerHTML = `
+          <div class="empty-state">
+            Inga maträtter ännu. Lägg till din första rätt i formuläret ovan.
+          </div>
+        `;
+        return;
+      }
+
+      elements.menuItemList.innerHTML = state.menuItems.map((item) => `
+        <article class="menu-item-card">
+          <div class="menu-item-top">
+            <div>
+              <h3 class="menu-item-title">${escapeHtml(item.name)}</h3>
+              <div class="menu-item-meta">
+                <span class="badge">${escapeHtml(item.category_name || "Utan kategori")}</span>
+                <span class="pill ${item.is_active ? "pill-active" : "pill-inactive"}">
+                  ${item.is_active ? "Aktiv" : "Inaktiv"}
+                </span>
+              </div>
+            </div>
+            <strong>${formatPrice(item.price)}</strong>
+          </div>
+          <p>${escapeHtml(item.description || "Ingen beskrivning ännu.")}</p>
+          <div class="menu-item-actions">
+            <button class="btn btn-secondary" type="button" data-edit-item="${item.id}">Redigera</button>
+            <button class="btn btn-danger" type="button" data-delete-item="${item.id}">Ta bort</button>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function renderPublicMenu(restaurant, categories, menuItems) {
+      elements.publicRestaurantName.textContent = restaurant?.name || "Restaurang";
+      elements.publicMenuDescription.textContent = restaurant
+        ? "Välkommen. Här ser du restaurangens aktuella meny."
+        : "Den här menyn kunde inte laddas.";
+
+      if (!restaurant) {
+        setStatus(elements.publicMenuStatus, "Ingen meny hittades för den här länken.", "error");
+        elements.publicMenuContent.innerHTML = "";
+        return;
+      }
+
+      const groupedItems = categories.map((category) => ({
+        category,
+        items: menuItems.filter((item) => String(item.category_id) === String(category.id) && item.is_active)
+      })).filter((group) => group.items.length > 0);
+
+      if (!groupedItems.length) {
+        setStatus(elements.publicMenuStatus, "Menyn är publicerad men innehåller inga aktiva maträtter ännu.", "info");
+        elements.publicMenuContent.innerHTML = '<div class="empty-state">Inga aktiva maträtter att visa just nu.</div>';
+        return;
+      }
+
+      setStatus(elements.publicMenuStatus, "", "info");
+      elements.publicMenuContent.innerHTML = groupedItems.map(({ category, items }) => `
+        <section class="public-category">
+          <h2>${escapeHtml(category.name)}</h2>
+          ${items.map((item) => `
+            <article class="public-item">
+              <div class="public-item-head">
+                <h3>${escapeHtml(item.name)}</h3>
+                <div class="public-price">${formatPrice(item.price)}</div>
+              </div>
+              <p>${escapeHtml(item.description || "")}</p>
+            </article>
+          `).join("")}
+        </section>
+      `).join("");
+    }
+
+    function resetMenuItemForm() {
+      state.editingItemId = null;
+      elements.menuItemForm.reset();
+      elements.menuItemId.value = "";
+      elements.menuItemActive.value = "true";
+      elements.menuItemSubmitButton.textContent = "Spara maträtt";
+      elements.cancelEditButton.classList.add("hidden");
+    }
+
+    function fillMenuItemForm(itemId) {
+      const item = state.menuItems.find((entry) => String(entry.id) === String(itemId));
+      if (!item) return;
+
+      state.editingItemId = item.id;
+      elements.menuItemId.value = item.id;
+      elements.menuItemName.value = item.name;
+      elements.menuItemDescription.value = item.description || "";
+      elements.menuItemPrice.value = item.price;
+      elements.menuItemCategory.value = item.category_id || "";
+      elements.menuItemActive.value = item.is_active ? "true" : "false";
+      elements.menuItemSubmitButton.textContent = "Uppdatera maträtt";
+      elements.cancelEditButton.classList.remove("hidden");
+      elements.menuItemName.focus();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function ensureSupabase() {
+      if (supabase) return true;
+      const message = "Fyll i SUPABASE_URL och SUPABASE_ANON_KEY i index.html för att aktivera inloggning och datalagring.";
+      setStatus(elements.authStatus, message, "info");
+      setStatus(elements.dashboardStatus, message, "info");
+      return false;
+    }
+
+    async function fetchRestaurantData() {
+      if (!ensureSupabase() || !state.user) return;
+
+      setStatus(elements.dashboardStatus, "Laddar din restaurangdata...", "info");
+
+      const { data: restaurant, error: restaurantError } = await supabase
+        .from("restaurants")
+        .select("*")
+        .eq("owner_id", state.user.id)
+        .order("created_at", { ascending: true })
+        .limit(1)
+        .maybeSingle();
+
+      if (restaurantError) {
+        setStatus(elements.dashboardStatus, restaurantError.message, "error");
+        return;
+      }
+
+      state.restaurant = restaurant;
+      updateRestaurantForm();
+
+      if (!state.restaurant) {
+        state.categories = [];
+        state.menuItems = [];
+        renderCategories();
+        renderMenuItems();
+        setStatus(elements.dashboardStatus, "Ingen restaurang hittades ännu. Skapa en för att börja.", "info");
+        return;
+      }
+
+      const [{ data: categories, error: categoriesError }, { data: menuItems, error: menuItemsError }] = await Promise.all([
+        supabase
+          .from("categories")
+          .select("*")
+          .eq("restaurant_id", state.restaurant.id)
+          .order("sort_order", { ascending: true })
+          .order("created_at", { ascending: true }),
+        supabase
+          .from("menu_items")
+          .select("*, categories(name)")
+          .eq("restaurant_id", state.restaurant.id)
+          .order("created_at", { ascending: false })
+      ]);
+
+      if (categoriesError) {
+        setStatus(elements.dashboardStatus, categoriesError.message, "error");
+        return;
+      }
+
+      if (menuItemsError) {
+        setStatus(elements.dashboardStatus, menuItemsError.message, "error");
+        return;
+      }
+
+      state.categories = categories || [];
+      state.menuItems = (menuItems || []).map((item) => ({
+        ...item,
+        category_name: item.categories?.name || ""
+      }));
+
+      renderCategories();
+      renderMenuItems();
+      resetMenuItemForm();
+      setStatus(elements.dashboardStatus, "Dashboard uppdaterad.", "success");
+    }
+
+    async function handleAuthSubmit(event) {
+      event.preventDefault();
+      if (!ensureSupabase()) return;
+
+      const email = elements.authEmail.value.trim();
+      const password = elements.authPassword.value;
+
+      setStatus(elements.authStatus, "Bearbetar...", "info");
+
+      const action = state.authMode === "login"
+        ? supabase.auth.signInWithPassword({ email, password })
+        : supabase.auth.signUp({ email, password });
+
+      const { data, error } = await action;
+
+      if (error) {
+        setStatus(elements.authStatus, error.message, "error");
+        return;
+      }
+
+      if (state.authMode === "signup" && !data.session) {
+        setStatus(elements.authStatus, "Kontot skapades. Kontrollera din e-post för att bekräfta kontot innan du loggar in.", "success");
+        return;
+      }
+
+      setStatus(elements.authStatus, "Inloggning lyckades.", "success");
+      await initializeApp();
+    }
+
+    async function handleRestaurantSubmit(event) {
+      event.preventDefault();
+      if (!ensureSupabase() || !state.user) return;
+
+      const name = elements.restaurantName.value.trim();
+      const slugInput = elements.restaurantSlug.value.trim();
+      const slug = slugify(slugInput || name);
+
+      if (!name) {
+        setStatus(elements.dashboardStatus, "Ange ett restaurangnamn.", "error");
+        return;
+      }
+
+      setStatus(elements.dashboardStatus, "Sparar restaurang...", "info");
+
+      const payload = {
+        owner_id: state.user.id,
+        name,
+        slug
+      };
+
+      const query = state.restaurant
+        ? supabase.from("restaurants").update(payload).eq("id", state.restaurant.id).select().single()
+        : supabase.from("restaurants").insert(payload).select().single();
+
+      const { error } = await query;
+
+      if (error) {
+        setStatus(elements.dashboardStatus, error.message, "error");
+        return;
+      }
+
+      await fetchRestaurantData();
+    }
+
+    async function handleCategorySubmit(event) {
+      event.preventDefault();
+      if (!ensureSupabase() || !state.restaurant) {
+        setStatus(elements.dashboardStatus, "Skapa och spara en restaurang först.", "error");
+        return;
+      }
+
+      const name = elements.categoryName.value.trim();
+      const sortOrder = Number(elements.categorySortOrder.value || 0);
+
+      if (!name) {
+        setStatus(elements.dashboardStatus, "Ange ett kategorinamn.", "error");
+        return;
+      }
+
+      setStatus(elements.dashboardStatus, "Lägger till kategori...", "info");
+
+      const { error } = await supabase.from("categories").insert({
+        restaurant_id: state.restaurant.id,
+        name,
+        sort_order: sortOrder
+      });
+
+      if (error) {
+        setStatus(elements.dashboardStatus, error.message, "error");
+        return;
+      }
+
+      elements.categoryForm.reset();
+      elements.categorySortOrder.value = "0";
+      await fetchRestaurantData();
+    }
+
+    async function handleMenuItemSubmit(event) {
+      event.preventDefault();
+      if (!ensureSupabase() || !state.restaurant) {
+        setStatus(elements.dashboardStatus, "Skapa och spara en restaurang först.", "error");
+        return;
+      }
+
+      const payload = {
+        restaurant_id: state.restaurant.id,
+        category_id: elements.menuItemCategory.value,
+        name: elements.menuItemName.value.trim(),
+        description: elements.menuItemDescription.value.trim(),
+        price: Number(elements.menuItemPrice.value || 0),
+        is_active: elements.menuItemActive.value === "true"
+      };
+
+      if (!payload.name || !payload.category_id) {
+        setStatus(elements.dashboardStatus, "Fyll i namn och kategori för maträtten.", "error");
+        return;
+      }
+
+      setStatus(elements.dashboardStatus, state.editingItemId ? "Uppdaterar maträtt..." : "Sparar maträtt...", "info");
+
+      const query = state.editingItemId
+        ? supabase.from("menu_items").update(payload).eq("id", state.editingItemId)
+        : supabase.from("menu_items").insert(payload);
+
+      const { error } = await query;
+
+      if (error) {
+        setStatus(elements.dashboardStatus, error.message, "error");
+        return;
+      }
+
+      await fetchRestaurantData();
+    }
+
+    async function deleteCategory(categoryId) {
+      if (!ensureSupabase()) return;
+
+      const hasItems = state.menuItems.some((item) => String(item.category_id) === String(categoryId));
+      if (hasItems) {
+        setStatus(elements.dashboardStatus, "Ta bort eller flytta maträtterna i kategorin först.", "error");
+        return;
+      }
+
+      setStatus(elements.dashboardStatus, "Tar bort kategori...", "info");
+      const { error } = await supabase.from("categories").delete().eq("id", categoryId);
+
+      if (error) {
+        setStatus(elements.dashboardStatus, error.message, "error");
+        return;
+      }
+
+      await fetchRestaurantData();
+    }
+
+    async function deleteMenuItem(itemId) {
+      if (!ensureSupabase()) return;
+
+      setStatus(elements.dashboardStatus, "Tar bort maträtt...", "info");
+      const { error } = await supabase.from("menu_items").delete().eq("id", itemId);
+
+      if (error) {
+        setStatus(elements.dashboardStatus, error.message, "error");
+        return;
+      }
+
+      await fetchRestaurantData();
+    }
+
+    async function loadPublicMenu(restaurantId) {
+      showView("publicMenu");
+
+      if (!ensureSupabase()) {
+        setStatus(elements.publicMenuStatus, "Fyll i Supabase-konfigurationen i index.html för att visa publika menyer.", "info");
+        elements.publicRestaurantName.textContent = "Konfiguration saknas";
+        elements.publicMenuContent.innerHTML = "";
+        return;
+      }
+
+      setStatus(elements.publicMenuStatus, "Hämtar menyn...", "info");
+      elements.publicMenuContent.innerHTML = "";
+
+      const { data: restaurant, error: restaurantError } = await supabase
+        .from("restaurants")
+        .select("*")
+        .eq("id", restaurantId)
+        .maybeSingle();
+
+      if (restaurantError || !restaurant) {
+        renderPublicMenu(null, [], []);
+        return;
+      }
+
+      const [{ data: categories, error: categoriesError }, { data: menuItems, error: menuItemsError }] = await Promise.all([
+        supabase
+          .from("categories")
+          .select("*")
+          .eq("restaurant_id", restaurant.id)
+          .order("sort_order", { ascending: true })
+          .order("created_at", { ascending: true }),
+        supabase
+          .from("menu_items")
+          .select("*")
+          .eq("restaurant_id", restaurant.id)
+          .order("created_at", { ascending: true })
+      ]);
+
+      if (categoriesError || menuItemsError) {
+        setStatus(elements.publicMenuStatus, categoriesError?.message || menuItemsError?.message, "error");
+        return;
+      }
+
+      renderPublicMenu(restaurant, categories || [], menuItems || []);
+    }
+
+    async function handleLogout() {
+      if (!supabase) return;
+      await supabase.auth.signOut();
+      state.user = null;
+      state.restaurant = null;
+      state.categories = [];
+      state.menuItems = [];
+      showView("landing");
+    }
+
+    async function initializeApp() {
+      const params = new URLSearchParams(window.location.search);
+      const publicMenuId = params.get("menu");
+
+      if (publicMenuId) {
+        await loadPublicMenu(publicMenuId);
+        return;
+      }
+
+      if (!supabase) {
+        showView("landing");
+        return;
+      }
+
+      const [{ data: sessionData }] = await Promise.all([
+        supabase.auth.getSession()
+      ]);
+
+      state.user = sessionData.session?.user || null;
+
+      if (!state.authSubscriptionInitialized) {
+        supabase.auth.onAuthStateChange(async (_event, session) => {
+          state.user = session?.user || null;
+          if (state.user) {
+            elements.userEmailLabel.textContent = state.user.email || "-";
+            showView("dashboard");
+            await fetchRestaurantData();
+          } else {
+            elements.userEmailLabel.textContent = "-";
+            showView("landing");
+          }
+        });
+        state.authSubscriptionInitialized = true;
+      }
+
+      if (state.user) {
+        elements.userEmailLabel.textContent = state.user.email || "-";
+        showView("dashboard");
+        await fetchRestaurantData();
+      } else {
+        showView("landing");
+      }
+    }
+
+    function wireEvents() {
+      elements.brandLogo.addEventListener("error", () => {
+        elements.brandLogo.classList.add("hidden");
+        elements.brandFallback.classList.remove("hidden");
+      });
+
+      elements.navHomeButton.addEventListener("click", () => {
+        history.replaceState({}, "", window.location.pathname);
+        showView("landing");
+      });
+
+      elements.navDashboardButton.addEventListener("click", async () => {
+        history.replaceState({}, "", window.location.pathname);
+        showView("dashboard");
+        await fetchRestaurantData();
+      });
+
+      elements.navAuthButton.addEventListener("click", () => showView("auth"));
+      elements.navLogoutButton.addEventListener("click", handleLogout);
+
+      document.querySelectorAll("[data-go-auth]").forEach((button) => {
+        button.addEventListener("click", () => {
+          setAuthMode(button.dataset.goAuth);
+          showView("auth");
+        });
+      });
+
+      elements.loginTab.addEventListener("click", () => setAuthMode("login"));
+      elements.signupTab.addEventListener("click", () => setAuthMode("signup"));
+      elements.authForm.addEventListener("submit", handleAuthSubmit);
+      elements.restaurantForm.addEventListener("submit", handleRestaurantSubmit);
+      elements.categoryForm.addEventListener("submit", handleCategorySubmit);
+      elements.menuItemForm.addEventListener("submit", handleMenuItemSubmit);
+      elements.cancelEditButton.addEventListener("click", resetMenuItemForm);
+
+      elements.restaurantName.addEventListener("input", (event) => {
+        if (!elements.restaurantSlug.value || elements.restaurantSlug.value === slugify(state.restaurant?.name || "")) {
+          elements.restaurantSlug.value = slugify(event.target.value);
+        }
+      });
+
+      elements.copyLinkButton.addEventListener("click", async () => {
+        if (!state.restaurant) {
+          setStatus(elements.dashboardStatus, "Spara restaurangen först för att få en länk.", "error");
+          return;
+        }
+
+        const link = `${window.location.origin}${window.location.pathname}?menu=${state.restaurant.id}`;
+        try {
+          await navigator.clipboard.writeText(link);
+          setStatus(elements.dashboardStatus, "Länken kopierades till urklipp.", "success");
+        } catch (_error) {
+          setStatus(elements.dashboardStatus, "Kunde inte kopiera länken automatiskt. Kopiera den manuellt.", "error");
+        }
+      });
+
+      elements.categoryList.addEventListener("click", async (event) => {
+        const button = event.target.closest("[data-delete-category]");
+        if (!button) return;
+        await deleteCategory(button.dataset.deleteCategory);
+      });
+
+      elements.menuItemList.addEventListener("click", async (event) => {
+        const editButton = event.target.closest("[data-edit-item]");
+        const deleteButton = event.target.closest("[data-delete-item]");
+
+        if (editButton) {
+          fillMenuItemForm(editButton.dataset.editItem);
+        }
+
+        if (deleteButton) {
+          await deleteMenuItem(deleteButton.dataset.deleteItem);
+        }
+      });
+    }
+
+    wireEvents();
+    setAuthMode("login");
+    initializeApp();
+  </script>
+</body>
+</html>
